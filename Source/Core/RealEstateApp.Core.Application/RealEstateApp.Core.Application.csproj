@@ -8,10 +8,19 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RealEstateApp.Core.Domain\RealEstateApp.Core.Domain.csproj" />
+	  
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Contracts\Users\Base\" />
+    <Folder Include="Mapping\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.2.0" />
+	  <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.11" />
+	  <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.11" />
+	  <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.3.11" />
+	  <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
   </ItemGroup>
 
 </Project>

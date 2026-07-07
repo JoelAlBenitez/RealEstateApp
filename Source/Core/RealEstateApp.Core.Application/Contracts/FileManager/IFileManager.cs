@@ -1,8 +1,10 @@
-﻿namespace RealEstateApp.Core.Application.Contracts.FileManager
+﻿using Microsoft.AspNetCore.Http;
+
+namespace RealEstateApp.Core.Application.Contracts.FileManager
 {
     public interface IFileManager
     {
-        Task<string?> SaveAsync(IFileManager fileManager, string folderName, string Id);
+        Task<string?> SaveAsync(IFormFile fileManager, string folderName, string Id);
         Task<bool> DeleteAsync(string folderName, string Id);
     }
 }
