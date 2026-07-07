@@ -1,6 +1,6 @@
-﻿namespace RealEstateApp.Core.Application.DTOs.Users.Operational
+﻿namespace RealEstateApp.Core.Application.DTOs.Users.Operational.Base
 {
-    public sealed record RegisterUserDto
+    public abstract record RegisterUserDto
     {
         public required string Name { get; set; }
         public required string LastName { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace RealEstateApp.Core.Application.DTOs.Users.Operational
+﻿namespace RealEstateApp.Core.Application.DTOs.Users.Auth
 {
     public sealed record  LoginDto
     {
