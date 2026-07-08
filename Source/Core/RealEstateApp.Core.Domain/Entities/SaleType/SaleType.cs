@@ -1,0 +1,14 @@
+﻿using RealEstateApp.Core.Domain.Entities.Base;
+
+namespace RealEstateApp.Core.Domain.Entities
+{
+    public class SaleType : BaseEntitie<int>
+    {
+        public required string Name { get; set; }
+
+        public string? Description { get; set; }
+
+        //Navigation properties
+        public IReadOnlyCollection<Property> Properties { get; set; } = null!;
+    }
+}
