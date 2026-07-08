@@ -7,6 +7,7 @@ namespace RealEstateApp.Core.Application.Contracts.GenericServices
         Task<ValidationResult> AddAsync(TDtoModel dto);
         Task<ValidationResult?> UpdateAsync(TDtoModel dto, TKey id);
         Task<ValidationResult<TDtoModel>> GetByIdAsync(TKey id);
+        Task<ValidationResult> RemoveAsync(TKey id);
         Task<ValidationResult<IReadOnlyCollection<TDtoModel>>> GetAllAsync();
     }
 }
