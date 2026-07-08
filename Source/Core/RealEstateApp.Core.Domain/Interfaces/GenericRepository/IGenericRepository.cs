@@ -6,5 +6,6 @@
         Task<bool> UpdateAsync(TEntity entity);
         Task<IReadOnlyCollection<TEntity>> GetAllAsync();
         Task<TEntity> GetByIdAsync(TKey key);
+        Task<bool> DeleteAsync(TEntity entity);
     }
 }
