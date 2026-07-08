@@ -1,9 +1,10 @@
-﻿
+
 using RealEstateApp.Core.Domain.Common.Enums.OfferStatus;
+using RealEstateApp.Core.Domain.Entities.Base;
 
 namespace RealEstateApp.Core.Domain.Entities
 {
-    public class Offer
+    public class Offer : BaseEntitie<int>
     {
         public required string CustomerId { get; set; }
         public int PropertyId { get; set; }

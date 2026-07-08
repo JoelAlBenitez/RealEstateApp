@@ -1,6 +1,6 @@
-﻿using RealEstateApp.Core.Domain.Entities.Base;
+using RealEstateApp.Core.Domain.Entities.Base;
 
-namespace RealEstateApp.Core.Domain.Entities.Message
+namespace RealEstateApp.Core.Domain.Entities
 {
     public class Message : BaseEntitie<int>
     {
