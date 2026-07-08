@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <Folder Include="Mapping\" />
+    <Folder Include="ViewsModel\Users\Consult\" />
   </ItemGroup>
 
   <ItemGroup>
