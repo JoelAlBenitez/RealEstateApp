@@ -5,9 +5,9 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
 {
     public interface IOfferRepository : IGenericRepository<Offer, int>
     {
-        Task<Offer?> GetPendingOfferByClientAndPropertyAsync(string clientId, int propertyId);
+        Task<Offer?> GetPendingOfferByClientAndPropertyAsync(string customerId, int propertyId);
         Task<bool> HasAcceptedOfferAsync(int propertyId);
-        Task<IReadOnlyCollection<Offer>> GetOffersByClientAsync(string clientId);
+        Task<IReadOnlyCollection<Offer>> GetOffersByClientAsync(string customerId);
         Task<IReadOnlyCollection<Offer>> GetPendingOffersByPropertyAsync(int propertyId);
     }
 }
