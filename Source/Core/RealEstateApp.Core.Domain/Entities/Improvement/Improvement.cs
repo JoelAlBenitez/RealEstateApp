@@ -1,4 +1,4 @@
-﻿using RealEstateApp.Core.Domain.Entities.Base;
+using RealEstateApp.Core.Domain.Entities.Base;
 
 namespace RealEstateApp.Core.Domain.Entities
 {
@@ -7,7 +7,7 @@ namespace RealEstateApp.Core.Domain.Entities
         public required string Name { get; set; }
         public string? Description { get; set; }
 
-        //Navigation properties
+        // Navigation Properties
         public IReadOnlyCollection<Propertyimprovement> PropertyImprovements { get; set; } = null!;
     }
 }

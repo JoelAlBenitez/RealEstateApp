@@ -6,9 +6,11 @@ namespace RealEstateApp.Core.Domain.Entities
     {
         public required string CustomerId { get; set; }
         public required string AgentId { get; set; }
-        public int PropertyId { get; set; }
-        public Property? Property { get; set; }
+        public required int PropertyId { get; set; }
         public required string Content { get; set; }
-        public DateTime SentAt { get; set; }
+        public required DateTime SentAt { get; set; }
+
+        // Navigation Properties
+        public Property? Property { get; set; }
     }
 }
