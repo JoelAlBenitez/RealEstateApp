@@ -14,27 +14,27 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.ExternalUs
         [StringLength(100, ErrorMessage = "La contraseña debe contener minimo 8 caracteres", MinimumLength = 8)]
         [Display(Name = "Contraseña")]
         [DataType(DataType.Password)]
-        public required string Password { get; set; }
+        public required string NewPassword { get; set; }
 
 
         [Required(ErrorMessage = "La conformacion de contraseña es requerida favor ingrese el valor pertinente")]
         [StringLength(100, ErrorMessage = "La confirmacion de contraseña debe contener minimo 8 caracteres", MinimumLength = 8)]
         [Display(Name = "Confirmacion de contraseña")]
         [DataType(DataType.Password)]
-        [Compare(nameof(Password), ErrorMessage = "Las contraseñas deben coincidir.")]
-        public required string ConfirmPassword { get; set; }
+        [Compare(nameof(NewPassword), ErrorMessage = "Las contraseñas deben coincidir.")]
+        public required string ConfirmNewPassword { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            bool password = !string.IsNullOrWhiteSpace(Password);
-            bool confirm = !string.IsNullOrWhiteSpace(ConfirmPassword);
+            bool password = !string.IsNullOrWhiteSpace(NewPassword);
+            bool confirm = !string.IsNullOrWhiteSpace(ConfirmNewPassword);
             if (password != confirm)
             {
                 yield return new ValidationResult("La nueva password y su contraseña deben coincidir",
                     new[]
                     {
-                        nameof(Password),
-                        nameof(ConfirmPassword)
+                        nameof(NewPassword),
+                        nameof(ConfirmNewPassword)
                     }
                    );
             }
