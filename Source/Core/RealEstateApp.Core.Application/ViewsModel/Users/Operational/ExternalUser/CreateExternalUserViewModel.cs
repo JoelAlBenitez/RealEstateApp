@@ -12,12 +12,10 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.ExternalUs
         [Phone]
         [DataType(DataType.PhoneNumber)]
         [Display(Name = "Numero telefonico")]
-
         public required string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Debe ingresar una imagen de perfil valida para ser procesada (PNG, JPEG, JPG)")]
         [Display(Name = "Imagen de perfil")]
-
         public required IFormFile ProfileImg { get; set; }
     }
 }

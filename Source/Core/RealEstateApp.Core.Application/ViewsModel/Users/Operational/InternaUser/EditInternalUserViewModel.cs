@@ -7,7 +7,6 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.InternaUse
         [Required(ErrorMessage = "Debe  ingresar un numero de identitdad valido sin guiones")]
         [StringLength(11, ErrorMessage = "El numero de identidad debe tener 11 digitos sin guiines", MinimumLength = 11)]
         [Display(Name = "Cedula")]
-
         public required string IDCard { get; set; }
 
         [Required(ErrorMessage = "Debe ingresar un nombre de usuario valido")]
@@ -15,13 +14,11 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.InternaUse
         [Display(Name = "Nombre de usuario")]
         public required string UserName { get; set; }
 
-
         [Required(ErrorMessage = "Debe ingresar un correo electronico valido")]
         [StringLength(254, ErrorMessage = "El correo electronico no puede tener una longitud mayor a 254 caracteres ni ser menor a 12 caracteres", MinimumLength = 12)]
         [EmailAddress]
         [DataType(DataType.EmailAddress)]
         [Display(Name = "Correo Electronico")]
-
         public required string Email  { get; set; }
 
         [DataType(DataType.Password)]

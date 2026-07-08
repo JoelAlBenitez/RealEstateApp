@@ -12,11 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Mapping\" />
-    <Folder Include="ViewsModel\Users\Consult\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="16.2.0" />
 	  <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.11" />
 	  <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.11" />

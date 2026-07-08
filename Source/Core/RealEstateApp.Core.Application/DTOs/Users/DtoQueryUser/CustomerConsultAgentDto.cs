@@ -2,7 +2,7 @@
 
 namespace RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser
 {
-    public sealed record CustomerInquiryAgentDto : BaseGetUserDto
+    public sealed record CustomerConsultAgentDto : BaseGetUserDto
     {
         public required string ProfileImgAgent {  get; set; }
     }
