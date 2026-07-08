@@ -31,14 +31,14 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.InternaUse
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             bool password = !string.IsNullOrWhiteSpace(NewPassword);
-            bool confirm = !string.IsNullOrWhiteSpace(ConfirmPassword);
+            bool confirm = !string.IsNullOrWhiteSpace(ConfirmNewPassword);
             if(password != confirm)
             {
-                yield return new ValidationResult("La nueva password y su contraseña deben coincidir"
+                yield return new ValidationResult("La nueva password y su contraseña deben coincidir",
                     new[]
                     {
                         nameof(NewPassword),
-                        nameof(ConfirmPassword)
+                        nameof(ConfirmNewPassword)
                     }
                    );
             }
