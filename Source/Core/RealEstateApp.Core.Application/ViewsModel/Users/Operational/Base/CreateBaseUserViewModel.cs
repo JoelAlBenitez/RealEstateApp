@@ -42,6 +42,9 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.Base
 
         public required string NameUser { get; set; }
 
+        [Required(ErrorMessage = "Debe indicar un tipo de usuario valido")]
+        public required int TypeUser { get; set; }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             bool password = !string.IsNullOrWhiteSpace(Password);

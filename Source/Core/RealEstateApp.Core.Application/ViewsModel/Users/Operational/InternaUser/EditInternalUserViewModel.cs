@@ -7,7 +7,7 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.InternaUse
         [Required(ErrorMessage = "Debe  ingresar un numero de identitdad valido sin guiones")]
         [StringLength(11, ErrorMessage = "El numero de identidad debe tener 11 digitos sin guiines", MinimumLength = 11)]
         [Display(Name = "Cedula")]
-        public required string IDCard { get; set; }
+        public required string IdCard { get; set; }
 
         [Required(ErrorMessage = "Debe ingresar un nombre de usuario valido")]
         [StringLength(25, ErrorMessage = "El nombre de usuario no debe superar los 25 caracteres ni tener menos de 5", MinimumLength = 5)]
@@ -26,7 +26,7 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.InternaUse
 
         [DataType(DataType.Password)]
         [Compare(nameof(NewPassword),ErrorMessage = "Las contraseñas deben coincidir")]
-        public string? ConfirmPassword { get; set; }
+        public string? ConfirmNewPassword { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

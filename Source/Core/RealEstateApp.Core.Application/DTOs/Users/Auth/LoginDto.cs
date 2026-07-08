@@ -2,7 +2,7 @@
 {
     public sealed record  LoginDto
     {
-        public required string CorreoOrUserName { get; set; }
+        public required string EmailOrNameUser { get; set; }
         public required string Password { get; set; }
     }
 }
