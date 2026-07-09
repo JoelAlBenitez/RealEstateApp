@@ -2,7 +2,7 @@ using RealEstateApp.Core.Application.Common.Errors;
 using RealEstateApp.Core.Application.Contracts.Users;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
-using RealEstateApp.Core.Application.ViewsModel.Users.Operational.InternaUser;
+
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 
@@ -28,7 +28,7 @@ namespace RealEstateApp.Core.Application.Services
             );
         }
 
-        public async Task<ValidationResult> CreateAsync(CreateInternalUserViewModel vm)
+        public async Task<ValidationResult> CreateAsync(RegisterInternalUsersDto dto)
         {
             // PENDIENTE DE CONFIRMAR: RegisterInternalUserAsync() en IOperationalAccountWebApp de Joel
             return await Task.FromResult(
@@ -38,10 +38,10 @@ namespace RealEstateApp.Core.Application.Services
             );
         }
 
-        public async Task<ValidationResult> EditAsync(EditInternalUserViewModel vm, string currentAdminId)
+        public async Task<ValidationResult> EditAsync(EditInernalUserDto dto, string currentAdminId)
         {
             // Regla de auto-protección: no se puede editar a sí mismo
-            if (vm.Id == currentAdminId)
+            if (dto.Id == currentAdminId)
             {
                 return ValidationResult.Failure(
                     ErrorAdministrator.SelfEdit

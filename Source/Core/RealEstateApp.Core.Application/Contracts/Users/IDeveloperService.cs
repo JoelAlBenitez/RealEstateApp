@@ -1,6 +1,6 @@
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
-using RealEstateApp.Core.Application.ViewsModel.Users.Operational.InternaUser;
+
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 
 namespace RealEstateApp.Core.Application.Contracts.Users
@@ -14,10 +14,10 @@ namespace RealEstateApp.Core.Application.Contracts.Users
         Task<ValidationResult<IReadOnlyCollection<GetInternalUserDto>>> GetDevelopersAsync();
 
         // Registra un nuevo desarrollador
-        Task<ValidationResult> CreateAsync(CreateInternalUserViewModel vm);
+        Task<ValidationResult> CreateAsync(RegisterInternalUsersDto dto);
 
         // Edita un desarrollador existente
-        Task<ValidationResult> EditAsync(EditInternalUserViewModel vm);
+        Task<ValidationResult> EditAsync(EditInernalUserDto dto);
 
         // Cambia el estado de un desarrollador
         Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto);

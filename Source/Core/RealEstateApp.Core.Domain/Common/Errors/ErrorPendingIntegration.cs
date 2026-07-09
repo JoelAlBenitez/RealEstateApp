@@ -4,12 +4,7 @@ using RealEstateApp.Core.Domain.Common.Errors;
 
 namespace RealEstateApp.Core.Application.Common.Errors
 {
-    /// <summary>
-    /// Errores TEMPORALES de integración pendiente con teammates (Joel / Sebastián).
-    /// Esta clase debe eliminarse por completo una vez que todos los métodos de
-    /// IOperationalAccountWebApp (Joel) e IPropertyService (Sebastián) estén confirmados
-    /// e implementados. Ningún error de aquí debe llegar a producción.
-    /// </summary>
+    
     public static class ErrorPendingIntegration
     {
         // ── Dashboard ──────────────────────────────────────────────────────

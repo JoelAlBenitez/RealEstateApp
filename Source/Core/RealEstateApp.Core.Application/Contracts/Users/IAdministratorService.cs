@@ -1,6 +1,6 @@
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
-using RealEstateApp.Core.Application.ViewsModel.Users.Operational.InternaUser;
+
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 
 namespace RealEstateApp.Core.Application.Contracts.Users
@@ -15,10 +15,10 @@ namespace RealEstateApp.Core.Application.Contracts.Users
 
 
         // Registra un nuevo administrador
-        Task<ValidationResult> CreateAsync(CreateInternalUserViewModel vm);
+        Task<ValidationResult> CreateAsync(RegisterInternalUsersDto dto);
 
         // Edita un administrador existente, aplicando validación de auto-edición
-        Task<ValidationResult> EditAsync(EditInternalUserViewModel vm, string currentAdminId);
+        Task<ValidationResult> EditAsync(EditInernalUserDto dto, string currentAdminId);
 
         // Cambia el estado de un administrador, aplicando validación de auto-inactivación y mínimo un administrador activo
         Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto, string currentAdminId);
