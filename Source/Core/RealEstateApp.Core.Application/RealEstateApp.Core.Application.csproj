@@ -8,8 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RealEstateApp.Core.Domain\RealEstateApp.Core.Domain.csproj" />
-<<<<<<< HEAD
-=======
+
 	  
   </ItemGroup>
 
@@ -19,7 +18,7 @@
 	  <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.11" />
 	  <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.3.11" />
 	  <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
->>>>>>> development
+
   </ItemGroup>
 
 </Project>
