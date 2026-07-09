@@ -1,4 +1,4 @@
-﻿using RealEstateApp.Core.Application.Contracts.FavoriteProperty;
+using RealEstateApp.Core.Application.Contracts.FavoriteProperty;
 using RealEstateApp.Core.Application.DTOs.FavoriteProperty;
 using RealEstateApp.Core.Domain.Common.CodeErrors.Favorite;
 using RealEstateApp.Core.Domain.Common.Errors;
@@ -33,7 +33,7 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperty
 
             if (!string.IsNullOrEmpty(dto.CustomerId))
             {
-                var favorites = await _favoritePropertyRepository.GetFavoritesByCustomertAsync(dto.CustomerId);
+                var favorites = await _favoritePropertyRepository.GetFavoritesByCustomerAsync(dto.CustomerId);
                 if (favorites.Any(f => f.PropertyId == dto.PropertyId))
                 {
                     errors.Add(FavoriteErrors.AlreadyFavorite);
@@ -47,7 +47,7 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperty
         {
             var errors = new List<Error>();
 
-            var favorites = await _favoritePropertyRepository.GetFavoritesByCustomertAsync(customerId);
+            var favorites = await _favoritePropertyRepository.GetFavoritesByCustomerAsync(customerId);
             if (!favorites.Any(f => f.PropertyId == propertyId))
             {
                 errors.Add(new Error("Favorite.NotFound", "La propiedad no se encuentra en su listado de favoritos"));

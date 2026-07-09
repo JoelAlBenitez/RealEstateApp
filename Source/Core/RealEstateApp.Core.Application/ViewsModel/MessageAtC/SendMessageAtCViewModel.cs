@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace RealEstateApp.Core.Application.ViewsModel.MessageAtC
 {
-    public class SendMessaceAtCViewModel
+    public class SendMessageAtCViewModel
     {
         public int PropertyId { get; set; }
         public string? AgentId { get; set; }

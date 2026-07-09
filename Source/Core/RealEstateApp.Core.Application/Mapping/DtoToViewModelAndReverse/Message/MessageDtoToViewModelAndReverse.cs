@@ -9,7 +9,7 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Messag
         public MessageDtoToViewModelAndReverse()
         {
             CreateMap<MessageAtCDto, MessageAtCViewModel>().ReverseMap();
-            CreateMap<SaveMessageAtCDto, SendMessaceAtCViewModel>().ReverseMap();
+            CreateMap<SaveMessageAtCDto, SendMessageAtCViewModel>().ReverseMap();
         }
     }
 }
