@@ -6,6 +6,6 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
     public interface IFavoritePropertyRepository : IGenericRepository<FavoriteProperty, int>
     {
         Task<FavoriteProperty?> GetFavoriteAsync(string customerId, int propertyId);
-        Task<IReadOnlyCollection<FavoriteProperty>> GetFavoritesByClientAsync(string customerId);
+        Task<IReadOnlyCollection<FavoriteProperty>> GetFavoritesByCustomertAsync(string customerId);
     }
 }
