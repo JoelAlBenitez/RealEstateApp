@@ -89,6 +89,10 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Base
             return response;
         }
 
+        public Task SignOutAsync()
+        {
+            throw new NotImplementedException();
+        }
 
         #region create
         public async Task<UserResponseDto> CreateExternalAsync(RegisterExternalUsers registerUserDto)
@@ -278,7 +282,9 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Base
             return response;
         }
 
-     
+      
+
+
         #endregion
     }
 }

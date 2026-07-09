@@ -14,5 +14,7 @@ namespace RealEstateApp.Core.Application.Contracts.Users.Base
         Task<UserResponseDto> ChangeStateAsync(AlterStateUserDto alterStateUserDto, string IdUserCurrent);
         Task<UserResponseDto> DeleteAsync(string IdUser);
         Task<BaseGetUserDto> GetById(string IdUser);
+        Task SignOutAsync();
+
     }
 }
