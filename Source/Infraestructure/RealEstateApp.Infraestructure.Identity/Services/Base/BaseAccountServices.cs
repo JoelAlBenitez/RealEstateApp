@@ -8,8 +8,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Base
 {
     public sealed class BaseAccountServices : IBaseAccountUser
     {
-        private readonly
-
+        
         public Task<UserResponseDto> ChangeStateAsync(AlterStateUserDto alterStateUserDto, string IdUserCurrent)
         {
             throw new NotImplementedException();
