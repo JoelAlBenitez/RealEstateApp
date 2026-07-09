@@ -2,7 +2,7 @@
 
 namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.Base
 {
-    public abstract class CreateBaseUserViewModel : IValidatableObject
+    public  class CreateBaseUserViewModel : IValidatableObject
     {
 
         [Required(ErrorMessage = "Debee ingresar un nombre valido")]

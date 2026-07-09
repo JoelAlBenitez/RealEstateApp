@@ -2,7 +2,7 @@
 
 namespace RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser
 {
-    public sealed record ClientDto : BaseGetUserDto
+    public sealed class ClientDto : BaseGetUserDto
     {
     }
 }
