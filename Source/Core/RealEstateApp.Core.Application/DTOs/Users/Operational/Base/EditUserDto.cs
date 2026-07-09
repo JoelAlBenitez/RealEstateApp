@@ -1,6 +1,6 @@
 ﻿namespace RealEstateApp.Core.Application.DTOs.Users.Operational.Base
 {
-    public abstract record EditUserDto
+    public  class EditUserDto
     {
          public required string Id { get; set; }
          public required string Name { get; set; }

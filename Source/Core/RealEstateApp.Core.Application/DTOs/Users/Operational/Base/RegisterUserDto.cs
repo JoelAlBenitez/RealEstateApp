@@ -1,6 +1,6 @@
 ﻿namespace RealEstateApp.Core.Application.DTOs.Users.Operational.Base
 {
-    public abstract record RegisterUserDto
+    public  class RegisterUserDto
     {
         public required string Name { get; set; }
         public required string LastName { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser.Base
 {
-    public abstract record BaseGetUserDto
+    public  class BaseGetUserDto
     {
         public required string Id { get; set; }
         public required string Name { get; set; }

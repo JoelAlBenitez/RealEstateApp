@@ -2,7 +2,7 @@
 
 namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.Base
 {
-    public abstract class EditBaseUserViewModel
+    public  class EditBaseUserViewModel
     {
         [Required(ErrorMessage = "Usuario no especificado, favor intente de nuevo")]
         public required string Id { get; set; }

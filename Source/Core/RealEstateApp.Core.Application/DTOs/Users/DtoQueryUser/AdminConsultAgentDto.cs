@@ -2,7 +2,7 @@
 
 namespace RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser
 {
-   public sealed record AdminConsultAgentDto : BaseGetUserDto
+   public sealed class AdminConsultAgentDto : BaseGetUserDto
     {
         public required string Email { get; set; }
         public required int  Properties { get; set; }

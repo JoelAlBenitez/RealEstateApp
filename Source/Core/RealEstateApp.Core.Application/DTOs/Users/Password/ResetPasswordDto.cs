@@ -1,6 +1,6 @@
 ﻿namespace RealEstateApp.Core.Application.DTOs.Users.Password
 {
-    public sealed record  ResetPasswordDto
+    public sealed class  ResetPasswordDto
     {
 
         public required string Id { get; set; }
