@@ -1,4 +1,5 @@
 using RealEstateApp.Core.Application.Common.Errors;
+using RealEstateApp.Core.Domain.Common.Enums;
 using RealEstateApp.Core.Application.Contracts.Users;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
@@ -20,12 +21,8 @@ namespace RealEstateApp.Core.Application.Services
 
         public async Task<ValidationResult<IReadOnlyCollection<GetInternalUserDto>>> GetAdministratorsAsync()
         {
-            // PENDIENTE DE CONFIRMAR: GetUsersByRoleAsync(TypeUsers.Administrator) en IOperationalAccountWebApp de Joel
-            return await Task.FromResult(
-                ValidationResult<IReadOnlyCollection<GetInternalUserDto>>.Failure(
-                    ErrorPendingIntegration.AdminList
-                )
-            );
+            var result = await _accountWebApp.GetInternalUserGetAll(Roles.Administrador);
+            return ValidationResult<IReadOnlyCollection<GetInternalUserDto>>.Success(result);
         }
 
         public async Task<ValidationResult> CreateAsync(RegisterInternalUsersDto dto)

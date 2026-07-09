@@ -22,12 +22,8 @@ namespace RealEstateApp.Core.Application.Services
 
         public async Task<ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>> GetAgentsAsync()
         {
-            // PENDIENTE DE CONFIRMAR: GetAgentsAsync() en IOperationalAccountWebApp de Joel
-            return await Task.FromResult(
-                ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>.Failure(
-                    ErrorPendingIntegration.AgentList
-                )
-            );
+            var result = await _accountWebApp.GetAgentByConsultAdminAll();
+            return ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>.Success(result);
         }
 
         public async Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto)
