@@ -1,6 +1,6 @@
-﻿namespace RealEstateApp.Core.Application.Contracts.Users
+namespace RealEstateApp.Core.Application.Contracts.Users
 {
-    internal interface IOperationalAccountWebApp
+    public interface IOperationalAccountWebApp
     {
     }
 }
