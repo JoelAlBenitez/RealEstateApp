@@ -15,8 +15,7 @@ namespace RealEstateApp.Core.Application.Contracts.Users
         Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentAllViewHomeByCustomer();
         Task<CustomerConsultAgentDto> GetAgentByConsultCustomerByUserNameAgent(string userName);
         Task<ConsultAgentDto> GetConsultAgentById(string id);
-        Task<UserResponseDto> ForgoutPasswordAsync(ForgoutPasswordDto forgoutPasswordDto);
-        Task<UserResponseDto> ResetPasswordAsync(ResetPasswordDto resetPasswordDto);
+      
 
     }
 }

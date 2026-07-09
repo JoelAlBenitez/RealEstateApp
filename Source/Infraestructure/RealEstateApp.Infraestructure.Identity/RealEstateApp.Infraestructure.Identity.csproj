@@ -20,10 +20,12 @@
 
 	<ItemGroup>
 	  <Folder Include="Migrations\" />
-	  <Folder Include="Services\Base\" />
+	  <Folder Include="Services\Interfaces\" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\Core\RealEstateApp.Core.Application\RealEstateApp.Core.Application.csproj" />
 	  <ProjectReference Include="..\..\Core\RealEstateApp.Core.Domain\RealEstateApp.Core.Domain.csproj" />
+	  <ProjectReference Include="..\RealEstateApp.Infraestructure.Shared\RealEstateApp.Infraestructure.Shared.csproj" />
 	</ItemGroup>
 </Project>
