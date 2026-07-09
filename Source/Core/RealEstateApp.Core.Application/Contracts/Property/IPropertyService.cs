@@ -13,6 +13,7 @@ namespace RealEstateApp.Core.Application.Contracts.Property
         Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAllWithDetailsAsync();
         Task<ValidationResult<PropertyTotalsDto>> GetTotalsByStatusAsync();
         Task<ValidationResult<int>> CountByAgentAsync(string agentId);
+        Task<bool> IsAvailableAsync(int propertyId);
         Task<ValidationResult> DeletePropertiesByAgentAsync(string agentId);
     }
 }

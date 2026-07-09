@@ -1,4 +1,5 @@
-﻿using RealEstateApp.Core.Application.Contracts.Offer;
+using RealEstateApp.Core.Application.Contracts.Offer;
+using RealEstateApp.Core.Application.Contracts.Property;
 using RealEstateApp.Core.Application.DTOs.Offer;
 using RealEstateApp.Core.Domain.Common.CodeErrors.Offer;
 using RealEstateApp.Core.Domain.Common.Enums.OfferStatus;
@@ -12,12 +13,12 @@ namespace RealEstateApp.Core.Application.Services.Offer
     public sealed class OfferValidationService : IOfferValidationService
     {
         private readonly IOfferRepository _offerRepository;
-        private readonly IPropertyRepository _propertyRepository;
+        private readonly IPropertyService _propertyService;
 
-        public OfferValidationService(IOfferRepository offerRepository, IPropertyRepository propertyRepository)
+        public OfferValidationService(IOfferRepository offerRepository, IPropertyService propertyService)
         {
             _offerRepository = offerRepository;
-            _propertyRepository = propertyRepository;
+            _propertyService = propertyService;
         }
 
         public async Task<ValidationResult> ValidateForCreateAsync(SaveOfferDto dto)
@@ -30,16 +31,10 @@ namespace RealEstateApp.Core.Application.Services.Offer
                 return ValidationResult.Failure(errors);
             }
 
-            var property = await _propertyRepository.GetByIdAsync(dto.PropertyId);
-            if (property == null)
+            var isAvailable = await _propertyService.IsAvailableAsync(dto.PropertyId);
+            if (!isAvailable)
             {
-                errors.Add(new Error("Offer.PropertyNotFound", "La propiedad especificada no existe"));
-                return ValidationResult.Failure(errors);
-            }
-
-            if (property.Status == PropertyState.Sold)
-            {
-                errors.Add(OfferErrors.PropertyAlreadySold);
+                errors.Add(new Error("Offer.PropertyNotFound", "La propiedad especificada no existe o no está disponible"));
                 return ValidationResult.Failure(errors);
             }
 
@@ -79,12 +74,13 @@ namespace RealEstateApp.Core.Application.Services.Offer
                 return ValidationResult.Failure(errors);
             }
 
-            var property = await _propertyRepository.GetByIdAsync(offer.PropertyId);
-            if (property == null)
+            var propertyResult = await _propertyService.GetByIdAsync(offer.PropertyId);
+            if (!propertyResult.IsValid || propertyResult.Value == null)
             {
                 errors.Add(new Error("Offer.PropertyNotFound", "La propiedad asociada a la oferta no existe"));
                 return ValidationResult.Failure(errors);
             }
+            var property = propertyResult.Value;
 
             if (property.Status == PropertyState.Sold)
             {
@@ -116,8 +112,8 @@ namespace RealEstateApp.Core.Application.Services.Offer
                 return ValidationResult.Failure(errors);
             }
 
-            var property = await _propertyRepository.GetByIdAsync(offer.PropertyId);
-            if (property == null || property.AgentId != agentId)
+            var propertyResult = await _propertyService.GetByIdAsync(offer.PropertyId);
+            if (!propertyResult.IsValid || propertyResult.Value == null || propertyResult.Value.AgentId != agentId)
             {
                 errors.Add(new Error("Offer.UnauthorizedAgent", "No tiene permisos para gestionar ofertas en esta propiedad"));
             }

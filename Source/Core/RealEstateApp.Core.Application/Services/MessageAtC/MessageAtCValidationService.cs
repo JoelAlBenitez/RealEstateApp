@@ -1,19 +1,19 @@
-﻿using RealEstateApp.Core.Application.Contracts.Message;
+using RealEstateApp.Core.Application.Contracts.Message;
+using RealEstateApp.Core.Application.Contracts.Property;
 using RealEstateApp.Core.Application.DTOs.MessageAtC;
 using RealEstateApp.Core.Domain.Common.CodeErrors.Message;
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
-using RealEstateApp.Core.Domain.Interfaces.Repositories;
 
 namespace RealEstateApp.Core.Application.Services.MessageAtC
 {
     public sealed class MessageAtCValidationService : IMessageAtCValidationService
     {
-        private readonly IPropertyRepository _propertyRepository;
+        private readonly IPropertyService _propertyService;
 
-        public MessageAtCValidationService(IPropertyRepository propertyRepository)
+        public MessageAtCValidationService(IPropertyService propertyService)
         {
-            _propertyRepository = propertyRepository;
+            _propertyService = propertyService;
         }
 
         public async Task<ValidationResult> ValidateForCreateAsync(SaveMessageAtCDto dto)
@@ -26,8 +26,8 @@ namespace RealEstateApp.Core.Application.Services.MessageAtC
                 return ValidationResult.Failure(errors);
             }
 
-            var property = await _propertyRepository.GetByIdAsync(dto.PropertyId);
-            if (property == null)
+            var propertyResult = await _propertyService.GetByIdAsync(dto.PropertyId);
+            if (!propertyResult.IsValid || propertyResult.Value == null)
             {
                 errors.Add(new Error("Message.PropertyNotFound", "La propiedad de la conversación no existe"));
             }

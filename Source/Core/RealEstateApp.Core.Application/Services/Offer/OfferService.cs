@@ -122,6 +122,12 @@ namespace RealEstateApp.Core.Application.Services.Offer
             offer!.Status = OfferState.Rejected;
             await _offerRepository.UpdateAsync(offer);
 
+            var result = await _offerRepository.SaveAsync();
+            if (result <= 0)
+            {
+                return ValidationResult.Failure(new Domain.Common.Errors.Error("Database.SaveError", "No se pudo rechazar la oferta en la base de datos"));
+            }
+
             return ValidationResult.Success();
         }
 
@@ -135,6 +141,12 @@ namespace RealEstateApp.Core.Application.Services.Offer
 
             var offer = await _offerRepository.GetByIdAsync(offerId);
             await _offerRepository.DeleteAsync(offer!);
+
+            var result = await _offerRepository.SaveAsync();
+            if (result <= 0)
+            {
+                return ValidationResult.Failure(new Domain.Common.Errors.Error("Database.DeleteError", "No se pudo cancelar la oferta en la base de datos"));
+            }
 
             return ValidationResult.Success();
         }

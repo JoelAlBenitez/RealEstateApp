@@ -5,6 +5,7 @@ using RealEstateApp.Core.Application.DTOs.FavoriteProperty;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Entities;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
+using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 
 namespace RealEstateApp.Core.Application.Services.FavoriteProperty
 {
@@ -65,7 +66,8 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperty
         public async Task<ValidationResult<IReadOnlyCollection<FavoritePropertyDto>>> GetByCustomerAsync(string customerId)
         {
             var favorites = await _favoritePropertyRepository.GetFavoritesByCustomerAsync(customerId);
-            var dtos = _mapper.Map<IReadOnlyCollection<FavoritePropertyDto>>(favorites);
+            var availableFavorites = favorites.Where(f => f.Property != null && f.Property.Status == PropertyState.Available).ToList();
+            var dtos = _mapper.Map<IReadOnlyCollection<FavoritePropertyDto>>(availableFavorites);
             return ValidationResult<IReadOnlyCollection<FavoritePropertyDto>>.Success(dtos);
         }
 
@@ -81,6 +83,11 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperty
             if (favorite != null)
             {
                 await _favoritePropertyRepository.DeleteAsync(favorite);
+                var result = await _favoritePropertyRepository.SaveAsync();
+                if (result <= 0)
+                {
+                    return ValidationResult.Failure(new Domain.Common.Errors.Error("Database.DeleteError", "No se pudo eliminar el favorito de la base de datos"));
+                }
             }
 
             return ValidationResult.Success();

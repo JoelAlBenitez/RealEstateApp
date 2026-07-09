@@ -1,4 +1,5 @@
 using RealEstateApp.Core.Application.Contracts.FavoriteProperty;
+using RealEstateApp.Core.Application.Contracts.Property;
 using RealEstateApp.Core.Application.DTOs.FavoriteProperty;
 using RealEstateApp.Core.Domain.Common.CodeErrors.Favorite;
 using RealEstateApp.Core.Domain.Common.Errors;
@@ -10,24 +11,24 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperty
     public class FavoritePropertyValidationService : IFavoritePropertyValidationService
     {
         private readonly IFavoritePropertyRepository _favoritePropertyRepository;
-        private readonly IPropertyRepository _propertyRepository;
+        private readonly IPropertyService _propertyService;
 
         public FavoritePropertyValidationService(
             IFavoritePropertyRepository favoritePropertyRepository,
-            IPropertyRepository propertyRepository)
+            IPropertyService propertyService)
         {
             _favoritePropertyRepository = favoritePropertyRepository;
-            _propertyRepository = propertyRepository;
+            _propertyService = propertyService;
         }
 
         public async Task<ValidationResult> ValidateForCreateAsync(SaveFavoritePropertyDto dto)
         {
             var errors = new List<Error>();
 
-            var property = await _propertyRepository.GetByIdAsync(dto.PropertyId);
-            if (property == null)
+            var isAvailable = await _propertyService.IsAvailableAsync(dto.PropertyId);
+            if (!isAvailable)
             {
-                errors.Add(new Error("Favorite.PropertyNotFound", "La propiedad especificada no existe"));
+                errors.Add(new Error("Favorite.PropertyNotFound", "La propiedad especificada no existe o no está disponible"));
                 return ValidationResult.Failure(errors);
             }
 

@@ -135,8 +135,19 @@ namespace RealEstateApp.Core.Application.Services.Property
             var properties = await _propertyRepository.GetAllAsync();
             var agentProperties = properties.Where(p => p.AgentId == agentId).ToList();
 
-            var deleteTasks = agentProperties.Select(p => _propertyRepository.DeleteAsync(p));
-            await Task.WhenAll(deleteTasks);
+            foreach (var p in agentProperties)
+            {
+                await _propertyRepository.DeleteAsync(p);
+            }
+
+            if (agentProperties.Count > 0)
+            {
+                var result = await _propertyRepository.SaveAsync();
+                if (result <= 0)
+                {
+                    return ValidationResult.Failure(new Domain.Common.Errors.Error("Database.DeleteError", "No se pudieron eliminar las propiedades de la base de datos"));
+                }
+            }
 
             return ValidationResult.Success();
         }
@@ -144,6 +155,12 @@ namespace RealEstateApp.Core.Application.Services.Property
         public async Task<ValidationResult> RemoveAsync(int id)
         {
             return await _genericService.RemoveAsync(id);
+        }
+
+        public async Task<bool> IsAvailableAsync(int propertyId)
+        {
+            var property = await _propertyRepository.GetByIdAsync(propertyId);
+            return property != null && property.Status == PropertyState.Available;
         }
     }
 }
