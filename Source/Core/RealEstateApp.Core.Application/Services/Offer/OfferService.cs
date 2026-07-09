@@ -91,15 +91,21 @@ namespace RealEstateApp.Core.Application.Services.Offer
             var pendingOffers = await _offerRepository.GetPendingOffersByPropertyAsync(offer.PropertyId);
             var otherOffers = pendingOffers.Where(o => o.Id != offerId).ToList();
 
-            var rejectTasks = otherOffers.Select(o => {
-                o.Status = OfferState.Rejected;
-                return _offerRepository.UpdateAsync(o);
-            });
-            await Task.WhenAll(rejectTasks);
+            foreach (var otherOffer in otherOffers)
+            {
+                otherOffer.Status = OfferState.Rejected;
+                await _offerRepository.UpdateAsync(otherOffer);
+            }
 
             var property = await _propertyRepository.GetByIdAsync(offer.PropertyId);
             property!.Status = PropertyState.Sold;
             await _propertyRepository.UpdateAsync(property);
+
+            var result = await _offerRepository.SaveAsync();
+            if (result <= 0)
+            {
+                return ValidationResult.Failure(new Domain.Common.Errors.Error("Database.SaveError", "No se pudieron guardar los datos de forma atómica"));
+            }
 
             return ValidationResult.Success();
         }
@@ -131,6 +137,11 @@ namespace RealEstateApp.Core.Application.Services.Offer
             await _offerRepository.DeleteAsync(offer!);
 
             return ValidationResult.Success();
+        }
+
+        public async Task<ValidationResult> RemoveAsync(int id)
+        {
+            return await _genericService.RemoveAsync(id);
         }
     }
 }

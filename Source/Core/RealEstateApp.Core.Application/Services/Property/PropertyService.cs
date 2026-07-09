@@ -140,5 +140,10 @@ namespace RealEstateApp.Core.Application.Services.Property
 
             return ValidationResult.Success();
         }
+
+        public async Task<ValidationResult> RemoveAsync(int id)
+        {
+            return await _genericService.RemoveAsync(id);
+        }
     }
 }

@@ -79,5 +79,10 @@ namespace RealEstateApp.Core.Application.Services.MessageAtC
             var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(customerMessages);
             return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Success(dtos);
         }
+
+        public async Task<ValidationResult> RemoveAsync(int id)
+        {
+            return await _genericService.RemoveAsync(id);
+        }
     }
 }

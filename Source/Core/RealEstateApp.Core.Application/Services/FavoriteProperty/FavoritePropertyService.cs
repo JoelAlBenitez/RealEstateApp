@@ -85,5 +85,10 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperty
 
             return ValidationResult.Success();
         }
+
+        public async Task<ValidationResult> RemoveAsync(int id)
+        {
+            return await _genericService.RemoveAsync(id);
+        }
     }
 }
