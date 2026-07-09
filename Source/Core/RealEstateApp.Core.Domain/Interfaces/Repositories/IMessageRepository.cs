@@ -6,5 +6,7 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
     public interface IMessageRepository : IGenericRepository<Message, int>
     {
         Task<IReadOnlyCollection<Message>> GetConversationAsync(string customerId, string agentId, int propertyId);
+        Task<IReadOnlyCollection<Message>> GetMessagesByAgentAsync(string agentId);
+        Task<IReadOnlyCollection<Message>> GetMessagesByCustomerAsync(string customerId);
     }
 }

@@ -66,17 +66,15 @@ namespace RealEstateApp.Core.Application.Services.MessageAtC
 
         public async Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatsByAgentAsync(string agentId)
         {
-            var messages = await _messageRepository.GetAllAsync();
-            var agentMessages = messages.Where(m => m.AgentId == agentId).ToList();
-            var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(agentMessages);
+            var messages = await _messageRepository.GetMessagesByAgentAsync(agentId);
+            var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(messages);
             return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Success(dtos);
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatsByCustomerAsync(string customerId)
         {
-            var messages = await _messageRepository.GetAllAsync();
-            var customerMessages = messages.Where(m => m.CustomerId == customerId).ToList();
-            var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(customerMessages);
+            var messages = await _messageRepository.GetMessagesByCustomerAsync(customerId);
+            var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(messages);
             return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Success(dtos);
         }
 

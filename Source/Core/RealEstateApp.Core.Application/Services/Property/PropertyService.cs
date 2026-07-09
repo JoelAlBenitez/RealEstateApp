@@ -70,7 +70,18 @@ namespace RealEstateApp.Core.Application.Services.Property
 
         public async Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAvailableAsync(PropertyFilterDto? filters)
         {
-            var properties = await _propertyRepository.GetAvailablePropertiesAsync();
+            IReadOnlyCollection<Domain.Entities.Property> properties;
+
+            if (filters != null && (filters.MinPrice.HasValue || filters.MaxPrice.HasValue || filters.Bedrooms.HasValue || filters.Bathrooms.HasValue))
+            {
+                var criteria = _mapper.Map<PropertyFilterCriteria>(filters);
+                properties = await _propertyRepository.GetFilteredPropertiesAsync(criteria);
+            }
+            else
+            {
+                properties = await _propertyRepository.GetAvailablePropertiesAsync();
+            }
+
             var dtos = _mapper.Map<IReadOnlyCollection<PropertyDto>>(properties);
             return ValidationResult<IReadOnlyCollection<PropertyDto>>.Success(dtos);
         }
@@ -99,9 +110,8 @@ namespace RealEstateApp.Core.Application.Services.Property
 
         public async Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAvailableByAgentAsync(string agentId)
         {
-            var properties = await _propertyRepository.GetAvailablePropertiesAsync();
-            var agentProperties = properties.Where(p => p.AgentId == agentId).ToList();
-            var dtos = _mapper.Map<IReadOnlyCollection<PropertyDto>>(agentProperties);
+            var properties = await _propertyRepository.GetAvailablePropertiesByAgentAsync(agentId);
+            var dtos = _mapper.Map<IReadOnlyCollection<PropertyDto>>(properties);
             return ValidationResult<IReadOnlyCollection<PropertyDto>>.Success(dtos);
         }
 
