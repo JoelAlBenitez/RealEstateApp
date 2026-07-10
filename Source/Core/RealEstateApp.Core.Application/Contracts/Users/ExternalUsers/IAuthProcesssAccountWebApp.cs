@@ -2,7 +2,7 @@
 using RealEstateApp.Core.Application.DTOs.Users.Password;
 using RealEstateApp.Core.Application.DTOs.Users.Response;
 
-namespace RealEstateApp.Core.Application.Contracts.Users
+namespace RealEstateApp.Core.Application.Contracts.Users.ExternalUsers
 {
     public interface IAuthProcesssAccountWebApp
     {

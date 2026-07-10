@@ -1,27 +1,47 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using RealEstateApp.Core.Application.Contracts.Users;
+using RealEstateApp.Core.Application.Contracts.FileManager;
+using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
+using RealEstateApp.Core.Application.DTOs.Users.Operational;
+using RealEstateApp.Core.Application.DTOs.Users.Response;
 using RealEstateApp.Core.Domain.Common.Enums;
 using RealEstateApp.Infraestructure.Identity.Entities;
 using RealEstateApp.Infraestructure.Identity.Services.Base;
 
-namespace RealEstateApp.Infraestructure.Identity.Services
+namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
 {
-    public sealed class OperationalAccountWebApp : BaseAccountUser, IOperationalAccountWebApp
+
+    public sealed class OperationalAccountWebApp 
+        : BaseAccountUser,
+        IOperationalAccountWebApp
     {
-
-
+        private readonly IFileManager _fileManager;
         public OperationalAccountWebApp(
             UserManager<AppUsers> userManager,
             SignInManager<AppUsers> signInManager,
-            IUserSession userSession
+            IUserSession userSession,
+            IFileManager fileManager
            
             ) 
             : base(userManager, signInManager, userSession)
         {
+            _fileManager = fileManager;   
         }
+        #region operation create and send email confirmation
+        public Task<UserResponseDto> CreateExternalAsync(RegisterExternalUsersDto registerUserDto)
+        {
+          
+        }
+        #endregion
+
+        #region operation update data external user -> agent
+        public Task<EditResponseDto> UpdateAgentAsync(EditAgentUserDto editAgent)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
 
         #region agents users consult
         public async Task<IReadOnlyCollection<ConsultAgentDto>> GetAgentAllAsync(List<string> Ids)
@@ -108,7 +128,13 @@ namespace RealEstateApp.Infraestructure.Identity.Services
             }).ToList();
             return clients;
         }
-      
+
+
+        #endregion
+
+        #region private methods
+
         #endregion
     }
+
 }

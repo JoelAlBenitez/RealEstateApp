@@ -2,7 +2,7 @@
 
 namespace RealEstateApp.Core.Application.DTOs.Users.Operational
 {
-    public sealed class RegisterExternalUsers : RegisterUserDto
+    public sealed class RegisterExternalUsersDto : RegisterUserDto
     {
         public required string Origin { get; set; }
         public required string PhoneNumber { get; set; }

@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using RealEstateApp.Infraestructure.Identity.Entities;
-using RealEstateApp.Infraestructure.Identity.Services.Interfaces;
+using RealEstateApp.Infraestructure.Identity.Interfaces;
 using System.Text;
 
-namespace RealEstateApp.Infraestructure.Identity.Services
+namespace RealEstateApp.Infraestructure.Identity.Services.GenerateTokens
 {
     public class GenerateTokens : IGenerateTokens
     {

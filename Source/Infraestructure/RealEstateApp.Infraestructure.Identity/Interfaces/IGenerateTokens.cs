@@ -1,6 +1,6 @@
 ﻿using RealEstateApp.Infraestructure.Identity.Entities;
 
-namespace RealEstateApp.Infraestructure.Identity.Services.Interfaces
+namespace RealEstateApp.Infraestructure.Identity.Interfaces
 {
     public interface IGenerateTokens
     {
