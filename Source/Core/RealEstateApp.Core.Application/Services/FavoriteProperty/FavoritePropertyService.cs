@@ -1,66 +1,52 @@
 using AutoMapper;
 using RealEstateApp.Core.Application.Contracts.FavoriteProperty;
-using RealEstateApp.Core.Application.Contracts.GenericServices;
 using RealEstateApp.Core.Application.DTOs.FavoriteProperty;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Entities;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
+using RealEstateApp.Core.Application.Services.Generic;
 
 namespace RealEstateApp.Core.Application.Services.FavoriteProperty
 {
-    public sealed class FavoritePropertyService : IFavoritePropertyService
+    public sealed class FavoritePropertyService : GenericServices<SaveFavoritePropertyDto, Domain.Entities.FavoriteProperty, int>, IFavoritePropertyService
     {
         private readonly IFavoritePropertyRepository _favoritePropertyRepository;
         private readonly IFavoritePropertyValidationService _validationService;
-        private readonly IMapper _mapper;
-        private readonly IGenericServices<SaveFavoritePropertyDto, int> _genericService;
 
         public FavoritePropertyService(
             IFavoritePropertyRepository favoritePropertyRepository,
             IFavoritePropertyValidationService validationService,
-            IMapper mapper,
-            IGenericServices<SaveFavoritePropertyDto, int> genericService)
+            IMapper mapper)
+            : base(favoritePropertyRepository, mapper)
         {
             _favoritePropertyRepository = favoritePropertyRepository;
             _validationService = validationService;
-            _mapper = mapper;
-            _genericService = genericService;
         }
 
-        public async Task<ValidationResult> AddAsync(SaveFavoritePropertyDto dto)
+        public override async Task<ValidationResult> AddAsync(SaveFavoritePropertyDto dto)
         {
             var validation = await _validationService.ValidateForCreateAsync(dto);
             if (!validation.IsValid)
             {
                 return validation;
             }
-            return await _genericService.AddAsync(dto);
+            return await base.AddAsync(dto);
         }
 
-        public async Task<ValidationResult?> UpdateAsync(SaveFavoritePropertyDto dto, int id)
+        public override async Task<ValidationResult?> UpdateAsync(SaveFavoritePropertyDto dto)
         {
-            return await _genericService.UpdateAsync(dto, id);
+            return await base.UpdateAsync(dto);
         }
 
-        public async Task<ValidationResult<SaveFavoritePropertyDto>> GetByIdAsync(int id)
-        {
-            return await _genericService.GetByIdAsync(id);
-        }
-
-        public async Task<ValidationResult<IReadOnlyCollection<SaveFavoritePropertyDto>>> GetAllAsync()
-        {
-            return await _genericService.GetAllAsync();
-        }
-
-        public async Task<ValidationResult> DeleteAsync(int id)
+        public override async Task<ValidationResult> RemoveAsync(int id)
         {
             var entity = await _favoritePropertyRepository.GetByIdAsync(id);
             if (entity == null)
             {
                 return ValidationResult.Failure(new Domain.Common.Errors.Error("Favorite.NotFound", "El favorito no existe"));
             }
-            return await _genericService.DeleteAsync(id);
+            return await base.RemoveAsync(id);
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<FavoritePropertyDto>>> GetByCustomerAsync(string customerId)
@@ -86,16 +72,11 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperty
                 var result = await _favoritePropertyRepository.SaveAsync();
                 if (result <= 0)
                 {
-                    return ValidationResult.Failure(new Domain.Common.Errors.Error("Database.DeleteError", "No se pudo eliminar el favorito de la base de datos"));
+                    return ValidationResult.Failure(new Domain.Common.Errors.Error("Oops", "Ocurrió un error al eliminar el favorito. Inténtalo de nuevo más tarde."));
                 }
             }
 
             return ValidationResult.Success();
-        }
-
-        public async Task<ValidationResult> RemoveAsync(int id)
-        {
-            return await _genericService.RemoveAsync(id);
         }
     }
 }

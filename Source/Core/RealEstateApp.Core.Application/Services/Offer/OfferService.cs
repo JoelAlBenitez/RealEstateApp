@@ -1,5 +1,4 @@
 using AutoMapper;
-using RealEstateApp.Core.Application.Contracts.GenericServices;
 using RealEstateApp.Core.Application.Contracts.Offer;
 using RealEstateApp.Core.Application.DTOs.Offer;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
@@ -7,59 +6,41 @@ using RealEstateApp.Core.Domain.Entities;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Core.Domain.Common.Enums.OfferStatus;
 using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
+using RealEstateApp.Core.Application.Services.Generic;
 
 namespace RealEstateApp.Core.Application.Services.Offer
 {
-    public sealed class OfferService : IOfferService
+    public sealed class OfferService : GenericServices<SaveOfferDto, Domain.Entities.Offer, int>, IOfferService
     {
         private readonly IOfferRepository _offerRepository;
         private readonly IPropertyRepository _propertyRepository;
         private readonly IOfferValidationService _validationService;
-        private readonly IMapper _mapper;
-        private readonly IGenericServices<SaveOfferDto, int> _genericService;
 
         public OfferService(
             IOfferRepository offerRepository,
             IPropertyRepository propertyRepository,
             IOfferValidationService validationService,
-            IMapper mapper,
-            IGenericServices<SaveOfferDto, int> genericService)
+            IMapper mapper)
+            : base(offerRepository, mapper)
         {
             _offerRepository = offerRepository;
             _propertyRepository = propertyRepository;
             _validationService = validationService;
-            _mapper = mapper;
-            _genericService = genericService;
         }
 
-        public async Task<ValidationResult> AddAsync(SaveOfferDto dto)
+        public override async Task<ValidationResult> AddAsync(SaveOfferDto dto)
         {
             var validation = await _validationService.ValidateForCreateAsync(dto);
             if (!validation.IsValid)
             {
                 return validation;
             }
-            return await _genericService.AddAsync(dto);
+            return await base.AddAsync(dto);
         }
 
-        public async Task<ValidationResult?> UpdateAsync(SaveOfferDto dto, int id)
+        public override async Task<ValidationResult?> UpdateAsync(SaveOfferDto dto)
         {
-            return await _genericService.UpdateAsync(dto, id);
-        }
-
-        public async Task<ValidationResult<SaveOfferDto>> GetByIdAsync(int id)
-        {
-            return await _genericService.GetByIdAsync(id);
-        }
-
-        public async Task<ValidationResult<IReadOnlyCollection<SaveOfferDto>>> GetAllAsync()
-        {
-            return await _genericService.GetAllAsync();
-        }
-
-        public async Task<ValidationResult> DeleteAsync(int id)
-        {
-            return await _genericService.DeleteAsync(id);
+            return await base.UpdateAsync(dto);
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<OfferDto>>> GetPendingByPropertyAsync(int propertyId)
@@ -104,7 +85,7 @@ namespace RealEstateApp.Core.Application.Services.Offer
             var result = await _offerRepository.SaveAsync();
             if (result <= 0)
             {
-                return ValidationResult.Failure(new Domain.Common.Errors.Error("Database.SaveError", "No se pudieron guardar los datos de forma atómica"));
+                return ValidationResult.Failure(new Domain.Common.Errors.Error("Oops", "Ocurrió un error al procesar la aceptación de la oferta. Inténtalo de nuevo más tarde."));
             }
 
             return ValidationResult.Success();
@@ -125,7 +106,7 @@ namespace RealEstateApp.Core.Application.Services.Offer
             var result = await _offerRepository.SaveAsync();
             if (result <= 0)
             {
-                return ValidationResult.Failure(new Domain.Common.Errors.Error("Database.SaveError", "No se pudo rechazar la oferta en la base de datos"));
+                return ValidationResult.Failure(new Domain.Common.Errors.Error("Oops", "Ocurrió un error al rechazar la oferta. Inténtalo de nuevo más tarde."));
             }
 
             return ValidationResult.Success();
@@ -145,15 +126,10 @@ namespace RealEstateApp.Core.Application.Services.Offer
             var result = await _offerRepository.SaveAsync();
             if (result <= 0)
             {
-                return ValidationResult.Failure(new Domain.Common.Errors.Error("Database.DeleteError", "No se pudo cancelar la oferta en la base de datos"));
+                return ValidationResult.Failure(new Domain.Common.Errors.Error("Oops", "Ocurrió un error al cancelar la oferta. Inténtalo de nuevo más tarde."));
             }
 
             return ValidationResult.Success();
-        }
-
-        public async Task<ValidationResult> RemoveAsync(int id)
-        {
-            return await _genericService.RemoveAsync(id);
         }
     }
 }

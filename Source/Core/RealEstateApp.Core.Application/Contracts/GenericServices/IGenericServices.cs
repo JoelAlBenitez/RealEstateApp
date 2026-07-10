@@ -1,4 +1,4 @@
-﻿using RealEstateApp.Core.Domain.Common.ValidationResult;
+using RealEstateApp.Core.Domain.Common.ValidationResult;
 
 namespace RealEstateApp.Core.Application.Contracts.GenericServices
 {
@@ -9,6 +9,5 @@ namespace RealEstateApp.Core.Application.Contracts.GenericServices
         Task<ValidationResult<TDtoModel>> GetByIdAsync(TKey id);
         Task<ValidationResult> RemoveAsync(TKey id);
         Task<ValidationResult<IReadOnlyCollection<TDtoModel>>> GetAllAsync();
-        Task<ValidationResult> DeleteAsync(TKey id);
     }
 }

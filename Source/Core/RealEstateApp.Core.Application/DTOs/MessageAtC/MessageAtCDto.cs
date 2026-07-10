@@ -1,4 +1,4 @@
-﻿namespace RealEstateApp.Core.Application.DTOs.MessageAtC
+namespace RealEstateApp.Core.Application.DTOs.MessageAtC
 {
     public sealed class MessageAtCDto
     {
@@ -9,8 +9,8 @@
         public required string Content { get; set; }
         public DateTime SentAt { get; set; }
         public DateTimeOffset CreateAt { get; set; }
-        public string? CustomerName { get; set; }
-        public string? AgentName { get; set; }
-        public string? PropertyCode { get; set; }
+        public string CustomerName { get; set; } = null!;
+        public string AgentName { get; set; } = null!;
+        public string PropertyCode { get; set; } = null!;
     }
 }

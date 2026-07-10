@@ -1,4 +1,4 @@
-﻿namespace RealEstateApp.Core.Application.ViewsModel.MessageAtC
+namespace RealEstateApp.Core.Application.ViewsModel.MessageAtC
 {
     public class MessageAtCViewModel
     {
@@ -9,7 +9,7 @@
         public required string Content { get; set; }
         public DateTime SentAt { get; set; }
         public DateTimeOffset CreateAt { get; set; }
-        public string? CustomerName { get; set; }
-        public string? AgentName { get; set; }
+        public string CustomerName { get; set; } = null!;
+        public string AgentName { get; set; } = null!;
     }
 }

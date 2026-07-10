@@ -1,71 +1,57 @@
 using AutoMapper;
-using RealEstateApp.Core.Application.Contracts.GenericServices;
 using RealEstateApp.Core.Application.Contracts.Property;
 using RealEstateApp.Core.Application.DTOs.Property;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Entities;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
+using RealEstateApp.Core.Application.Services.Generic;
 
 namespace RealEstateApp.Core.Application.Services.Property
 {
-    public sealed class PropertyService : IPropertyService
+    public sealed class PropertyService : GenericServices<SavePropertyDto, Domain.Entities.Property, int>, IPropertyService
     {
         private readonly IPropertyRepository _propertyRepository;
         private readonly IPropertyValidationService _validationService;
-        private readonly IMapper _mapper;
-        private readonly IGenericServices<SavePropertyDto, int> _genericService;
 
         public PropertyService(
             IPropertyRepository propertyRepository,
             IPropertyValidationService validationService,
-            IMapper mapper,
-            IGenericServices<SavePropertyDto, int> genericService)
+            IMapper mapper)
+            : base(propertyRepository, mapper)
         {
             _propertyRepository = propertyRepository;
             _validationService = validationService;
-            _mapper = mapper;
-            _genericService = genericService;
         }
 
-        public async Task<ValidationResult> AddAsync(SavePropertyDto dto)
+        public override async Task<ValidationResult> AddAsync(SavePropertyDto dto)
         {
             var validation = await _validationService.ValidateForCreateAsync(dto);
             if (!validation.IsValid)
             {
                 return validation;
             }
-            return await _genericService.AddAsync(dto);
+            return await base.AddAsync(dto);
         }
 
-        public async Task<ValidationResult?> UpdateAsync(SavePropertyDto dto, int id)
+        public override async Task<ValidationResult?> UpdateAsync(SavePropertyDto dto)
         {
             var validation = await _validationService.ValidateForUpdateAsync(dto);
             if (!validation.IsValid)
             {
                 return validation;
             }
-            return await _genericService.UpdateAsync(dto, id);
+            return await base.UpdateAsync(dto);
         }
 
-        public async Task<ValidationResult<SavePropertyDto>> GetByIdAsync(int id)
-        {
-            return await _genericService.GetByIdAsync(id);
-        }
-
-        public async Task<ValidationResult<IReadOnlyCollection<SavePropertyDto>>> GetAllAsync()
-        {
-            return await _genericService.GetAllAsync();
-        }
-
-        public async Task<ValidationResult> DeleteAsync(int id)
+        public override async Task<ValidationResult> RemoveAsync(int id)
         {
             var validation = await _validationService.ValidateForDeleteAsync(id);
             if (!validation.IsValid)
             {
                 return validation;
             }
-            return await _genericService.DeleteAsync(id);
+            return await base.RemoveAsync(id);
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAvailableAsync(PropertyFilterDto? filters)
@@ -155,16 +141,11 @@ namespace RealEstateApp.Core.Application.Services.Property
                 var result = await _propertyRepository.SaveAsync();
                 if (result <= 0)
                 {
-                    return ValidationResult.Failure(new Domain.Common.Errors.Error("Database.DeleteError", "No se pudieron eliminar las propiedades de la base de datos"));
+                    return ValidationResult.Failure(new Domain.Common.Errors.Error("Oops", "Ocurrió un error al eliminar las propiedades. Inténtalo de nuevo más tarde."));
                 }
             }
 
             return ValidationResult.Success();
-        }
-
-        public async Task<ValidationResult> RemoveAsync(int id)
-        {
-            return await _genericService.RemoveAsync(id);
         }
 
         public async Task<bool> IsAvailableAsync(int propertyId)
