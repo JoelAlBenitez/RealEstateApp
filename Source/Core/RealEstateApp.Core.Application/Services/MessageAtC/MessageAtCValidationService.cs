@@ -26,10 +26,10 @@ namespace RealEstateApp.Core.Application.Services.MessageAtC
                 return ValidationResult.Failure(errors);
             }
 
-            var propertyResult = await _propertyService.GetByIdAsync(dto.PropertyId);
-            if (!propertyResult.IsValid || propertyResult.Value == null)
+            var isAvailable = await _propertyService.IsAvailableAsync(dto.PropertyId);
+            if (!isAvailable)
             {
-                errors.Add(new Error("Message.PropertyNotFound", "La propiedad de la conversación no existe"));
+                errors.Add(new Error("Message.PropertyNotAvailable", "La propiedad de la conversación no existe o no está disponible."));
             }
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();
