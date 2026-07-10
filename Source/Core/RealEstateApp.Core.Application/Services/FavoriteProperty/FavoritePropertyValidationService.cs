@@ -5,6 +5,7 @@ using RealEstateApp.Core.Domain.Common.CodeErrors.Favorite;
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
+using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 
 namespace RealEstateApp.Core.Application.Services.FavoriteProperty
 {
@@ -12,13 +13,16 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperty
     {
         private readonly IFavoritePropertyRepository _favoritePropertyRepository;
         private readonly IPropertyService _propertyService;
+        private readonly IUserSession _userSession;
 
         public FavoritePropertyValidationService(
             IFavoritePropertyRepository favoritePropertyRepository,
-            IPropertyService propertyService)
+            IPropertyService propertyService,
+            IUserSession userSession)
         {
             _favoritePropertyRepository = favoritePropertyRepository;
             _propertyService = propertyService;
+            _userSession = userSession;
         }
 
         public async Task<ValidationResult> ValidateForCreateAsync(SaveFavoritePropertyDto dto)
@@ -28,7 +32,7 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperty
             var isAvailable = await _propertyService.IsAvailableAsync(dto.PropertyId);
             if (!isAvailable)
             {
-                errors.Add(new Error("Favorite.PropertyNotFound", "La propiedad especificada no existe o no está disponible"));
+                errors.Add(new Error("Favorito.PropiedadNoEncontrada", "La propiedad especificada no existe o no está disponible."));
                 return ValidationResult.Failure(errors);
             }
 
@@ -44,14 +48,15 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperty
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();
         }
 
-        public async Task<ValidationResult> ValidateForDeleteAsync(string customerId, int propertyId)
+        public async Task<ValidationResult> ValidateForDeleteAsync(int propertyId)
         {
             var errors = new List<Error>();
+            var customerId = _userSession.GetIdCurrentUser();
 
             var favorites = await _favoritePropertyRepository.GetFavoritesByCustomerAsync(customerId);
             if (!favorites.Any(f => f.PropertyId == propertyId))
             {
-                errors.Add(new Error("Favorite.NotFound", "La propiedad no se encuentra en su listado de favoritos"));
+                errors.Add(new Error("Favorito.NoEncontrado", "La propiedad no se encuentra en su listado de favoritos."));
             }
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();

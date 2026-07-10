@@ -5,6 +5,7 @@ using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Entities;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Core.Application.Services.Generic;
+using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 
 namespace RealEstateApp.Core.Application.Services.MessageAtC
 {
@@ -12,19 +13,23 @@ namespace RealEstateApp.Core.Application.Services.MessageAtC
     {
         private readonly IMessageRepository _messageRepository;
         private readonly IMessageAtCValidationService _validationService;
+        private readonly IUserSession _userSession;
 
         public MessageAtCService(
             IMessageRepository messageRepository,
             IMessageAtCValidationService validationService,
-            IMapper mapper)
+            IMapper mapper,
+            IUserSession userSession)
             : base(messageRepository, mapper)
         {
             _messageRepository = messageRepository;
             _validationService = validationService;
+            _userSession = userSession;
         }
 
         public override async Task<ValidationResult> AddAsync(SaveMessageAtCDto dto)
         {
+            dto.CustomerId = _userSession.GetIdCurrentUser();
             var validation = await _validationService.ValidateForCreateAsync(dto);
             if (!validation.IsValid)
             {
@@ -33,9 +38,9 @@ namespace RealEstateApp.Core.Application.Services.MessageAtC
             return await base.AddAsync(dto);
         }
 
-        public override async Task<ValidationResult?> UpdateAsync(SaveMessageAtCDto dto)
+        public override async Task<ValidationResult> RemoveAsync(int id)
         {
-            return await base.UpdateAsync(dto);
+            return await base.RemoveAsync(id);
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatHistoryAsync(string customerId, string agentId, int propertyId)
@@ -45,15 +50,17 @@ namespace RealEstateApp.Core.Application.Services.MessageAtC
             return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Success(dtos);
         }
 
-        public async Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatsByAgentAsync(string agentId)
+        public async Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatsByAgentAsync()
         {
+            var agentId = _userSession.GetIdCurrentUser();
             var messages = await _messageRepository.GetMessagesByAgentAsync(agentId);
             var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(messages);
             return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Success(dtos);
         }
 
-        public async Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatsByCustomerAsync(string customerId)
+        public async Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatsByCustomerAsync()
         {
+            var customerId = _userSession.GetIdCurrentUser();
             var messages = await _messageRepository.GetMessagesByCustomerAsync(customerId);
             var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(messages);
             return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Success(dtos);

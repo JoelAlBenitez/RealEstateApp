@@ -6,8 +6,8 @@ namespace RealEstateApp.Core.Application.Contracts.Offer
     public interface IOfferValidationService
     {
         Task<ValidationResult> ValidateForCreateAsync(SaveOfferDto dto);
-        Task<ValidationResult> ValidateForAcceptAsync(int offerId, string agentId);
-        Task<ValidationResult> ValidateForRejectAsync(int offerId, string agentId);
-        Task<ValidationResult> ValidateForCancelAsync(int offerId, string customerId);
+        Task<ValidationResult> ValidateForAcceptAsync(int offerId);
+        Task<ValidationResult> ValidateForRejectAsync(int offerId);
+        Task<ValidationResult> ValidateForCancelAsync(int offerId);
     }
 }

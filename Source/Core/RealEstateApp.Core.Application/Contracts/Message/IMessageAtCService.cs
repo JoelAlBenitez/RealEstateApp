@@ -7,7 +7,7 @@ namespace RealEstateApp.Core.Application.Contracts.Message
     public interface IMessageAtCService : IGenericServices<SaveMessageAtCDto, int>
     {
         Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatHistoryAsync(string customerId, string agentId, int propertyId);
-        Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatsByAgentAsync(string agentId);
-        Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatsByCustomerAsync(string customerId);
+        Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatsByAgentAsync();
+        Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatsByCustomerAsync();
     }
 }

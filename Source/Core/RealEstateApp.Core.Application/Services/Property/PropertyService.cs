@@ -128,8 +128,7 @@ namespace RealEstateApp.Core.Application.Services.Property
 
         public async Task<ValidationResult> DeletePropertiesByAgentAsync(string agentId)
         {
-            var properties = await _propertyRepository.GetAllAsync();
-            var agentProperties = properties.Where(p => p.AgentId == agentId).ToList();
+            var agentProperties = await _propertyRepository.GetPropertiesByAgentAsync(agentId);
 
             foreach (var p in agentProperties)
             {

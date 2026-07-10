@@ -29,7 +29,7 @@ namespace RealEstateApp.Core.Application.Services.MessageAtC
             var isAvailable = await _propertyService.IsAvailableAsync(dto.PropertyId);
             if (!isAvailable)
             {
-                errors.Add(new Error("Message.PropertyNotAvailable", "La propiedad de la conversación no existe o no está disponible."));
+                errors.Add(new Error("Mensaje.PropiedadNoDisponible", "La propiedad de la conversación no existe o no está disponible."));
             }
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();

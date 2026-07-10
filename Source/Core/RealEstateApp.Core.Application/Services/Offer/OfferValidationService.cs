@@ -7,6 +7,7 @@ using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
+using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 
 namespace RealEstateApp.Core.Application.Services.Offer
 {
@@ -14,11 +15,16 @@ namespace RealEstateApp.Core.Application.Services.Offer
     {
         private readonly IOfferRepository _offerRepository;
         private readonly IPropertyService _propertyService;
+        private readonly IUserSession _userSession;
 
-        public OfferValidationService(IOfferRepository offerRepository, IPropertyService propertyService)
+        public OfferValidationService(
+            IOfferRepository offerRepository, 
+            IPropertyService propertyService,
+            IUserSession userSession)
         {
             _offerRepository = offerRepository;
             _propertyService = propertyService;
+            _userSession = userSession;
         }
 
         public async Task<ValidationResult> ValidateForCreateAsync(SaveOfferDto dto)
@@ -34,7 +40,7 @@ namespace RealEstateApp.Core.Application.Services.Offer
             var isAvailable = await _propertyService.IsAvailableAsync(dto.PropertyId);
             if (!isAvailable)
             {
-                errors.Add(new Error("Offer.PropertyNotFound", "La propiedad especificada no existe o no está disponible"));
+                errors.Add(new Error("Oferta.PropiedadNoEncontrada", "La propiedad especificada no existe o no está disponible."));
                 return ValidationResult.Failure(errors);
             }
 
@@ -57,14 +63,15 @@ namespace RealEstateApp.Core.Application.Services.Offer
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();
         }
 
-        public async Task<ValidationResult> ValidateForAcceptAsync(int offerId, string agentId)
+        public async Task<ValidationResult> ValidateForAcceptAsync(int offerId)
         {
             var errors = new List<Error>();
+            var agentId = _userSession.GetIdCurrentUser();
 
             var offer = await _offerRepository.GetByIdAsync(offerId);
             if (offer == null)
             {
-                errors.Add(new Error("Offer.NotFound", "La oferta no existe"));
+                errors.Add(new Error("Oferta.NoEncontrada", "La oferta no existe."));
                 return ValidationResult.Failure(errors);
             }
 
@@ -77,7 +84,7 @@ namespace RealEstateApp.Core.Application.Services.Offer
             var propertyResult = await _propertyService.GetByIdAsync(offer.PropertyId);
             if (!propertyResult.IsValid || propertyResult.Value == null)
             {
-                errors.Add(new Error("Offer.PropertyNotFound", "La propiedad asociada a la oferta no existe"));
+                errors.Add(new Error("Oferta.PropiedadNoEncontrada", "La propiedad asociada a la oferta no existe."));
                 return ValidationResult.Failure(errors);
             }
             var property = propertyResult.Value;
@@ -89,20 +96,21 @@ namespace RealEstateApp.Core.Application.Services.Offer
 
             if (property.AgentId != agentId)
             {
-                errors.Add(new Error("Offer.UnauthorizedAgent", "No tiene permisos para gestionar ofertas en esta propiedad"));
+                errors.Add(new Error("Oferta.AgenteNoAutorizado", "No tiene permisos para gestionar ofertas en esta propiedad."));
             }
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();
         }
 
-        public async Task<ValidationResult> ValidateForRejectAsync(int offerId, string agentId)
+        public async Task<ValidationResult> ValidateForRejectAsync(int offerId)
         {
             var errors = new List<Error>();
+            var agentId = _userSession.GetIdCurrentUser();
 
             var offer = await _offerRepository.GetByIdAsync(offerId);
             if (offer == null)
             {
-                errors.Add(new Error("Offer.NotFound", "La oferta no existe"));
+                errors.Add(new Error("Oferta.NoEncontrada", "La oferta no existe."));
                 return ValidationResult.Failure(errors);
             }
 
@@ -115,20 +123,21 @@ namespace RealEstateApp.Core.Application.Services.Offer
             var propertyResult = await _propertyService.GetByIdAsync(offer.PropertyId);
             if (!propertyResult.IsValid || propertyResult.Value == null || propertyResult.Value.AgentId != agentId)
             {
-                errors.Add(new Error("Offer.UnauthorizedAgent", "No tiene permisos para gestionar ofertas en esta propiedad"));
+                errors.Add(new Error("Oferta.AgenteNoAutorizado", "No tiene permisos para gestionar ofertas en esta propiedad."));
             }
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();
         }
 
-        public async Task<ValidationResult> ValidateForCancelAsync(int offerId, string customerId)
+        public async Task<ValidationResult> ValidateForCancelAsync(int offerId)
         {
             var errors = new List<Error>();
+            var customerId = _userSession.GetIdCurrentUser();
 
             var offer = await _offerRepository.GetByIdAsync(offerId);
             if (offer == null)
             {
-                errors.Add(new Error("Offer.NotFound", "La oferta no existe"));
+                errors.Add(new Error("Oferta.NoEncontrada", "La oferta no existe."));
                 return ValidationResult.Failure(errors);
             }
 
@@ -139,7 +148,7 @@ namespace RealEstateApp.Core.Application.Services.Offer
 
             if (offer.CustomerId != customerId)
             {
-                errors.Add(new Error("Offer.UnauthorizedCustomer", "No tiene permisos para cancelar esta oferta"));
+                errors.Add(new Error("Oferta.ClienteNoAutorizado", "No tiene permisos para cancelar esta oferta."));
             }
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();

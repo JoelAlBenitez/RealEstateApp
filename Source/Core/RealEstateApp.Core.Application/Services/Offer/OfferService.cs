@@ -7,6 +7,7 @@ using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Core.Domain.Common.Enums.OfferStatus;
 using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 using RealEstateApp.Core.Application.Services.Generic;
+using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 
 namespace RealEstateApp.Core.Application.Services.Offer
 {
@@ -15,21 +16,25 @@ namespace RealEstateApp.Core.Application.Services.Offer
         private readonly IOfferRepository _offerRepository;
         private readonly IPropertyRepository _propertyRepository;
         private readonly IOfferValidationService _validationService;
+        private readonly IUserSession _userSession;
 
         public OfferService(
             IOfferRepository offerRepository,
             IPropertyRepository propertyRepository,
             IOfferValidationService validationService,
-            IMapper mapper)
+            IMapper mapper,
+            IUserSession userSession)
             : base(offerRepository, mapper)
         {
             _offerRepository = offerRepository;
             _propertyRepository = propertyRepository;
             _validationService = validationService;
+            _userSession = userSession;
         }
 
         public override async Task<ValidationResult> AddAsync(SaveOfferDto dto)
         {
+            dto.CustomerId = _userSession.GetIdCurrentUser();
             var validation = await _validationService.ValidateForCreateAsync(dto);
             if (!validation.IsValid)
             {
@@ -38,9 +43,9 @@ namespace RealEstateApp.Core.Application.Services.Offer
             return await base.AddAsync(dto);
         }
 
-        public override async Task<ValidationResult?> UpdateAsync(SaveOfferDto dto)
+        public override async Task<ValidationResult> RemoveAsync(int id)
         {
-            return await base.UpdateAsync(dto);
+            return await base.RemoveAsync(id);
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<OfferDto>>> GetPendingByPropertyAsync(int propertyId)
@@ -50,16 +55,17 @@ namespace RealEstateApp.Core.Application.Services.Offer
             return ValidationResult<IReadOnlyCollection<OfferDto>>.Success(dtos);
         }
 
-        public async Task<ValidationResult<IReadOnlyCollection<OfferDto>>> GetByCustomerAsync(string customerId)
+        public async Task<ValidationResult<IReadOnlyCollection<OfferDto>>> GetByCustomerAsync()
         {
+            var customerId = _userSession.GetIdCurrentUser();
             var offers = await _offerRepository.GetOffersByClientAsync(customerId);
             var dtos = _mapper.Map<IReadOnlyCollection<OfferDto>>(offers);
             return ValidationResult<IReadOnlyCollection<OfferDto>>.Success(dtos);
         }
 
-        public async Task<ValidationResult> AcceptOfferAsync(int offerId, string agentId)
+        public async Task<ValidationResult> AcceptOfferAsync(int offerId)
         {
-            var validation = await _validationService.ValidateForAcceptAsync(offerId, agentId);
+            var validation = await _validationService.ValidateForAcceptAsync(offerId);
             if (!validation.IsValid)
             {
                 return validation;
@@ -91,9 +97,9 @@ namespace RealEstateApp.Core.Application.Services.Offer
             return ValidationResult.Success();
         }
 
-        public async Task<ValidationResult> RejectOfferAsync(int offerId, string agentId)
+        public async Task<ValidationResult> RejectOfferAsync(int offerId)
         {
-            var validation = await _validationService.ValidateForRejectAsync(offerId, agentId);
+            var validation = await _validationService.ValidateForRejectAsync(offerId);
             if (!validation.IsValid)
             {
                 return validation;
@@ -112,9 +118,9 @@ namespace RealEstateApp.Core.Application.Services.Offer
             return ValidationResult.Success();
         }
 
-        public async Task<ValidationResult> CancelOfferAsync(int offerId, string customerId)
+        public async Task<ValidationResult> CancelOfferAsync(int offerId)
         {
-            var validation = await _validationService.ValidateForCancelAsync(offerId, customerId);
+            var validation = await _validationService.ValidateForCancelAsync(offerId);
             if (!validation.IsValid)
             {
                 return validation;
