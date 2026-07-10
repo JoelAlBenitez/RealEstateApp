@@ -8,8 +8,8 @@ namespace RealEstateApp.Core.Application.Contracts.Users
     {
         Task<UserResponseDto> ForgoutPasswordAsync(ForgoutPasswordDto forgoutPasswordDto);
         Task<UserResponseDto> ResetPasswordAsync(ResetPasswordDto resetPasswordDto);
-        Task<UserResponseDto> LoginUser(LoginDto loginDto);
-        Task<string> ConfirmAccountByEmailAsync(string token, string userId);
-        Task<UserResponseDto> ResendActivationEmailAsync(ResendActivationEmailDto resendActivationEmailDto);
+        //Task<UserResponseDto> LoginUser(LoginDto loginDto);
+        //Task<string> ConfirmAccountByEmailAsync(string token, string userId);
+        //Task<UserResponseDto> ResendActivationEmailAsync(ResendActivationEmailDto resendActivationEmailDto);
     }
 }

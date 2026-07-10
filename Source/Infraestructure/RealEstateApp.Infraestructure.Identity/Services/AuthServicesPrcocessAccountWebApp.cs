@@ -22,10 +22,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services
         {
             throw new NotImplementedException();
         }
-        public Task<UserResponseDto> LoginUser(LoginDto loginDto)
-        {
-            throw new NotImplementedException();
-        }
+      
         public Task<UserResponseDto> ResetPasswordAsync(ResetPasswordDto resetPasswordDto)
         {
             throw new NotImplementedException();
