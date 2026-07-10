@@ -1,6 +1,5 @@
 ﻿using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
-using RealEstateApp.Core.Application.DTOs.Users.Password;
-using RealEstateApp.Core.Application.DTOs.Users.Response;
+
 using RealEstateApp.Core.Domain.Common.Enums;
 
 namespace RealEstateApp.Core.Application.Contracts.Users

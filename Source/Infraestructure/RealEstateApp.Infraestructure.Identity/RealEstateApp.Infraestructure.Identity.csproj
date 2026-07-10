@@ -21,7 +21,6 @@
 	<ItemGroup>
 	  <Folder Include="EmailProvider\Options\" />
 	  <Folder Include="Migrations\" />
-	  <Folder Include="Services\Base\" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -2,7 +2,7 @@
 
 namespace RealEstateApp.Core.Application.DTOs.Users.Operational
 {
-    public sealed class EditInernalUserDto  : EditUserDto
+    public sealed class EditInternalUserDto  : EditUserDto
     {
         public required string Email { get; set; }
         public required string IdCard { get; set; }

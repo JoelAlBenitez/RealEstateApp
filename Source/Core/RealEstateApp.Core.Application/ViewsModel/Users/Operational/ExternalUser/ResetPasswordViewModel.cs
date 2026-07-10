@@ -7,7 +7,7 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.ExternalUs
         [Required(ErrorMessage = "Error esta peticion no es valida para este usuario, favor intente de nuevo")]
         public required string Id { get; set; }
 
-        [Required(ErrorMessage = "Error link invalido no puede ser procesada la accion")]
+        [Required(ErrorMessage = "Opps, Link invalido la accion no puede ser procesada")]
         public required string Token { get; set; }
 
         [Required(ErrorMessage = "La contraseña es requerida favor ingrese una de al menos 8 caracteres")]
