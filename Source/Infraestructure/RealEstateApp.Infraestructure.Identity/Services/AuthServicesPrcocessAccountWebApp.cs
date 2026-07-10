@@ -18,11 +18,26 @@ namespace RealEstateApp.Infraestructure.Identity.Services
             _signInManager = signInManager;
         }
 
+        public Task<string> ConfirmAccountByEmailAsync(string token, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<UserResponseDto> ForgoutPasswordAsync(ForgoutPasswordDto forgoutPasswordDto)
         {
             throw new NotImplementedException();
         }
-      
+
+        public Task<UserResponseDto> LoginUser(LoginDto loginDto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UserResponseDto> ResendActivationEmailAsync(ResendActivationEmailDto resendActivationEmailDto)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<UserResponseDto> ResetPasswordAsync(ResetPasswordDto resetPasswordDto)
         {
             throw new NotImplementedException();

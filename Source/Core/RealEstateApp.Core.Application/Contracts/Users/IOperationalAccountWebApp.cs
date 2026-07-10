@@ -8,9 +8,7 @@ namespace RealEstateApp.Core.Application.Contracts.Users
     {
         Task<IReadOnlyCollection<ClientDto>> GetClientAllAsync(List<string> Ids);
         Task<IReadOnlyCollection<ConsultAgentDto>> GetAgentAllAsync(List<string> Ids);
-        Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentByConsultCustomerAsync();
-        Task<IReadOnlyCollection<GetInternalUserDto>> GetInternalUserGetAll(Roles roles);
-        Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAgentByConsultAdminAll();
+        //Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentByConsultCustomerAsync();
         Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentAllViewHomeByCustomer();
         Task<CustomerConsultAgentDto> GetAgentByConsultCustomerByUserNameAgent(string userName);
         Task<ConsultAgentDto> GetConsultAgentById(string id);

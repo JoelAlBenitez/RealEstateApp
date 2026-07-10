@@ -1,57 +1,114 @@
-﻿using RealEstateApp.Core.Application.Contracts.Users;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using RealEstateApp.Core.Application.Contracts.Users;
+using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Domain.Common.Enums;
+using RealEstateApp.Infraestructure.Identity.Entities;
+using RealEstateApp.Infraestructure.Identity.Services.Base;
 
 namespace RealEstateApp.Infraestructure.Identity.Services
 {
-    public sealed class OperationalAccountWebApp : IOperationalAccountWebApp
+    public sealed class OperationalAccountWebApp : BaseAccountUser, IOperationalAccountWebApp
     {
 
 
+        public OperationalAccountWebApp(
+            UserManager<AppUsers> userManager,
+            SignInManager<AppUsers> signInManager,
+            IUserSession userSession
+           
+            ) 
+            : base(userManager, signInManager, userSession)
+        {
+        }
 
         #region agents users consult
-        public Task<IReadOnlyCollection<ConsultAgentDto>> GetAgentAllAsync(List<string> Ids)
+        public async Task<IReadOnlyCollection<ConsultAgentDto>> GetAgentAllAsync(List<string> Ids)
         {
-            throw new NotImplementedException();
+           var result = await _userManager.Users.AsNoTracking()
+                .Where(u => Ids.Contains(u.Id))
+                .ToListAsync();
+            if (result == null)return [];
+            var agentsResult = result.Select(a => new ConsultAgentDto
+            {
+                Id = a.Id,
+                PhoneNumber  = a.PhoneNumber!,
+                ProfileImgAgent = a.ProfileImg,
+                Email = a.Email!,
+                LastName = a.LastName,
+                Name = a.Name
+
+            }).ToList();
+            return agentsResult;
         }
 
-        public Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentAllViewHomeByCustomer()
+        public async Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentAllViewHomeByCustomer()
         {
-            throw new NotImplementedException();
+            var result = await _userManager.GetUsersInRoleAsync(Roles.Agente.ToString());
+            if (result == null) return [];
+            var agents = result.Select(a => new CustomerConsultAgentDto
+            {
+                Id = a.Id,
+                Name = a.Name,
+                LastName = a.LastName,
+                ProfileImgAgent = a.ProfileImg
+            }).ToList();
+            return agents;
         }
+    
+        //public Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentByConsultCustomerAsync()
+        //{
+        //   var results =  //comentado de momento -> 
+        //}
 
-        public Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAgentByConsultAdminAll()
+        public async Task<CustomerConsultAgentDto> GetAgentByConsultCustomerByUserNameAgent(string userName)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentByConsultCustomerAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<CustomerConsultAgentDto> GetAgentByConsultCustomerByUserNameAgent(string userName)
-        {
-            throw new NotImplementedException();
+            var result = await _userManager.FindByNameAsync(userName);
+            if (result == null) return null!;
+            return new CustomerConsultAgentDto
+            {
+                Id = result!.Id,
+                LastName = result.LastName,
+                Name = result.Name,
+                ProfileImgAgent = result.ProfileImg
+                
+            };
         }
 
     
-
-        public Task<ConsultAgentDto> GetConsultAgentById(string id)
+        public async Task<ConsultAgentDto> GetConsultAgentById(string id)
         {
-            throw new NotImplementedException();
+            var result  = await _userManager.FindByIdAsync(id);
+            if (result == null) return null!;
+            return new ConsultAgentDto
+            {
+                Email = result.Email!,
+                Id = result.Id,
+                Name = result.Name,
+                LastName= result.LastName,
+                PhoneNumber  = result.PhoneNumber!,
+                ProfileImgAgent = result.ProfileImg
+            };
         }
         #endregion
 
         #region clients users consults
-        public Task<IReadOnlyCollection<ClientDto>> GetClientAllAsync(List<string> Ids)
+        public async Task<IReadOnlyCollection<ClientDto>> GetClientAllAsync(List<string> Ids)
         {
-            throw new NotImplementedException();
+            var results = await _userManager.Users.
+                AsNoTracking()
+                .Where(u => Ids.Contains(u.Id)).ToListAsync();
+            if (results == null) return [];
+            var clients = results.Select(c => new ClientDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                LastName  = c.LastName
+            }).ToList();
+            return clients;
         }
-        public Task<IReadOnlyCollection<GetInternalUserDto>> GetInternalUserGetAll(Roles roles)
-        {
-            throw new NotImplementedException();
-        }
+      
         #endregion
     }
 }
