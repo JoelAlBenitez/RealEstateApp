@@ -1,6 +1,7 @@
 using RealEstateApp.Core.Application.Common.Errors;
 using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.Contracts.Users;
+using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 using RealEstateApp.Core.Domain.Common.Errors;
@@ -22,8 +23,14 @@ namespace RealEstateApp.Core.Application.Services
 
         public async Task<ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>> GetAgentsAsync()
         {
-            var result = await _accountWebApp.GetAgentByConsultAdminAll();
-            return ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>.Success(result);
+            // TODO: descomentar cuando Joel suba su refactorización de IOperationalAccountWebApp
+            // var result = await _accountWebApp.GetAgentByConsultAdminAll();
+            // return ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>.Success(result);
+            return await Task.FromResult(
+                ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>.Failure(
+                    ErrorPendingIntegration.AgentList
+                )
+            );
         }
 
         public async Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto)
@@ -70,6 +77,8 @@ namespace RealEstateApp.Core.Application.Services
                     ErrorPendingIntegration.AgentDelete
                 )
             );
+
+
         }
     }
 }

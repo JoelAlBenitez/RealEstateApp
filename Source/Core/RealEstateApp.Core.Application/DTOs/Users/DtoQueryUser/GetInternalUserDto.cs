@@ -1,4 +1,5 @@
-﻿using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser.Base;
+using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser.Base;
+using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser.Base;
 
 namespace RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser
 {
@@ -8,6 +9,6 @@ namespace RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser
         public required string UserName { get; set; }
         public required string Email { get; set; }
         public required bool State {  get; set; }
-        public required string Email { get; set; }
+        
     }
 }

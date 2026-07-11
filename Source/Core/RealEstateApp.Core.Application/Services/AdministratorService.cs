@@ -6,6 +6,7 @@ using RealEstateApp.Core.Application.DTOs.Users.Operational;
 
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
+using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 
 namespace RealEstateApp.Core.Application.Services
 {
@@ -19,11 +20,11 @@ namespace RealEstateApp.Core.Application.Services
             _accountWebApp = accountWebApp;
         }
 
-        public async Task<ValidationResult<IReadOnlyCollection<GetInternalUserDto>>> GetAdministratorsAsync()
-        {
-            var result = await _accountWebApp.GetInternalUserGetAll(Roles.Administrador);
-            return ValidationResult<IReadOnlyCollection<GetInternalUserDto>>.Success(result);
-        }
+        //public async Task<ValidationResult<IReadOnlyCollection<GetInternalUserDto>>> GetAdministratorsAsync()
+        //{
+        //    var result = await _accountWebApp.GetInternalUserGetAll(Roles.Administrador);
+        //    return ValidationResult<IReadOnlyCollection<GetInternalUserDto>>.Success(result);
+        //}
 
         public async Task<ValidationResult> CreateAsync(RegisterInternalUsersDto dto)
         {
@@ -35,7 +36,7 @@ namespace RealEstateApp.Core.Application.Services
             );
         }
 
-        public async Task<ValidationResult> EditAsync(EditInernalUserDto dto, string currentAdminId)
+        public async Task<ValidationResult> EditAsync(EditInternalUserDto dto, string currentAdminId)
         {
             // Regla de auto-protección: no se puede editar a sí mismo
             if (dto.Id == currentAdminId)
