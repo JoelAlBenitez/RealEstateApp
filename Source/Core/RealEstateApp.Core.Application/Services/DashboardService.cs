@@ -1,9 +1,8 @@
 using RealEstateApp.Core.Application.Common.Errors;
 using RealEstateApp.Core.Application.Contracts.Properties;
-using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.Contracts.Dashboard;
-using RealEstateApp.Core.Application.Contracts.Properties;
-using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
+// TODO: descomentar cuando Joel suba su refactorización de IOperationalAccountWebApp
+// using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 using RealEstateApp.Core.Application.DTOs.Dashboard;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 
@@ -27,13 +26,25 @@ namespace RealEstateApp.Core.Application.Services
 
         public async Task<ValidationResult<DashboardDto>> GetDashboardStatsAsync()
         {
-            // PENDIENTE DE CONFIRMAR CON JOEL: GetUserCountersAsync() → agentes/clientes/desarrolladores activos e inactivos
-            // PENDIENTE DE CONFIRMAR CON SEBASTIÁN: GetTotalsByStatusAsync() → propiedades disponibles y vendidas
-            return await Task.FromResult(
-                ValidationResult<DashboardDto>.Failure(
-                    ErrorPendingIntegration.DashboardStats
-                )
-            );
+            var propertyTotals = await _propertyService.GetTotalsByStatusAsync();
+            if (!propertyTotals.IsValid)
+                return ValidationResult<DashboardDto>.Failure(propertyTotals.Errors.ToArray());
+
+            var dto = new DashboardDto
+            {
+                AvailableProperties = propertyTotals.Value.AvailableProperties,
+                SoldProperties = propertyTotals.Value.SoldProperties,
+                
+                // TODO: completar con GetUserCountersAsync() de Joel
+                ActiveAgents = 0,
+                InactiveAgents = 0,
+                ActiveClients = 0,
+                InactiveClients = 0,
+                ActiveDevelopers = 0,
+                InactiveDevelopers = 0
+            };
+
+            return ValidationResult<DashboardDto>.Success(dto);
         }
     }
 }
