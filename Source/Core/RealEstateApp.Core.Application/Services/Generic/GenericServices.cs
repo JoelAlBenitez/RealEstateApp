@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using RealEstateApp.Core.Application.Contracts.GenericServices;
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;

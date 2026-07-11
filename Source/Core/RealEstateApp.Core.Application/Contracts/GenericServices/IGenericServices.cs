@@ -1,4 +1,4 @@
-﻿using RealEstateApp.Core.Domain.Common.ValidationResult;
+using RealEstateApp.Core.Domain.Common.ValidationResult;
 
 namespace RealEstateApp.Core.Application.Contracts.GenericServices
 {
