@@ -24,7 +24,7 @@ namespace RealEstateApp.Infraestructure.Identity.Context
             builder.Entity<AppUsers>().HasIndex(u => u.IDCard).IsUnique();
 
             builder.Entity<AppUsers>().Property(u => u.IsActive).IsRequired();
-
+            builder.Entity<AppUsers>().Property(u => u.PhoneNumber).HasMaxLength(10);
             builder.Entity<AppUsers>().Property(u => u.ProfileImg).HasMaxLength(int.MaxValue);
 
         }

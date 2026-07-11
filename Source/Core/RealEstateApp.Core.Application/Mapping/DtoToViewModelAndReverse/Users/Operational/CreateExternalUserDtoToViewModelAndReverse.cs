@@ -8,7 +8,7 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.
     {
         public CreateExternalUserDtoToViewModelAndReverse()
         {
-            CreateMap<RegisterExternalUsers, CreateExternalUserViewModel>().ReverseMap()
+            CreateMap<RegisterExternalUsersDto, CreateExternalUserViewModel>().ReverseMap()
                 .ForMember(opt => opt.Origin, des => des.Ignore());
                 
         }

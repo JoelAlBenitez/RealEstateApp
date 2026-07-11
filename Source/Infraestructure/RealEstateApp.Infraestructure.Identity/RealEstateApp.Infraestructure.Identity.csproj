@@ -19,8 +19,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="EmailProvider\Options\" />
 	  <Folder Include="Migrations\" />
-	  <Folder Include="Services\Interfaces\" />
+	  <Folder Include="Services\InternalUsers\" />
 	</ItemGroup>
 
 	<ItemGroup>
