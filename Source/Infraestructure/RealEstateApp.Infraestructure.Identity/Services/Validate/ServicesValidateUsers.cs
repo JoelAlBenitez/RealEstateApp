@@ -54,6 +54,8 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Validate
                 response.Errors.Add("Debe ingresar un número telefónico válido de República Dominicana.");
             if (!Regex.IsMatch(externalUsersDto.Email, EmailRegex))
                 response.Errors.Add("Debe ingresar un correo eletronico valido");
+            if (externalUsersDto.Password != externalUsersDto.ConfirmPassword)
+                response.Errors.Add("Las contraseñas deben coincidir");
 
             if (response.Errors.Any())
             {
@@ -85,9 +87,11 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Validate
             return response;
 
         }
-        public  UserResponseDto UpdateExternalValidateUserAsync
-           (EditAgentUserDto editAgentUserDto, UserResponseDto response)
+        public  async Task<EditResponseDto> UpdateExternalValidateUserAsync
+           (EditAgentUserDto editAgentUserDto, EditResponseDto response)
         {
+
+            #region validate fields
             if (string.IsNullOrWhiteSpace(editAgentUserDto.Name) ||
                string.IsNullOrWhiteSpace(editAgentUserDto.LastName) ||
             string.IsNullOrWhiteSpace(editAgentUserDto.PhoneNumber) ||
@@ -103,12 +107,30 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Validate
             if (editAgentUserDto.ChangePorfileImg && string.IsNullOrWhiteSpace(editAgentUserDto.ProfileImg))
                 response.Errors.Add("La imagen ingresa no pudo se procesada verifique" +
                         " si la misma tiene un formato valido (JPG, PNG, JPEG) y no mauor a 5 mb ");
-
             if (response.Errors.Any())
             {
                 response.HasError = true;
                 return response;
             }
+            #endregion
+
+            #region validate user
+            var existUser = await _userManager.FindByIdAsync(editAgentUserDto.Id);
+            if(existUser == null)
+            {
+                response.HasError = true;
+                response.Errors.Add("Oops, Al parecer su usuario presenta problemas favor, intente de nuevo mas tarde.");
+                return response;
+            }
+            var users = await _userManager.GetRolesAsync(existUser);
+            if (!users.Contains(Roles.Agente.ToString()))
+            {
+                response.HasError = true;
+                response.Errors.Add("No posee los privilegios suficientes para ejecutar esta operacion");
+                return response;
+            }
+
+            #endregion
 
             return response;
 
@@ -124,7 +146,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Validate
         }
 
      
-        public Task<UserResponseDto> UpdateInternalValidateUserAsync
+        public Task<EditResponseDto> UpdateInternalValidateUserAsync
             (EditInternalUserDto editInternalUserDto, UserResponseDto response)
         {
             throw new NotImplementedException(); //implementar en la rama de la api

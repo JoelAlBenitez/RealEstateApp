@@ -13,13 +13,13 @@ namespace RealEstateApp.Core.Application.Contracts.Users.Validation
             RegisterExternalUsersDto externalUsersDto,
             UserResponseDto  response
             );
-        Task<UserResponseDto> UpdateInternalValidateUserAsync (
+        Task<EditResponseDto> UpdateInternalValidateUserAsync (
             EditInternalUserDto editInternalUserDto,
             UserResponseDto response
             );
-        UserResponseDto UpdateExternalValidateUserAsync(
+        Task<EditResponseDto> UpdateExternalValidateUserAsync(
             EditAgentUserDto editAgentUserDto,
-            UserResponseDto response
+            EditResponseDto response
             );
         
     }

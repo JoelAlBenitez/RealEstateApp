@@ -74,8 +74,9 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Base
             if(validate != null && validate.HasError) return validate;
 
             var user = await _userManager.FindByIdAsync(IdUser);
+            var invalidSessionUser = await _userManager.UpdateSecurityStampAsync(user!);
             var delete = await _userManager.DeleteAsync(user!);
-            if (!delete.Succeeded)
+            if (!delete.Succeeded && !invalidSessionUser.Succeeded)
             {
                 response.HasError = true;
                 response.Errors.Add("Oops, " +
