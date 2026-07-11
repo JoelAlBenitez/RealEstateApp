@@ -1,11 +1,11 @@
-using RealEstateApp.Core.Application.Contracts.Message;
-using RealEstateApp.Core.Application.Contracts.Property;
+using RealEstateApp.Core.Application.Contracts.Messages;
+using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.DTOs.MessageAtC;
 using RealEstateApp.Core.Domain.Common.CodeErrors.Message;
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 
-namespace RealEstateApp.Core.Application.Services.MessageAtC
+namespace RealEstateApp.Core.Application.Services.MessagesAtC
 {
     public sealed class MessageAtCValidationService : IMessageAtCValidationService
     {

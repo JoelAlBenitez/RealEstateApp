@@ -1,5 +1,5 @@
-using RealEstateApp.Core.Application.Contracts.FavoriteProperty;
-using RealEstateApp.Core.Application.Contracts.Property;
+using RealEstateApp.Core.Application.Contracts.FavoriteProperties;
+using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.DTOs.FavoriteProperty;
 using RealEstateApp.Core.Domain.Common.CodeErrors.Favorite;
 using RealEstateApp.Core.Domain.Common.Errors;
@@ -7,7 +7,7 @@ using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 
-namespace RealEstateApp.Core.Application.Services.FavoriteProperty
+namespace RealEstateApp.Core.Application.Services.FavoriteProperties
 {
     public class FavoritePropertyValidationService : IFavoritePropertyValidationService
     {

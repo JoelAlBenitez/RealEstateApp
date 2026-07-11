@@ -1,5 +1,5 @@
 using AutoMapper;
-using RealEstateApp.Core.Application.Contracts.Message;
+using RealEstateApp.Core.Application.Contracts.Messages;
 using RealEstateApp.Core.Application.DTOs.MessageAtC;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Entities;
@@ -8,7 +8,7 @@ using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using RealEstateApp.Core.Domain.Common.Errors;
 
-namespace RealEstateApp.Core.Application.Services.MessageAtC
+namespace RealEstateApp.Core.Application.Services.MessagesAtC
 {
     public sealed class MessageAtCService : GenericServices<SaveMessageAtCDto, Domain.Entities.Message, int>, IMessageAtCService
     {

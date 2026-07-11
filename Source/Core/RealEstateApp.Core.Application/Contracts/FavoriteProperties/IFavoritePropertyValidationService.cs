@@ -1,7 +1,7 @@
 using RealEstateApp.Core.Application.DTOs.FavoriteProperty;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 
-namespace RealEstateApp.Core.Application.Contracts.FavoriteProperty
+namespace RealEstateApp.Core.Application.Contracts.FavoriteProperties
 {
     public interface IFavoritePropertyValidationService
     {

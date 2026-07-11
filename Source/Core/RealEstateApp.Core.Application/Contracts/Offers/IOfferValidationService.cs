@@ -1,7 +1,7 @@
 using RealEstateApp.Core.Application.DTOs.Offer;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 
-namespace RealEstateApp.Core.Application.Contracts.Offer
+namespace RealEstateApp.Core.Application.Contracts.Offers
 {
     public interface IOfferValidationService
     {

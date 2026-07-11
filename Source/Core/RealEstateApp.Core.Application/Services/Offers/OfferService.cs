@@ -1,5 +1,5 @@
 using AutoMapper;
-using RealEstateApp.Core.Application.Contracts.Offer;
+using RealEstateApp.Core.Application.Contracts.Offers;
 using RealEstateApp.Core.Application.DTOs.Offer;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Entities;
@@ -10,7 +10,7 @@ using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using RealEstateApp.Core.Domain.Common.Errors;
 
-namespace RealEstateApp.Core.Application.Services.Offer
+namespace RealEstateApp.Core.Application.Services.Offers
 {
     public sealed class OfferService : GenericServices<SaveOfferDto, Domain.Entities.Offer, int>, IOfferService
     {

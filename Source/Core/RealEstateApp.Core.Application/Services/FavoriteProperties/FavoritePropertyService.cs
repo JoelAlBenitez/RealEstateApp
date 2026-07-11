@@ -1,5 +1,5 @@
 using AutoMapper;
-using RealEstateApp.Core.Application.Contracts.FavoriteProperty;
+using RealEstateApp.Core.Application.Contracts.FavoriteProperties;
 using RealEstateApp.Core.Application.DTOs.FavoriteProperty;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Entities;
@@ -9,7 +9,7 @@ using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using RealEstateApp.Core.Domain.Common.Errors;
 
-namespace RealEstateApp.Core.Application.Services.FavoriteProperty
+namespace RealEstateApp.Core.Application.Services.FavoriteProperties
 {
     public sealed class FavoritePropertyService : GenericServices<SaveFavoritePropertyDto, Domain.Entities.FavoriteProperty, int>, IFavoritePropertyService
     {

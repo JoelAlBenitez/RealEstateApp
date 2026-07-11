@@ -1,5 +1,5 @@
 using AutoMapper;
-using RealEstateApp.Core.Application.Contracts.Property;
+using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.DTOs.Property;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Entities;
@@ -8,9 +8,9 @@ using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Domain.Common.Errors;
 
-namespace RealEstateApp.Core.Application.Services.Property
+namespace RealEstateApp.Core.Application.Services.Properties
 {
-    public sealed class PropertyService : GenericServices<SavePropertyDto, Domain.Entities.Property, int>, IPropertyService
+    public sealed class PropertyService : GenericServices<SavePropertyDto, Property, int>, IPropertyService
     {
         private readonly IPropertyRepository _propertyRepository;
         private readonly IPropertyValidationService _validationService;
@@ -63,7 +63,7 @@ namespace RealEstateApp.Core.Application.Services.Property
         {
             try
             {
-                IReadOnlyCollection<Domain.Entities.Property> properties;
+                IReadOnlyCollection<Property> properties;
 
                 if (filters != null && (filters.MinPrice.HasValue || filters.MaxPrice.HasValue || filters.Bedrooms.HasValue || filters.Bathrooms.HasValue))
                 {

@@ -1,7 +1,7 @@
 using RealEstateApp.Core.Application.DTOs.Property;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 
-namespace RealEstateApp.Core.Application.Contracts.Property
+namespace RealEstateApp.Core.Application.Contracts.Properties
 {
     public interface IPropertyValidationService
     {

@@ -1,11 +1,11 @@
-using RealEstateApp.Core.Application.Contracts.Property;
+using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.DTOs.Property;
 using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
 
-namespace RealEstateApp.Core.Application.Services.Property
+namespace RealEstateApp.Core.Application.Services.Properties
 {
     public sealed class PropertyValidationService : IPropertyValidationService
     {

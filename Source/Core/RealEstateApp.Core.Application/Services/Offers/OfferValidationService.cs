@@ -1,5 +1,5 @@
-using RealEstateApp.Core.Application.Contracts.Offer;
-using RealEstateApp.Core.Application.Contracts.Property;
+using RealEstateApp.Core.Application.Contracts.Offers;
+using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.DTOs.Offer;
 using RealEstateApp.Core.Domain.Common.CodeErrors.Offer;
 using RealEstateApp.Core.Domain.Common.Enums.OfferStatus;
@@ -9,7 +9,7 @@ using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 
-namespace RealEstateApp.Core.Application.Services.Offer
+namespace RealEstateApp.Core.Application.Services.Offers
 {
     public sealed class OfferValidationService : IOfferValidationService
     {
