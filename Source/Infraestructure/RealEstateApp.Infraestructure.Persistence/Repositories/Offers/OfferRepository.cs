@@ -5,7 +5,7 @@ using RealEstateApp.Core.Domain.Common.Enums.OfferStatus;
 using RealEstateApp.Infraestructure.Persistence.Context;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Generic;
 
-namespace RealEstateApp.Infraestructure.Persistence.Repositories
+namespace RealEstateApp.Infraestructure.Persistence.Repositories.Offers
 {
     public sealed class OfferRepository : GenericRepository<Offer, int>, IOfferRepository
     {

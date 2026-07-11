@@ -4,7 +4,7 @@ using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Infraestructure.Persistence.Context;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Generic;
 
-namespace RealEstateApp.Infraestructure.Persistence.Repositories
+namespace RealEstateApp.Infraestructure.Persistence.Repositories.FavoriteProperties
 {
     public sealed class FavoritePropertyRepository : GenericRepository<FavoriteProperty, int>, IFavoritePropertyRepository
     {

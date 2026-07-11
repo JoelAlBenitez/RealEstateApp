@@ -5,7 +5,7 @@ using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 using RealEstateApp.Infraestructure.Persistence.Context;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Generic;
 
-namespace RealEstateApp.Infraestructure.Persistence.Repositories
+namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
 {
     public sealed class PropertyRepository : GenericRepository<Property, int>, IPropertyRepository
     {
