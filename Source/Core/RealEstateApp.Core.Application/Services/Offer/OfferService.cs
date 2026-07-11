@@ -8,6 +8,7 @@ using RealEstateApp.Core.Domain.Common.Enums.OfferStatus;
 using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
+using RealEstateApp.Core.Domain.Common.Errors;
 
 namespace RealEstateApp.Core.Application.Services.Offer
 {
@@ -34,108 +35,171 @@ namespace RealEstateApp.Core.Application.Services.Offer
 
         public override async Task<ValidationResult> AddAsync(SaveOfferDto dto)
         {
-            dto.CustomerId = _userSession.GetIdCurrentUser();
-            var validation = await _validationService.ValidateForCreateAsync(dto);
-            if (!validation.IsValid)
+            try
             {
-                return validation;
+                dto.CustomerId = _userSession.GetIdCurrentUser();
+                var validation = await _validationService.ValidateForCreateAsync(dto);
+                if (!validation.IsValid)
+                {
+                    return validation;
+                }
+                return await base.AddAsync(dto);
             }
-            return await base.AddAsync(dto);
+            catch (Exception)
+            {
+                return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
+            }
         }
 
         public override async Task<ValidationResult> RemoveAsync(int id)
         {
-            return await base.RemoveAsync(id);
+            try
+            {
+                return await base.RemoveAsync(id);
+            }
+            catch (Exception)
+            {
+                return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
+            }
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<OfferDto>>> GetPendingByPropertyAsync(int propertyId)
         {
-            var offers = await _offerRepository.GetPendingOffersByPropertyAsync(propertyId);
-            var dtos = _mapper.Map<IReadOnlyCollection<OfferDto>>(offers);
-            return ValidationResult<IReadOnlyCollection<OfferDto>>.Success(dtos);
+            try
+            {
+                var offers = await _offerRepository.GetPendingOffersByPropertyAsync(propertyId);
+                var dtos = _mapper.Map<IReadOnlyCollection<OfferDto>>(offers);
+                return ValidationResult<IReadOnlyCollection<OfferDto>>.Success(dtos);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<IReadOnlyCollection<OfferDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<OfferDto>>> GetByCustomerAsync()
         {
-            var customerId = _userSession.GetIdCurrentUser();
-            var offers = await _offerRepository.GetOffersByClientAsync(customerId);
-            var dtos = _mapper.Map<IReadOnlyCollection<OfferDto>>(offers);
-            return ValidationResult<IReadOnlyCollection<OfferDto>>.Success(dtos);
+            try
+            {
+                var customerId = _userSession.GetIdCurrentUser();
+                var offers = await _offerRepository.GetOffersByClientAsync(customerId);
+                var dtos = _mapper.Map<IReadOnlyCollection<OfferDto>>(offers);
+                return ValidationResult<IReadOnlyCollection<OfferDto>>.Success(dtos);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<IReadOnlyCollection<OfferDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
         }
 
         public async Task<ValidationResult> AcceptOfferAsync(int offerId)
         {
-            var validation = await _validationService.ValidateForAcceptAsync(offerId);
-            if (!validation.IsValid)
+            try
             {
-                return validation;
+                var validation = await _validationService.ValidateForAcceptAsync(offerId);
+                if (!validation.IsValid)
+                {
+                    return validation;
+                }
+
+                var offer = await _offerRepository.GetByIdAsync(offerId);
+                if (offer == null)
+                {
+                    return ValidationResult.Failure(new Error("Oferta.NoEncontrada", "La oferta especificada no existe."));
+                }
+
+                offer.Status = OfferState.Accepted;
+                await _offerRepository.UpdateAsync(offer);
+
+                // Bulk reject of other pending offers in the database!
+                await _offerRepository.RejectOtherOffersByPropertyAsync(offer.PropertyId, offerId);
+
+                var property = await _propertyRepository.GetByIdAsync(offer.PropertyId);
+                if (property == null)
+                {
+                    return ValidationResult.Failure(new Error("Propiedad.NoEncontrada", "La propiedad asociada a la oferta no existe."));
+                }
+
+                property.Status = PropertyState.Sold;
+                await _propertyRepository.UpdateAsync(property);
+
+                var result = await _offerRepository.SaveAsync();
+                if (result <= 0)
+                {
+                    return ValidationResult.Failure(new Error("Oops", "Ocurrió un error al procesar la aceptación de la oferta. Inténtalo de nuevo más tarde."));
+                }
+
+                return ValidationResult.Success();
             }
-
-            var offer = await _offerRepository.GetByIdAsync(offerId);
-            offer!.Status = OfferState.Accepted;
-            await _offerRepository.UpdateAsync(offer);
-
-            var pendingOffers = await _offerRepository.GetPendingOffersByPropertyAsync(offer.PropertyId);
-            var otherOffers = pendingOffers.Where(o => o.Id != offerId).ToList();
-
-            foreach (var otherOffer in otherOffers)
+            catch (Exception)
             {
-                otherOffer.Status = OfferState.Rejected;
-                await _offerRepository.UpdateAsync(otherOffer);
+                return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
-
-            var property = await _propertyRepository.GetByIdAsync(offer.PropertyId);
-            property!.Status = PropertyState.Sold;
-            await _propertyRepository.UpdateAsync(property);
-
-            var result = await _offerRepository.SaveAsync();
-            if (result <= 0)
-            {
-                return ValidationResult.Failure(new Domain.Common.Errors.Error("Oops", "Ocurrió un error al procesar la aceptación de la oferta. Inténtalo de nuevo más tarde."));
-            }
-
-            return ValidationResult.Success();
         }
 
         public async Task<ValidationResult> RejectOfferAsync(int offerId)
         {
-            var validation = await _validationService.ValidateForRejectAsync(offerId);
-            if (!validation.IsValid)
+            try
             {
-                return validation;
+                var validation = await _validationService.ValidateForRejectAsync(offerId);
+                if (!validation.IsValid)
+                {
+                    return validation;
+                }
+
+                var offer = await _offerRepository.GetByIdAsync(offerId);
+                if (offer == null)
+                {
+                    return ValidationResult.Failure(new Error("Oferta.NoEncontrada", "La oferta especificada no existe."));
+                }
+
+                offer.Status = OfferState.Rejected;
+                await _offerRepository.UpdateAsync(offer);
+
+                var result = await _offerRepository.SaveAsync();
+                if (result <= 0)
+                {
+                    return ValidationResult.Failure(new Error("Oops", "Ocurrió un error al rechazar la oferta. Inténtalo de nuevo más tarde."));
+                }
+
+                return ValidationResult.Success();
             }
-
-            var offer = await _offerRepository.GetByIdAsync(offerId);
-            offer!.Status = OfferState.Rejected;
-            await _offerRepository.UpdateAsync(offer);
-
-            var result = await _offerRepository.SaveAsync();
-            if (result <= 0)
+            catch (Exception)
             {
-                return ValidationResult.Failure(new Domain.Common.Errors.Error("Oops", "Ocurrió un error al rechazar la oferta. Inténtalo de nuevo más tarde."));
+                return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
-
-            return ValidationResult.Success();
         }
 
         public async Task<ValidationResult> CancelOfferAsync(int offerId)
         {
-            var validation = await _validationService.ValidateForCancelAsync(offerId);
-            if (!validation.IsValid)
+            try
             {
-                return validation;
+                var validation = await _validationService.ValidateForCancelAsync(offerId);
+                if (!validation.IsValid)
+                {
+                    return validation;
+                }
+
+                var offer = await _offerRepository.GetByIdAsync(offerId);
+                if (offer == null)
+                {
+                    return ValidationResult.Failure(new Error("Oferta.NoEncontrada", "La oferta especificada no existe."));
+                }
+
+                await _offerRepository.DeleteAsync(offer);
+
+                var result = await _offerRepository.SaveAsync();
+                if (result <= 0)
+                {
+                    return ValidationResult.Failure(new Error("Oops", "Ocurrió un error al cancelar la oferta. Inténtalo de nuevo más tarde."));
+                }
+
+                return ValidationResult.Success();
             }
-
-            var offer = await _offerRepository.GetByIdAsync(offerId);
-            await _offerRepository.DeleteAsync(offer!);
-
-            var result = await _offerRepository.SaveAsync();
-            if (result <= 0)
+            catch (Exception)
             {
-                return ValidationResult.Failure(new Domain.Common.Errors.Error("Oops", "Ocurrió un error al cancelar la oferta. Inténtalo de nuevo más tarde."));
+                return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
-
-            return ValidationResult.Success();
         }
     }
 }

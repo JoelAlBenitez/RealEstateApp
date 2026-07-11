@@ -7,6 +7,7 @@ using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
+using RealEstateApp.Core.Domain.Common.Errors;
 
 namespace RealEstateApp.Core.Application.Services.FavoriteProperty
 {
@@ -30,55 +31,85 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperty
 
         public override async Task<ValidationResult> AddAsync(SaveFavoritePropertyDto dto)
         {
-            dto.CustomerId = _userSession.GetIdCurrentUser();
-            var validation = await _validationService.ValidateForCreateAsync(dto);
-            if (!validation.IsValid)
+            try
             {
-                return validation;
+                dto.CustomerId = _userSession.GetIdCurrentUser();
+                var validation = await _validationService.ValidateForCreateAsync(dto);
+                if (!validation.IsValid)
+                {
+                    return validation;
+                }
+                return await base.AddAsync(dto);
             }
-            return await base.AddAsync(dto);
+            catch (Exception)
+            {
+                return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
+            }
         }
 
         public override async Task<ValidationResult> RemoveAsync(int id)
         {
-            var entity = await _favoritePropertyRepository.GetByIdAsync(id);
-            if (entity == null)
+            try
             {
-                return ValidationResult.Failure(new Domain.Common.Errors.Error("Favorito.NoEncontrado", "El favorito no existe."));
+                var entity = await _favoritePropertyRepository.GetByIdAsync(id);
+                if (entity == null)
+                {
+                    return ValidationResult.Failure(new Error("Favorito.NoEncontrado", "El favorito no existe."));
+                }
+                return await base.RemoveAsync(id);
             }
-            return await base.RemoveAsync(id);
+            catch (Exception)
+            {
+                return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
+            }
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<FavoritePropertyDto>>> GetByCustomerAsync()
         {
-            var customerId = _userSession.GetIdCurrentUser();
-            var favorites = await _favoritePropertyRepository.GetFavoritesByCustomerAsync(customerId);
-            var availableFavorites = favorites.Where(f => f.Property != null && f.Property.Status == PropertyState.Available).ToList();
-            var dtos = _mapper.Map<IReadOnlyCollection<FavoritePropertyDto>>(availableFavorites);
-            return ValidationResult<IReadOnlyCollection<FavoritePropertyDto>>.Success(dtos);
+            try
+            {
+                var customerId = _userSession.GetIdCurrentUser();
+                var favorites = await _favoritePropertyRepository.GetFavoritesByCustomerAsync(customerId);
+                var availableFavorites = favorites.Where(f => f.Property != null && f.Property.Status == PropertyState.Available).ToList();
+                var dtos = _mapper.Map<IReadOnlyCollection<FavoritePropertyDto>>(availableFavorites);
+                return ValidationResult<IReadOnlyCollection<FavoritePropertyDto>>.Success(dtos);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<IReadOnlyCollection<FavoritePropertyDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
         }
 
         public async Task<ValidationResult> RemoveFavoriteAsync(int propertyId)
         {
-            var validation = await _validationService.ValidateForDeleteAsync(propertyId);
-            if (!validation.IsValid)
+            try
             {
-                return validation;
-            }
+                var validation = await _validationService.ValidateForDeleteAsync(propertyId);
+                if (!validation.IsValid)
+                {
+                    return validation;
+                }
 
-            var customerId = _userSession.GetIdCurrentUser();
-            var favorite = await _favoritePropertyRepository.GetFavoriteAsync(customerId, propertyId);
-            if (favorite != null)
-            {
+                var customerId = _userSession.GetIdCurrentUser();
+                var favorite = await _favoritePropertyRepository.GetFavoriteAsync(customerId, propertyId);
+                if (favorite == null)
+                {
+                    return ValidationResult.Failure(new Error("Favorito.NoEncontrado", "La propiedad favorita especificada no existe."));
+                }
+
                 await _favoritePropertyRepository.DeleteAsync(favorite);
                 var result = await _favoritePropertyRepository.SaveAsync();
                 if (result <= 0)
                 {
-                    return ValidationResult.Failure(new Domain.Common.Errors.Error("Oops", "Ocurrió un error al eliminar el favorito. Inténtalo de nuevo más tarde."));
+                    return ValidationResult.Failure(new Error("Oops", "Ocurrió un error al eliminar el favorito. Inténtalo de nuevo más tarde."));
                 }
-            }
 
-            return ValidationResult.Success();
+                return ValidationResult.Success();
+            }
+            catch (Exception)
+            {
+                return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
+            }
         }
     }
 }

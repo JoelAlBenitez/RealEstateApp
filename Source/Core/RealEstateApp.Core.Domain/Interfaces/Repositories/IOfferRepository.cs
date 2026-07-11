@@ -9,5 +9,6 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
         Task<bool> HasAcceptedOfferAsync(int propertyId);
         Task<IReadOnlyCollection<Offer>> GetOffersByClientAsync(string customerId);
         Task<IReadOnlyCollection<Offer>> GetPendingOffersByPropertyAsync(int propertyId);
+        Task RejectOtherOffersByPropertyAsync(int propertyId, int acceptedOfferId);
     }
 }

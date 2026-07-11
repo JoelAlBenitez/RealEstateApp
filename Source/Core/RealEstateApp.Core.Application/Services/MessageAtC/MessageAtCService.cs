@@ -6,6 +6,7 @@ using RealEstateApp.Core.Domain.Entities;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
+using RealEstateApp.Core.Domain.Common.Errors;
 
 namespace RealEstateApp.Core.Application.Services.MessageAtC
 {
@@ -29,41 +30,76 @@ namespace RealEstateApp.Core.Application.Services.MessageAtC
 
         public override async Task<ValidationResult> AddAsync(SaveMessageAtCDto dto)
         {
-            dto.CustomerId = _userSession.GetIdCurrentUser();
-            var validation = await _validationService.ValidateForCreateAsync(dto);
-            if (!validation.IsValid)
+            try
             {
-                return validation;
+                dto.CustomerId = _userSession.GetIdCurrentUser();
+                var validation = await _validationService.ValidateForCreateAsync(dto);
+                if (!validation.IsValid)
+                {
+                    return validation;
+                }
+                return await base.AddAsync(dto);
             }
-            return await base.AddAsync(dto);
+            catch (Exception)
+            {
+                return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
+            }
         }
 
         public override async Task<ValidationResult> RemoveAsync(int id)
         {
-            return await base.RemoveAsync(id);
+            try
+            {
+                return await base.RemoveAsync(id);
+            }
+            catch (Exception)
+            {
+                return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
+            }
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatHistoryAsync(string customerId, string agentId, int propertyId)
         {
-            var messages = await _messageRepository.GetConversationAsync(customerId, agentId, propertyId);
-            var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(messages);
-            return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Success(dtos);
+            try
+            {
+                var messages = await _messageRepository.GetConversationAsync(customerId, agentId, propertyId);
+                var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(messages);
+                return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Success(dtos);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatsByAgentAsync()
         {
-            var agentId = _userSession.GetIdCurrentUser();
-            var messages = await _messageRepository.GetMessagesByAgentAsync(agentId);
-            var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(messages);
-            return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Success(dtos);
+            try
+            {
+                var agentId = _userSession.GetIdCurrentUser();
+                var messages = await _messageRepository.GetMessagesByAgentAsync(agentId);
+                var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(messages);
+                return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Success(dtos);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<MessageAtCDto>>> GetChatsByCustomerAsync()
         {
-            var customerId = _userSession.GetIdCurrentUser();
-            var messages = await _messageRepository.GetMessagesByCustomerAsync(customerId);
-            var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(messages);
-            return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Success(dtos);
+            try
+            {
+                var customerId = _userSession.GetIdCurrentUser();
+                var messages = await _messageRepository.GetMessagesByCustomerAsync(customerId);
+                var dtos = _mapper.Map<IReadOnlyCollection<MessageAtCDto>>(messages);
+                return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Success(dtos);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<IReadOnlyCollection<MessageAtCDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
         }
     }
 }
