@@ -12,7 +12,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
         private readonly UserManager<AppUsers> _userManager;
         private readonly SignInManager<AppUsers> _signInManager;
       
-
+        //por implementar
         public AuthServicesPrcocessAccountWebApp(UserManager<AppUsers> userManager, SignInManager<AppUsers> signInManager)
         {
             _userManager = userManager;
