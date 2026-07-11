@@ -19,7 +19,8 @@ namespace RealEstateApp.Infraestructure.Identity.Seeds
                 IDCard = "NA",
                 EmailConfirmed = true,
                 PhoneNumber = "829-000-000",
-                Email = "adrian@gmail.com"
+                Email = "adrian@gmail.com",
+                CreateAt = DateTimeOffset.UtcNow
             };
 
             if(userManager.Users.Any(u => u.Id == users.Id))

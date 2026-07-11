@@ -19,7 +19,9 @@ namespace RealEstateApp.Infraestructure.Identity.Seeds
                 UserName = "SPeguero",
                 EmailConfirmed = true,
                 IsActive = true,
-                IDCard = "NA"
+                IDCard = "NA",
+                CreateAt = DateTimeOffset.UtcNow
+
             };
 
             if(userManager.Users.Any(u => u.Id == user.Id))

@@ -9,5 +9,7 @@ namespace RealEstateApp.Infraestructure.Identity.Entities
         public required string ProfileImg {  get; set; }
         public required string IDCard {  get; set; }
         public required bool IsActive {  get; set; }
+        public DateTimeOffset? BlockedEmailSending { get; set; }
+        public required DateTimeOffset CreateAt { get; set; }
     }
 }

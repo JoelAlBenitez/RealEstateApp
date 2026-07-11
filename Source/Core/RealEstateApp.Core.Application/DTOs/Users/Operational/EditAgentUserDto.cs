@@ -6,5 +6,9 @@ namespace RealEstateApp.Core.Application.DTOs.Users.Operational
     {
         public required string PhoneNumber { get; set; }
         public required string ProfileImg {  get; set; }
+        public string? ProfileImgUrl { get; set; }
+        public required bool ChangePorfileImg { get; set; }
+
+
     }
 }

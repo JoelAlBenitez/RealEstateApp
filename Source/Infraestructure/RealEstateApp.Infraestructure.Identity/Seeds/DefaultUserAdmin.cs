@@ -19,7 +19,8 @@ namespace RealEstateApp.Infraestructure.Identity.Seeds
                 UserName = "JBenitez",
                 IDCard = "00912333330",
                 ProfileImg = "NA",
-                IsActive = true
+                IsActive = true,
+                CreateAt = DateTimeOffset.UtcNow
             };
 
             if(!userManager.Users.Any(u => u.Id == users.Id))

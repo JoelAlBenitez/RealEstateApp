@@ -7,7 +7,7 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.
     public sealed class EditInternalUserDtoToViewModelAndReverse : Profile
     {
         public EditInternalUserDtoToViewModelAndReverse() {
-            CreateMap<EditInernalUserDto, EditInternalUserViewModel>().ReverseMap();
+            CreateMap<EditInternalUserDto, EditInternalUserViewModel>().ReverseMap();
         }
     }
 }
