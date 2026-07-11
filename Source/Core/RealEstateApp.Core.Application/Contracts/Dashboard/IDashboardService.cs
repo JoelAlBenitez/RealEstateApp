@@ -4,7 +4,7 @@ using RealEstateApp.Core.Domain.Common.ValidationResult;
 namespace RealEstateApp.Core.Application.Contracts.Dashboard
 {
     /// <summary>
-    /// Trazabilidad: Corresponde a la pantalla "Home del administrador" (indicadores) del documento funcional.
+    /// Trazabilidad: Corresponde a la pantalla "Home del administrador" (indicadores) del documenDashboardServiceto funcional.
     /// </summary>
     public interface IDashboardService
     {

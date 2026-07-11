@@ -1,6 +1,5 @@
 using RealEstateApp.Core.Application.Common.Errors;
 using RealEstateApp.Core.Application.Contracts.Dashboard;
-using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.Contracts.Users;
 using RealEstateApp.Core.Application.DTOs.Dashboard;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
