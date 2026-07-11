@@ -32,7 +32,7 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperties
             var isAvailable = await _propertyService.IsAvailableAsync(dto.PropertyId);
             if (!isAvailable)
             {
-                errors.Add(new Error("Favorito.PropiedadNoEncontrada", "La propiedad especificada no existe o no está disponible."));
+                errors.Add(new Error("Favorite.PropertyNotFound", "La propiedad especificada no existe o no está disponible."));
                 return ValidationResult.Failure(errors);
             }
 
@@ -56,7 +56,7 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperties
             var favorites = await _favoritePropertyRepository.GetFavoritesByCustomerAsync(customerId);
             if (!favorites.Any(f => f.PropertyId == propertyId))
             {
-                errors.Add(new Error("Favorito.NoEncontrado", "La propiedad no se encuentra en su listado de favoritos."));
+                errors.Add(new Error("Favorite.NotFound", "La propiedad no se encuentra en su listado de favoritos."));
             }
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();

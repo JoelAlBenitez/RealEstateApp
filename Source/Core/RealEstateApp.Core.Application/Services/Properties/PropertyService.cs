@@ -109,7 +109,7 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var property = await _propertyRepository.GetByIdAsync(id);
                 if (property == null)
                 {
-                    return ValidationResult<PropertyDto>.Failure(new Error("Propiedad.NoEncontrada", "La propiedad no existe."));
+                    return ValidationResult<PropertyDto>.Failure(new List<Error> { new Error("Property.NotFound", "La propiedad no existe.") });
                 }
                 var dto = _mapper.Map<PropertyDto>(property);
                 return ValidationResult<PropertyDto>.Success(dto);

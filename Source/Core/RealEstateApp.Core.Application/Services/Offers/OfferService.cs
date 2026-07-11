@@ -105,19 +105,17 @@ namespace RealEstateApp.Core.Application.Services.Offers
                 var offer = await _offerRepository.GetByIdAsync(offerId);
                 if (offer == null)
                 {
-                    return ValidationResult.Failure(new Error("Oferta.NoEncontrada", "La oferta especificada no existe."));
+                    return ValidationResult.Failure(new Error("Offer.NotFound", "La oferta especificada no existe."));
                 }
 
                 offer.Status = OfferState.Accepted;
                 await _offerRepository.UpdateAsync(offer);
-
-                // Bulk reject of other pending offers in the database!
                 await _offerRepository.RejectOtherOffersByPropertyAsync(offer.PropertyId, offerId);
 
                 var property = await _propertyRepository.GetByIdAsync(offer.PropertyId);
                 if (property == null)
                 {
-                    return ValidationResult.Failure(new Error("Propiedad.NoEncontrada", "La propiedad asociada a la oferta no existe."));
+                    return ValidationResult.Failure(new Error("Property.NotFound", "La propiedad asociada a la oferta no existe."));
                 }
 
                 property.Status = PropertyState.Sold;
@@ -150,7 +148,7 @@ namespace RealEstateApp.Core.Application.Services.Offers
                 var offer = await _offerRepository.GetByIdAsync(offerId);
                 if (offer == null)
                 {
-                    return ValidationResult.Failure(new Error("Oferta.NoEncontrada", "La oferta especificada no existe."));
+                    return ValidationResult.Failure(new Error("Offer.NotFound", "La oferta especificada no existe."));
                 }
 
                 offer.Status = OfferState.Rejected;
@@ -183,7 +181,7 @@ namespace RealEstateApp.Core.Application.Services.Offers
                 var offer = await _offerRepository.GetByIdAsync(offerId);
                 if (offer == null)
                 {
-                    return ValidationResult.Failure(new Error("Oferta.NoEncontrada", "La oferta especificada no existe."));
+                    return ValidationResult.Failure(new Error("Offer.NotFound", "La oferta especificada no existe."));
                 }
 
                 await _offerRepository.DeleteAsync(offer);
