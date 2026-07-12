@@ -6,9 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.17" />
+	</ItemGroup>
+	<ItemGroup>
     <ProjectReference Include="..\Core\RealEstateApp.Core.Application\RealEstateApp.Core.Application.csproj" />
-    <ProjectReference Include="..\Infraestructure\RealEstateApp.Infraestructure.Identity\RealEstateApp.Infraestructure.Identity.csproj" />
     <ProjectReference Include="..\Infraestructure\RealEstateApp.Infraestructure.Persistence\RealEstateApp.Infraestructure.Persistence.csproj" />
     <ProjectReference Include="..\Infraestructure\RealEstateApp.Infraestructure.Shared\RealEstateApp.Infraestructure.Shared.csproj" />
   </ItemGroup>
