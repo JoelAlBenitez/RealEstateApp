@@ -124,7 +124,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Base
             if (!roles.Contains("Administrador"))
             {
                 response.HasError = true;
-                response.Errors.Add("Su perfil no posee privilegios suficientes apra realizar esta accion");
+                response.Errors.Add("Su perfil no posee privilegios suficientes para realizar esta accion");
                 return response;
             }
 
