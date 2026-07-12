@@ -1,8 +1,7 @@
 using RealEstateApp.Core.Application.Common.Errors;
 using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.Contracts.Dashboard;
-// TODO: descomentar cuando Joel suba su refactorización de IOperationalAccountWebApp
-// using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
+using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.DTOs.Dashboard;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 
@@ -12,16 +11,12 @@ namespace RealEstateApp.Core.Application.Services
     public sealed class DashboardService : IDashboardService
     {
         private readonly IPropertyService _propertyService;
-        // TODO: descomentar cuando Joel suba su refactorización de IOperationalAccountWebApp
-        // private readonly IOperationalAccountWebApp _accountWebApp;
+        private readonly IOperationalAccountWebApi _internalAccountApi;
 
-        // TODO: descomentar cuando Joel suba su refactorización de IOperationalAccountWebApp
-        // public DashboardService(IPropertyService propertyService, IOperationalAccountWebApp accountWebApp)
-        public DashboardService(IPropertyService propertyService)
+        public DashboardService(IPropertyService propertyService, IOperationalAccountWebApi internalAccountApi)
         {
             _propertyService = propertyService;
-            // TODO: descomentar cuando Joel suba su refactorización de IOperationalAccountWebApp
-            // _accountWebApp = accountWebApp;
+            _internalAccountApi = internalAccountApi;
         }
 
         public async Task<ValidationResult<DashboardDto>> GetDashboardStatsAsync()
@@ -35,7 +30,7 @@ namespace RealEstateApp.Core.Application.Services
                 AvailableProperties = propertyTotals.Value.AvailableProperties,
                 SoldProperties = propertyTotals.Value.SoldProperties,
                 
-                // TODO: completar con GetUserCountersAsync() de Joel
+                // PENDIENTE: Joel no ha expuesto GetUserCountersAsync() en IOperationalAccountWebApi todavía
                 ActiveAgents = 0,
                 InactiveAgents = 0,
                 ActiveClients = 0,

@@ -15,3 +15,4 @@ namespace RealEstateApp.Core.Application.Contracts.Users.ExternalUsers
         Task<EditResponseDto> UpdateAgentAsync(EditAgentUserDto editAgent);
     }
 }
+

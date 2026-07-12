@@ -1,7 +1,7 @@
 using RealEstateApp.Core.Application.Common.Errors;
 using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.Contracts.Users;
-using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
+using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 using RealEstateApp.Core.Domain.Common.Errors;
@@ -13,29 +13,31 @@ namespace RealEstateApp.Core.Application.Services
     public sealed class AgentManagementService : IAgentManagementService
     {
         private readonly IPropertyService _propertyService;
-        private readonly IOperationalAccountWebApp _accountWebApp;
+        private readonly IOperationalAccountWebApi _internalAccountApi;
 
-        public AgentManagementService(IPropertyService propertyService, IOperationalAccountWebApp accountWebApp)
+        public AgentManagementService(IPropertyService propertyService, IOperationalAccountWebApi internalAccountApi)
         {
             _propertyService = propertyService;
-            _accountWebApp = accountWebApp;
+            _internalAccountApi = internalAccountApi;
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>> GetAgentsAsync()
         {
-            // TODO: descomentar cuando Joel suba su refactorización de IOperationalAccountWebApp
-            // var result = await _accountWebApp.GetAgentByConsultAdminAll();
-            // return ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>.Success(result);
-            return await Task.FromResult(
-                ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>.Failure(
-                    ErrorPendingIntegration.AgentList
-                )
-            );
+            var agents = await _internalAccountApi.GetAllAgentesByConsultAdmin();
+            foreach (var agent in agents)
+            {
+                var countResult = await _propertyService.CountByAgentAsync(agent.Id);
+                if (countResult.IsValid)
+                {
+                    agent.Properties = countResult.Value;
+                }
+            }
+            return ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>.Success(agents);
         }
 
         public async Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto)
         {
-            // PENDIENTE DE CONFIRMAR: ChangeUserStatusAsync() en IOperationalAccountWebApp de Joel
+            // PENDIENTE DE CONFIRMAR: ChangeUserStatusAsync() en IOperationalAccountWebApi de Joel
             // (ErrorAgent.ConfirmInactivate / ErrorAgent.ConfirmActivate se usan en la UI/controlador
             //  como mensajes de confirmación antes de llamar a este método)
             return await Task.FromResult(
@@ -49,7 +51,7 @@ namespace RealEstateApp.Core.Application.Services
         {
             // Paso 0 — Validar existencia y rol del agente (PENDIENTE DE CONFIRMAR CON JOEL):
             // El documento funcional exige verificar que el agente exista y tenga rol Agente antes
-            // de ejecutar cualquier purga. Requiere un método de consulta en IOperationalAccountWebApp
+            // de ejecutar cualquier purga. Requiere un método de consulta en IOperationalAccountWebApi
             // (ej. GetUserByIdAsync o similar) que todavía no existe.
             // Si el agente no existe → retornar ValidationResult.Failure(ErrorAgent.NotFound)
             // Si el usuario existe pero no tiene rol Agente → retornar un error de rol incorrecto.
@@ -71,7 +73,7 @@ namespace RealEstateApp.Core.Application.Services
             // envuelva ambas operaciones, según la especificación de persistencia e Identity.
             // NO se implementa la transacción todavía porque no se ha confirmado cómo Joel expone el DbContext.
 
-            // PENDIENTE DE CONFIRMAR CON JOEL: DeleteUserAsync() en IOperationalAccountWebApp de Joel
+            // PENDIENTE DE CONFIRMAR CON JOEL: DeleteUserAsync() en IOperationalAccountWebApi de Joel
             return await Task.FromResult(
                 ValidationResult.Failure(
                     ErrorPendingIntegration.AgentDelete

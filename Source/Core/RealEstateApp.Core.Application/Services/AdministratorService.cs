@@ -1,34 +1,34 @@
 using RealEstateApp.Core.Application.Common.Errors;
 using RealEstateApp.Core.Domain.Common.Enums;
 using RealEstateApp.Core.Application.Contracts.Users;
+using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
-using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 
 namespace RealEstateApp.Core.Application.Services
 {
     // Servicio para la pantalla de mantenimiento de administradores
     public sealed class AdministratorService : IAdministratorService
     {
-        private readonly IOperationalAccountWebApp _accountWebApp;
+        private readonly IOperationalAccountWebApi _internalAccountApi;
 
-        public AdministratorService(IOperationalAccountWebApp accountWebApp)
+        public AdministratorService(IOperationalAccountWebApi internalAccountApi)
         {
-            _accountWebApp = accountWebApp;
+            _internalAccountApi = internalAccountApi;
         }
 
-        //public async Task<ValidationResult<IReadOnlyCollection<GetInternalUserDto>>> GetAdministratorsAsync()
-        //{
-        //    var result = await _accountWebApp.GetInternalUserGetAll(Roles.Administrador);
-        //    return ValidationResult<IReadOnlyCollection<GetInternalUserDto>>.Success(result);
-        //}
+        public async Task<ValidationResult<IReadOnlyCollection<GetInternalUserDto>>> GetAdministratorsAsync()
+        {
+            var admins = await _internalAccountApi.GetAllInternalUsersByRol(Roles.Administrador);
+            return ValidationResult<IReadOnlyCollection<GetInternalUserDto>>.Success(admins);
+        }
 
         public async Task<ValidationResult> CreateAsync(RegisterInternalUsersDto dto)
         {
-            // PENDIENTE DE CONFIRMAR: RegisterInternalUserAsync() en IOperationalAccountWebApp de Joel
+            // PENDIENTE DE CONFIRMAR: RegisterInternalUserAsync() en IOperationalAccountWebApi de Joel
             return await Task.FromResult(
                 ValidationResult.Failure(
                     ErrorPendingIntegration.AdminCreate
@@ -47,11 +47,11 @@ namespace RealEstateApp.Core.Application.Services
             }
 
             // PENDIENTE DE CONFIRMAR: validar existencia del administrador vía
-            // IOperationalAccountWebApp antes de editar. Si el administrador no existe,
+            // IOperationalAccountWebApi antes de editar. Si el administrador no existe,
             // retornar ValidationResult.Failure(ErrorAdministrator.NotFound).
             // Como el método de Joel para verificar esto todavía no existe, se deja como placeholder.
 
-            // PENDIENTE DE CONFIRMAR: EditInternalUserAsync() en IOperationalAccountWebApp de Joel
+            // PENDIENTE DE CONFIRMAR: EditInternalUserAsync() en IOperationalAccountWebApi de Joel
             return await Task.FromResult(
                 ValidationResult.Failure(
                     ErrorPendingIntegration.AdminEdit
@@ -74,13 +74,13 @@ namespace RealEstateApp.Core.Application.Services
             }
 
             // PENDIENTE DE CONFIRMAR: validar existencia del administrador vía
-            // IOperationalAccountWebApp antes de cambiar estado. Si el administrador no existe,
+            // IOperationalAccountWebApi antes de cambiar estado. Si el administrador no existe,
             // retornar ValidationResult.Failure(ErrorAdministrator.NotFound).
             // Como el método de Joel para verificar esto todavía no existe, se deja como placeholder.
 
-            // PENDIENTE DE CONFIRMAR: ChangeUserStatusAsync() en IOperationalAccountWebApp de Joel
+            // PENDIENTE DE CONFIRMAR: ChangeUserStatusAsync() en IOperationalAccountWebApi de Joel
             // (Joel valida internamente el mínimo de admins activos — ErrorAdministrator.LastAdminRequired
-            //  se usará cuando implementemos la respuesta real de Joel)
+            //  se usará cuando implemente la respuesta real de Joel)
             return await Task.FromResult(
                 ValidationResult.Failure(
                     ErrorPendingIntegration.AdminToggle
