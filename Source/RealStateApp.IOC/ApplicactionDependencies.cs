@@ -7,6 +7,7 @@ using RealEstateApp.Core.Application.Services.Generic;
 
 namespace RealStateApp.IOC
 {
+
     public static class ApplicactionDependencies
     {
         public static IServiceCollection AddApplicationDepdencies(
