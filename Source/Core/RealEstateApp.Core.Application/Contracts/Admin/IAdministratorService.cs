@@ -3,7 +3,7 @@ using RealEstateApp.Core.Application.DTOs.Users.Operational;
 
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 
-namespace RealEstateApp.Core.Application.Contracts.Users
+namespace RealEstateApp.Core.Application.Contracts.Admin
 {
     
     // Trazabilidad: Corresponde a la pantalla "Mantenimiento de administradores" del documento funcional.

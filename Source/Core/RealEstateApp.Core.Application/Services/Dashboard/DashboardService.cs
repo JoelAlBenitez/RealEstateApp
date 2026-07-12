@@ -5,7 +5,7 @@ using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.DTOs.Dashboard;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 
-namespace RealEstateApp.Core.Application.Services
+namespace RealEstateApp.Core.Application.Services.Dashboard
 {
     // Servicio para la pantalla de indicadores (Home del Administrador)
     public sealed class DashboardService : IDashboardService
