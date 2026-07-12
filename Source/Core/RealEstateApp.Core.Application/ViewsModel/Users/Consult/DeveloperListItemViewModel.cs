@@ -1,3 +1,5 @@
+using RealEstateApp.Core.Application.ViewsModel.Users.Consult.Base;
+
 namespace RealEstateApp.Core.Application.ViewsModel.Users.Consult
 {
     // ViewModel para el listado de desarrolladores

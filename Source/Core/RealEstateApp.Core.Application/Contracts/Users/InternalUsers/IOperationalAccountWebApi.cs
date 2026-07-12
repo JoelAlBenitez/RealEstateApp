@@ -11,5 +11,8 @@ namespace RealEstateApp.Core.Application.Contracts.Users.InternalUsers
         Task<UserResponseDto> UpdateInternalUserAsync(EditInternalUserDto edit);
         Task<IReadOnlyCollection<GetInternalUserDto>> GetAllInternalUsersByRol(Roles roles);
         Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAllAgentesByConsultAdmin();
+
+
+
     }
 }

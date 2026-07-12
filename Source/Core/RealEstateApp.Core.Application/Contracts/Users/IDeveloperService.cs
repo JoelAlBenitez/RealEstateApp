@@ -17,7 +17,7 @@ namespace RealEstateApp.Core.Application.Contracts.Users
         Task<ValidationResult> CreateAsync(RegisterInternalUsersDto dto);
 
         // Edita un desarrollador existente
-        Task<ValidationResult> EditAsync(EditInernalUserDto dto);
+        Task<ValidationResult> EditAsync(EditInternalUserDto dto);
 
         // Cambia el estado de un desarrollador
         Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto);
