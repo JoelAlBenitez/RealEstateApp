@@ -11,20 +11,26 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
     {
         public PropertyRepository(DbContextRealEstateApp context) : base(context) { }
 
-        public async Task<IReadOnlyCollection<Property>> GetAvailablePropertiesAsync()
+        public async Task<IReadOnlyCollection<Property>> GetAvailablePropertiesAsync(int pageNumber = 1, int pageSize = 10)
         {
             return await _context.Properties
                 .Include(p => p.Images)
                 .Where(p => p.Status == PropertyState.Available)
+                .OrderByDescending(p => p.CreateAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<IReadOnlyCollection<Property>> GetAvailablePropertiesByAgentAsync(string agentId)
+        public async Task<IReadOnlyCollection<Property>> GetAvailablePropertiesByAgentAsync(string agentId, int pageNumber = 1, int pageSize = 10)
         {
             return await _context.Properties
                 .Include(p => p.Images)
                 .Where(p => p.AgentId == agentId && p.Status == PropertyState.Available)
+                .OrderByDescending(p => p.CreateAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -36,7 +42,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
                 .FirstOrDefaultAsync(p => p.Code == code && p.Status == PropertyState.Available);
         }
 
-        public async Task<IReadOnlyCollection<Property>> GetFilteredPropertiesAsync(PropertyFilterCriteria criteria)
+        public async Task<IReadOnlyCollection<Property>> GetFilteredPropertiesAsync(PropertyFilterCriteria criteria, int pageNumber = 1, int pageSize = 10)
         {
             var query = _context.Properties
                 .Include(p => p.Images)
@@ -62,7 +68,12 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
                 query = query.Where(p => p.Bathrooms == criteria.Bathrooms.Value);
             }
 
-            return await query.AsNoTracking().ToListAsync();
+            return await query
+                .OrderByDescending(p => p.CreateAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task DeletePropertiesByAgentAsync(string agentId)

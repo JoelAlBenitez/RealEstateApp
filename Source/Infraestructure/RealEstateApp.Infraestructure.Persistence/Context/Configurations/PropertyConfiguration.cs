@@ -19,6 +19,10 @@ namespace RealEstateApp.Infraestructure.Persistence.Context.Configurations
             builder.HasIndex(p => p.Code)
                 .IsUnique();
 
+            builder.HasIndex(p => new { p.Status, p.CreateAt });
+
+            builder.HasIndex(p => p.AgentId);
+
             builder.Property(p => p.Price)
                 .IsRequired()
                 .HasPrecision(18, 2);
