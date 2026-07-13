@@ -1,12 +1,13 @@
-﻿using RealEstateApp.Core.Domain.Common.ValidationResult;
+using RealEstateApp.Core.Domain.Common.ValidationResult;
 
 namespace RealEstateApp.Core.Application.Contracts.GenericServices
 {
-    public interface IGenericServices <TDtoModel> where TDtoModel : class 
+    public interface IGenericServices <TDtoModel, TKey> where TDtoModel : class 
     {
         Task<ValidationResult> AddAsync(TDtoModel dto);
-        Task<ValidationResult?> UpdateAsync(TDtoModel dto, int id);
-        Task<ValidationResult<TDtoModel>> GetByIdAsync(int id);
+        Task<ValidationResult?> UpdateAsync(TDtoModel dto);
+        Task<ValidationResult<TDtoModel>> GetByIdAsync(TKey id);
+        Task<ValidationResult> RemoveAsync(TKey id);
         Task<ValidationResult<IReadOnlyCollection<TDtoModel>>> GetAllAsync();
     }
 }
