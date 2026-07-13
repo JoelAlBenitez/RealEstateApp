@@ -32,15 +32,15 @@ namespace RealStateApp.IOC
                 #endregion 
             });
 
-            services.AddTransient<IPropertyService, PropertyService>();
-            services.AddTransient<IFavoritePropertyService, FavoritePropertyService>();
-            services.AddTransient<IOfferService, OfferService>();
-            services.AddTransient<IMessageAtCService, MessageAtCService>();
+            services.AddScoped<IPropertyService, PropertyService>();
+            services.AddScoped<IFavoritePropertyService, FavoritePropertyService>();
+            services.AddScoped<IOfferService, OfferService>();
+            services.AddScoped<IMessageAtCService, MessageAtCService>();
 
-            services.AddTransient<IPropertyValidationService, PropertyValidationService>();
-            services.AddTransient<IFavoritePropertyValidationService, FavoritePropertyValidationService>();
-            services.AddTransient<IOfferValidationService, OfferValidationService>();
-            services.AddTransient<IMessageAtCValidationService, MessageAtCValidationService>();
+            services.AddScoped<IPropertyValidationService, PropertyValidationService>();
+            services.AddScoped<IFavoritePropertyValidationService, FavoritePropertyValidationService>();
+            services.AddScoped<IOfferValidationService, OfferValidationService>();
+            services.AddScoped<IMessageAtCValidationService, MessageAtCValidationService>();
 
             return services;
         }

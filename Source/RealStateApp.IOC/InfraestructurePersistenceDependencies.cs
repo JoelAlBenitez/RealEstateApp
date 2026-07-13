@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using RealEstateApp.Core.Domain.Interfaces.GenericRepository;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Infraestructure.Persistence.Context;
-using RealEstateApp.Infraestructure.Persistence.Repositories.Generic;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Properties;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Offers;
 using RealEstateApp.Infraestructure.Persistence.Repositories.FavoriteProperties;
@@ -19,8 +18,6 @@ namespace RealStateApp.IOC
         {
             services.AddDbContext<DbContextRealEstateApp>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-
-            services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 
             services.AddScoped<IPropertyRepository, PropertyRepository>();
             services.AddScoped<IOfferRepository, OfferRepository>();
