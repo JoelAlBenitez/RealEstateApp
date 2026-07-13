@@ -12,6 +12,9 @@ namespace RealEstateApp.Infraestructure.Persistence.Context.Configurations
 
             builder.HasKey(o => o.Id);
 
+            builder.HasIndex(o => o.CustomerId);
+            builder.HasIndex(o => o.PropertyId);
+
             builder.Property(o => o.CustomerId)
                 .IsRequired();
 
