@@ -6,10 +6,10 @@ using RealEstateApp.Core.Application.DTOs.Users.Operational;
 
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
-using RealEstateApp.Core.Application.Contracts.Users;
+using RealEstateApp.Core.Application.Contracts.Admin;
 using RealEstateApp.Core.Application.Contracts.Users.Base;
 
-namespace RealEstateApp.Core.Application.Services
+namespace RealEstateApp.Core.Application.Services.Admin
 {
     // Servicio para la pantalla de mantenimiento de administradores
     public sealed class AdministratorService : IAdministratorService

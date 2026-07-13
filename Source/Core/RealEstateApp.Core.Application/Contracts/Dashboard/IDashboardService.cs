@@ -3,9 +3,9 @@ using RealEstateApp.Core.Domain.Common.ValidationResult;
 
 namespace RealEstateApp.Core.Application.Contracts.Dashboard
 {
-    /// <summary>
-    /// Trazabilidad: Corresponde a la pantalla "Home del administrador" (indicadores) del documenDashboardServiceto funcional.
-    /// </summary>
+    
+    // Trazabilidad: Corresponde a la pantalla "Home del administrador" (indicadores) del documenDashboardServiceto funcional.
+    
     public interface IDashboardService
     {
         // Obtiene las estadísticas consolidadas de propiedades y usuarios
