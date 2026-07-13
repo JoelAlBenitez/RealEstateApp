@@ -11,5 +11,7 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
         Task<IReadOnlyCollection<Property>> GetFilteredPropertiesAsync(PropertyFilterCriteria criteria);
         Task<Property?> GetByIdWithImagesAsync(int id);
         Task DeletePropertiesByAgentAsync(string agentId);
+        Task DeletePropertiesByPropertyTypeAsync(int propertyTypeId);
+        Task DeletePropertiesBySaleTypeAsync(int saleTypeId);
     }
 }

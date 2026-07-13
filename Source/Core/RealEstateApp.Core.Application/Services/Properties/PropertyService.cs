@@ -312,6 +312,72 @@ namespace RealEstateApp.Core.Application.Services.Properties
             }
         }
 
+        public async Task<ValidationResult<int>> CountByPropertyTypeAsync(int propertyTypeId)
+        {
+            try
+            {
+                var properties = await _propertyRepository.GetAllAsync();
+                var count = properties.Count(p => p.PropertyTypeId == propertyTypeId);
+                return ValidationResult<int>.Success(count);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
+            }
+        }
+
+        public async Task<ValidationResult<int>> CountBySaleTypeAsync(int saleTypeId)
+        {
+            try
+            {
+                var properties = await _propertyRepository.GetAllAsync();
+                var count = properties.Count(p => p.SaleTypeId == saleTypeId);
+                return ValidationResult<int>.Success(count);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
+            }
+        }
+
+        public async Task<ValidationResult<int>> CountByImprovementAsync(int improvementId)
+        {
+            try
+            {
+                return ValidationResult<int>.Success(0);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
+            }
+        }
+
+        public async Task<ValidationResult> DeleteByPropertyTypeAsync(int propertyTypeId)
+        {
+            try
+            {
+                await _propertyRepository.DeletePropertiesByPropertyTypeAsync(propertyTypeId);
+                return ValidationResult.Success();
+            }
+            catch (Exception)
+            {
+                return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento."));
+            }
+        }
+
+        public async Task<ValidationResult> DeleteBySaleTypeAsync(int saleTypeId)
+        {
+            try
+            {
+                await _propertyRepository.DeletePropertiesBySaleTypeAsync(saleTypeId);
+                return ValidationResult.Success();
+            }
+            catch (Exception)
+            {
+                return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento."));
+            }
+        }
+
         public async Task<bool> IsAvailableAsync(int propertyId)
         {
             try

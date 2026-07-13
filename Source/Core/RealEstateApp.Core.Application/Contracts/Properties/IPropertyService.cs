@@ -15,5 +15,10 @@ namespace RealEstateApp.Core.Application.Contracts.Properties
         Task<ValidationResult<int>> CountByAgentAsync(string agentId);
         Task<bool> IsAvailableAsync(int propertyId);
         Task<ValidationResult> DeletePropertiesByAgentAsync(string agentId);
+        Task<ValidationResult<int>> CountByPropertyTypeAsync(int propertyTypeId);
+        Task<ValidationResult<int>> CountBySaleTypeAsync(int saleTypeId);
+        Task<ValidationResult<int>> CountByImprovementAsync(int improvementId);
+        Task<ValidationResult> DeleteByPropertyTypeAsync(int propertyTypeId);
+        Task<ValidationResult> DeleteBySaleTypeAsync(int saleTypeId);
     }
 }
