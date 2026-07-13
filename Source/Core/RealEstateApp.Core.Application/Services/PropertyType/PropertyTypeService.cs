@@ -93,5 +93,15 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
             dto = dto with { Name = trimmedName, Description = dto.Description?.Trim() ?? string.Empty };
             return await base.UpdateAsync(dto);
         }
+
+        // PENDIENTE DE CONFIRMAR CON SEBASTIÁN: la eliminación en cascada de propiedades
+        // al borrar un tipo de propiedad depende de que Sebastián configure la FK
+        // Property.PropertyTypeId con OnDelete(DeleteBehavior.Cascade) en Fluent API
+        // (según acuerdo del equipo en distribucion-equipo.html línea 414). Sebastián
+        // aún no ha llegado a esa parte de su implementación. Mientras tanto, RemoveAsync
+        // hereda el comportamiento genérico de GenericServices (solo borra el registro
+        // de PropertyType) — NO purga las propiedades asociadas todavía. Si se elimina
+        // un tipo de propiedad con propiedades activas antes de que Sebastián configure
+        // la cascada, quedarán registros huérfanos con una FK inválida.
     }
 }
