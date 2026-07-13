@@ -6,17 +6,20 @@ using RealEstateApp.Core.Application.DTOs.Users.Operational;
 
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
+using RealEstateApp.Core.Application.Contracts.Users.Base;
 
-namespace RealEstateApp.Core.Application.Services
+namespace RealEstateApp.Core.Application.Services.Developer
 {
     // Servicio para la pantalla de mantenimiento de desarrolladores
     public sealed class DeveloperService : IDeveloperService
     {
         private readonly IOperationalAccountWebApi _internalAccountApi;
+        private readonly IBaseAccountUser _baseAccount;
 
-        public DeveloperService(IOperationalAccountWebApi internalAccountApi)
+        public DeveloperService(IOperationalAccountWebApi internalAccountApi, IBaseAccountUser baseAccount)
         {
             _internalAccountApi = internalAccountApi;
+            _baseAccount = baseAccount;
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<GetInternalUserDto>>> GetDevelopersAsync()
@@ -43,12 +46,10 @@ namespace RealEstateApp.Core.Application.Services
 
         public async Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto)
         {
-            // PENDIENTE DE CONFIRMAR: ChangeUserStatusAsync() en IOperationalAccountWebApi de Joel
-            // (ErrorDeveloper.Activated / ErrorDeveloper.Inactivated se usarán en el controlador
-            //  como mensajes de éxito tras la respuesta real de Joel)
-            // TODO: reemplazar por ErrorPendingIntegration cuando llegue via merge de AdminBase
-            return await Task.FromResult(
-                ValidationResult.Failure(new Error("Dev_Pending", "Pendiente de Joel")));
+            var result = await _baseAccount.ChangeStateAsync(dto);
+            if (result.HasError)
+                return ValidationResult.Failure(new Error("Identity_Error", string.Join(", ", result.Errors ?? new List<string>())));
+            return ValidationResult.Success();
         }
     }
 }
