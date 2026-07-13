@@ -201,12 +201,6 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
             }).ToList();
             return agents;
         }
-    
-        //public Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentByConsultCustomerAsync()
-        //{
-        //   var results =  //comentado de momento -> 
-        //}
-
         public async Task<CustomerConsultAgentDto> GetAgentByConsultCustomerByUserNameAgent(string userName)
         {
             var result = await _userManager.FindByNameAsync(userName);

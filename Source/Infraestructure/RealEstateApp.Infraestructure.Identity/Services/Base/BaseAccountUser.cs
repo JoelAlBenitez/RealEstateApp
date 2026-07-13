@@ -117,7 +117,8 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Base
             if (existUser == null || existUser.IsActive)
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, Al parecer su usuario no se enecuentra habilitado, favor intente de nuevo.");
+                response.Errors.Add("Oops, Al parecer su usuario no cuenta con los priviligios para realizar esta operacion," +
+                    " favor intente de nuevo.");
                 return response;
             }
             var roles = _userSession.GetRolesCurrentUser();

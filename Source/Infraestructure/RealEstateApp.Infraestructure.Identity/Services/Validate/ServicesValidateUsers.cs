@@ -10,7 +10,6 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Validate
     public sealed class ServicesValidateUsers
         : IServicesValidateUsers
     {
-
         private readonly UserManager<AppUsers> _userManager;
         public const string EmailRegex = @"^(?=.{1,254}$)(?=.{1,64}@)[A-Za-z0-9]+(?:[._%+-][A-Za-z0-9]+)*@[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*(?:\.[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)+$";
         public ServicesValidateUsers(UserManager<AppUsers> userManager)
@@ -135,7 +134,6 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Validate
             return response;
 
         }
-
 
         #endregion
 

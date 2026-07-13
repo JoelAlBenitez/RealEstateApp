@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.Contracts.Users.Validation;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
@@ -30,9 +31,36 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             _servicesValidateUsers = servicesValidateUsers;
         }
 
+
+        #region method operational
         public Task<UserResponseDto> CreateInternalUserAsync(RegisterInternalUsersDto register)
         {
             throw new NotImplementedException();
+        }
+
+        public Task<UserResponseDto> UpdateInternalUserAsync(EditInternalUserDto edit)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+        #region get methods
+        public async Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAgentPendientConfirmAccount()
+        {
+            var result = await _userManager.Users
+                 .AsNoTracking()
+                 .Where(u => !u.EmailConfirmed && !u.IsActive).ToListAsync();
+            if (result == null) return [];
+            var select = result.Select(s => new AdminConsultAgentDto
+            {
+                Email = s.Email!,
+                Id = s.Id,
+                State = s.IsActive,
+                LastName = s.LastName,
+                Name = s.Name,
+                Properties = 0
+            }).ToList();
+            return select;
         }
 
         public async Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAllAgentesByConsultAdmin()
@@ -69,9 +97,24 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             return select;
         }
 
-        public Task<UserResponseDto> UpdateInternalUserAsync(EditInternalUserDto edit)
+        public async Task<int> GetUserAgentActiverOrInactive(bool isActive = true)
         {
-            throw new NotImplementedException();
+            return await _userManager.Users.AsNoTracking()
+                .CountAsync(u => u.IsActive == isActive);
         }
+
+        public async Task<int> GetUserClientAciveOrInactive(bool isActive = true)
+        {
+            return await _userManager.Users.AsNoTracking()
+                .CountAsync(u => u.IsActive == isActive);
+        }
+
+        public async Task<int> GetUserDevelopersActiveOrInactive(bool isActive = true)
+        {
+            return await _userManager.Users.AsNoTracking()
+               .CountAsync(u => u.IsActive == isActive);
+        }
+        #endregion
+        
     }
 }
