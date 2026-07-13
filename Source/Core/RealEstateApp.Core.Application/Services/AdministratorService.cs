@@ -6,18 +6,22 @@ using RealEstateApp.Core.Application.DTOs.Users.Operational;
 
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
-using RealEstateApp.Core.Application.Contracts.Admin;
+using RealEstateApp.Core.Application.Contracts.Users;
+using RealEstateApp.Core.Application.Contracts.Users.Base;
 
-namespace RealEstateApp.Core.Application.Services.Admin
+namespace RealEstateApp.Core.Application.Services
 {
     // Servicio para la pantalla de mantenimiento de administradores
     public sealed class AdministratorService : IAdministratorService
     {
         private readonly IOperationalAccountWebApi _internalAccountApi;
+        // IBaseAccountUser aún no está registrado en el contenedor de DI (RegistrationAndConfigurationsIdentity.cs sigue vacío) — compilará pero no funcionará en runtime hasta que Joel complete ese registro.
+        private readonly IBaseAccountUser _baseAccount;
 
-        public AdministratorService(IOperationalAccountWebApi internalAccountApi)
+        public AdministratorService(IOperationalAccountWebApi internalAccountApi, IBaseAccountUser baseAccount)
         {
             _internalAccountApi = internalAccountApi;
+            _baseAccount = baseAccount;
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<GetInternalUserDto>>> GetAdministratorsAsync()
@@ -78,14 +82,14 @@ namespace RealEstateApp.Core.Application.Services.Admin
             // retornar ValidationResult.Failure(ErrorAdministrator.NotFound).
             // Como el método de Joel para verificar esto todavía no existe, se deja como placeholder.
 
-            // PENDIENTE DE CONFIRMAR: ChangeUserStatusAsync() en IOperationalAccountWebApi de Joel
-            // (Joel valida internamente el mínimo de admins activos — ErrorAdministrator.LastAdminRequired
-            //  se usará cuando implemente la respuesta real de Joel)
-            return await Task.FromResult(
-                ValidationResult.Failure(
-                    ErrorPendingIntegration.AdminToggle
-                )
-            );
+            var result = await _baseAccount.ChangeStateAsync(dto);
+            
+            if (result.HasError)
+            {
+                return ValidationResult.Failure(new Error("Identity_Error", string.Join(", ", result.Errors ?? new List<string>())));
+            }
+
+            return ValidationResult.Success();
         }
     }
 }
