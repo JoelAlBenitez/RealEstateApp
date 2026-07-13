@@ -2,9 +2,9 @@
 {
 
     //por implementar
-    public sealed class RegistrationAndConfigurationsIdentity
+    public static class RegistrationAndConfigurationsIdentity
     {
-
+        
     }
 }
  

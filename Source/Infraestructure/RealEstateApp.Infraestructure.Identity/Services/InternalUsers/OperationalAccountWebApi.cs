@@ -33,14 +33,112 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
 
 
         #region method operational
-        public Task<UserResponseDto> CreateInternalUserAsync(RegisterInternalUsersDto register)
+        public async Task<UserResponseDto> CreateInternalUserAsync(
+            RegisterInternalUsersDto register)
         {
-            throw new NotImplementedException();
+            var response = new UserResponseDto
+            {
+                Errors = new List<string>(),
+                Roles = null!,
+                HasError = false
+            };
+            var user = await _userManager.FindByIdAsync(_userSession.GetIdCurrentUser());
+            if (user == null) { 
+               
+                response.HasError = true;
+                response.Errors.Add("Oops, Al parecer su usuario no se encuentra habilitado para realizar esta operacion");
+                return response;
+            }
+            var rolesCurrentUser = await _userManager.GetRolesAsync(user);
+            if (!rolesCurrentUser.Contains(Roles.Administrador.ToString()))
+            {
+                response.HasError = true;
+                response.Errors.Add("Oops, Al parecer no cuenta con los privilegios necesarios para realizar esta operacion.");
+                return response;
+            }
+            var validate = await _servicesValidateUsers.CreateInternalValidateUserAsync(register, response);
+            if (validate != null && validate.HasError) return validate;
+
+            var userC = new AppUsers
+            {
+                Name = register.Name,
+                BlockedEmailSending = null,
+                LastName = register.LastName,
+                UserName = register.NameUser,
+                Email = register.Email,
+                ProfileImg = "NA",
+                IsActive  = true,
+                EmailConfirmed = true,
+                IDCard = register.IDCard,
+                CreateAt = DateTimeOffset.UtcNow
+            };;
+
+            var create = await _userManager.CreateAsync(userC, register.Password);
+            if (!create.Succeeded)
+            {
+                response.HasError = true;
+                response.Errors.Add("Oops, Al parecer la solicitud no pudo ser procesada favor intente de nuevo mas tarde.");
+                return response;
+            }
+            var rol = register.TypeUser == (int)Roles.Desarrollador
+                ? Roles.Desarrollador.ToString()
+                : Roles.Administrador.ToString();
+            var list = new List<string>();
+            list.Add(rol);
+            var roles = await _userManager.AddToRolesAsync(user,list);
+            return response;
         }
 
-        public Task<UserResponseDto> UpdateInternalUserAsync(EditInternalUserDto edit)
+        public async Task<EditResponseDto> UpdateInternalUserAsync(EditInternalUserDto edit)
         {
-            throw new NotImplementedException();
+            var response = new EditResponseDto
+            {
+                Errors = new List<string>(),
+                HasError = false   
+            };
+            var validate = await _servicesValidateUsers
+                .UpdateInternalValidateUserAsync(edit, response);
+            if (validate != null && validate.HasError) return validate;
+            var existUser = await _userManager.FindByIdAsync(edit.Id);
+            if(existUser == null)
+            {
+                response.HasError = true;
+                response.Errors.Add("Oops, Al parecer a ocurrido un error al seleccionar el uusario.");
+                return response;
+            }
+            var user = new AppUsers
+            {
+                CreateAt = DateTimeOffset.UtcNow,
+                Name = edit.Name,
+                LastName = edit.LastName,
+                UserName = edit.UserName,
+                IDCard = edit.IdCard,
+                BlockedEmailSending = null,
+                Email = edit.Email,
+                IsActive = true,
+                ProfileImg = "NA"
+            };
+
+            if (!string.IsNullOrWhiteSpace(edit.NewPassword)) {
+                var changePassword = await _userManager.ChangePasswordAsync(user, existUser.PasswordHash!,edit.NewPassword);
+                if (!changePassword.Succeeded)
+                {
+                    response.HasError = true;
+                    response.Errors.Add("Oops, Al parecer a ocurrido un error inesperado al editar el usuario");
+                    return response;
+                }
+                return response;
+            }
+            
+            var update = await _userManager.UpdateAsync(user);
+            if (!update.Succeeded)
+            {
+                response.HasError = true;
+                response.Errors.Add("Oops, Al parecer a ocurrido un error inesperado al editar el usuario");
+                return response;
+            }
+
+            return response;
         }
 
         #endregion

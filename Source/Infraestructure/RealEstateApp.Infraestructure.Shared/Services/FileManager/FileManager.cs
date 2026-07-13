@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using RealEstateApp.Core.Application.Contracts.FileManager;
+using RealEstateApp.Core.Application.DTOs.FileManager;
 
 namespace RealEstateApp.Infraestructure.Shared.Services.FileManager
 {
@@ -24,7 +25,7 @@ namespace RealEstateApp.Infraestructure.Shared.Services.FileManager
             throw new NotImplementedException();
         }
 
-        public Task<IReadOnlyList<string>> SaveManyAsync(IEnumerable<IFormFile> files, string folderName)
+        public Task<FileManagersMultipleFiles> SaveManyAsync(IEnumerable<IFormFile> files, string folderName)
         {
             throw new NotImplementedException();
         }

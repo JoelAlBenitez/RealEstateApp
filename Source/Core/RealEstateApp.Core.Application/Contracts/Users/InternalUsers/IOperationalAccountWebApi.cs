@@ -9,7 +9,7 @@ namespace RealEstateApp.Core.Application.Contracts.Users.InternalUsers
     public interface IOperationalAccountWebApi : IBaseAccountUser
     {
         Task<UserResponseDto> CreateInternalUserAsync(RegisterInternalUsersDto register);
-        Task<UserResponseDto> UpdateInternalUserAsync(EditInternalUserDto edit);
+        Task<EditResponseDto> UpdateInternalUserAsync(EditInternalUserDto edit);
         Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAgentPendientConfirmAccount();
         Task<int> GetUserAgentActiverOrInactive(bool isActive = true);
         Task<int> GetUserDevelopersActiveOrInactive(bool isActive = true);
