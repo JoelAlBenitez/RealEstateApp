@@ -4,6 +4,8 @@ using RealEstateApp.Core.Application.DTOs.Users.Auth;
 using RealEstateApp.Core.Application.DTOs.Users.Response;
 using RealEstateApp.Core.Domain.Common.Enums;
 using RealEstateApp.Infraestructure.Identity.Entities;
+using RealEstateApp.Infraestructure.Identity.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
 {
@@ -11,32 +13,63 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
     {
         private readonly UserManager<AppUsers> _userManager;
         private readonly SignInManager<AppUsers> _signInManager;
+        private readonly IGenerateTokens _generateTokens;
 
         public AuthAccountWebApi(
             UserManager<AppUsers> userManager,
-            SignInManager<AppUsers> signInManager)
+            SignInManager<AppUsers> signInManager,
+            IGenerateTokens generateTokens
+            
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _generateTokens = generateTokens;
         }
 
-        public async Task<UserResponseDto> LoginAsync(LoginDto loginDto)
+        public async Task<LoginApiDtoResponse> LoginAsync(LoginDto loginDto)
         {
-            var response = new UserResponseDto
+            var response = new LoginApiDtoResponse
             {
                 Errors = new List<string>(),
                 HasError = false,
-                Roles = new List<string>()
+                Roles = new List<string>(),
+                Token = null!,
+                UserName = "",
             };
+            var existUserByUserName = await _userManager.FindByNameAsync(loginDto.EmailOrNameUser);
+            JwtSecurityToken jwt = null!;
 
+            if (existUserByUserName != null) {
+                var validate = await ValidateLogin(response, existUserByUserName, loginDto);
+                if (validate != null && validate.HasError) return validate;
+                var roles = await _userManager.GetRolesAsync(existUserByUserName);
+                jwt = await _generateTokens.GenerateJwtToken(existUserByUserName);
+                response.Token  = new JwtSecurityTokenHandler().WriteToken(jwt);
+                response.UserName = existUserByUserName.UserName!;
+                response.Roles = roles.ToList();
+                return response;
+            }
+            var existUserByEmail = await _userManager.FindByEmailAsync(loginDto.EmailOrNameUser);
+            if (existUserByEmail != null) {
+                var validate = await ValidateLogin(response, existUserByEmail, loginDto);
+                if (validate != null && validate.HasError) return validate;
+                var roles = await _userManager.GetRolesAsync(existUserByEmail);
+                jwt = await _generateTokens.GenerateJwtToken(existUserByEmail);
+                response.Token = new JwtSecurityTokenHandler().WriteToken(jwt);
+                response.UserName = existUserByEmail.Email!;
+                response.Roles = roles.ToList();
+                return response;
 
-
+            }
+            response.HasError = true;
+            response.Errors.Add("Las credenciales ingresadas son invalidas favor intente de nuevo.");
             return response;
         }
 
         #region private methods
 
-        private async Task<UserResponseDto> ValidateLogin(UserResponseDto response,
+        private async Task<LoginApiDtoResponse> ValidateLogin(LoginApiDtoResponse response,
           AppUsers user, LoginDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Password) || string.IsNullOrWhiteSpace(dto.EmailOrNameUser))
@@ -53,10 +86,13 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
                 return response;
             }
             var rolesUser = await _userManager.GetRolesAsync(user);
-            if (rolesUser.Contains(Roles.Desarrollador.ToString()))
+            if (rolesUser.Contains(Roles.Desarrollador.ToString()) 
+                || rolesUser.Contains(Roles.Agente.ToString())
+                || rolesUser.Contains(Roles.Cliente.ToString())
+                )
             {
                 response.HasError = true;
-                response.Errors.Add("El usuario no tiene un rol válido asignado." +
+                response.Errors.Add("No posee permisos para ingresar a este modulo." +
                     " Póngase en contacto con un administrador.");
                 return response;
             }
@@ -80,6 +116,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
 
             return response;
         }
+
 
         #endregion
     }
