@@ -32,7 +32,18 @@ namespace RealEstateApp.Core.Application.Services.MessagesAtC
         {
             try
             {
-                dto.CustomerId = _userSession.GetIdCurrentUser();
+                var currentUserId = _userSession.GetIdCurrentUser();
+                var roles = _userSession.GetRolesCurrentUser();
+
+                if (roles.Contains("Cliente"))
+                {
+                    dto.CustomerId = currentUserId;
+                }
+                else if (roles.Contains("Agente"))
+                {
+                    dto.AgentId = currentUserId;
+                }
+
                 var validation = await _validationService.ValidateForCreateAsync(dto);
                 if (!validation.IsValid)
                 {
