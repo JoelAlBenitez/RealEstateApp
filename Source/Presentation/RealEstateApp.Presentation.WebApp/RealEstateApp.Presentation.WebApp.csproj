@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <Folder Include="Controllers\Messages\" />
+    <Folder Include="Controllers\Customers\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
