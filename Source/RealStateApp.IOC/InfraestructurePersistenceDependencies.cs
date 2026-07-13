@@ -18,15 +18,14 @@ namespace RealStateApp.IOC
             this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<DbContextRealEstateApp>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-                m => m.MigrationsAssembly(typeof(DbContextRealEstateApp).Assembly.FullName)));
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddTransient(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
+            services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 
-            services.AddTransient<IPropertyRepository, PropertyRepository>();
-            services.AddTransient<IOfferRepository, OfferRepository>();
-            services.AddTransient<IFavoritePropertyRepository, FavoritePropertyRepository>();
-            services.AddTransient<IMessageRepository, MessageRepository>();
+            services.AddScoped<IPropertyRepository, PropertyRepository>();
+            services.AddScoped<IOfferRepository, OfferRepository>();
+            services.AddScoped<IFavoritePropertyRepository, FavoritePropertyRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
 
             return services;
         }
