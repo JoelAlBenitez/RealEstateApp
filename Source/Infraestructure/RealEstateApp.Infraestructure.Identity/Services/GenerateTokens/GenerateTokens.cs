@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RealEstateApp.Core.Domain.Settings.JWT;
 using RealEstateApp.Infraestructure.Identity.Entities;
@@ -18,11 +19,11 @@ namespace RealEstateApp.Infraestructure.Identity.Services.GenerateTokens
 
         public GenerateTokens(
             UserManager<AppUsers> userManager,
-            JwtSettings jwtSettings            
+            IOptions<JwtSettings> jwtSettings            
             )
         {
             _userManager = userManager;
-            _jwtSettings = jwtSettings;
+            _jwtSettings = jwtSettings.Value;
         }
 
         public async Task<JwtSecurityToken> GenerateJwtToken(AppUsers user)

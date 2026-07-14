@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.Contracts.Users.Validation;
+using RealEstateApp.Core.Domain.Settings.Email;
+using RealEstateApp.Core.Domain.Settings.JWT;
 using RealEstateApp.Infraestructure.Identity.Interfaces;
 using RealEstateApp.Infraestructure.Identity.Services.ExternalUsers;
 using RealEstateApp.Infraestructure.Identity.Services.GenerateTokens;
@@ -20,8 +23,11 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
             services.AddScoped<IOperationalAccountWebApp, OperationalAccountWebApp>();
             return services;
         }
-        public static IServiceCollection AddDependenciesCommon(this IServiceCollection services)
+        public static IServiceCollection AddDependenciesCommon(
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
+            services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
             services.AddScoped<IGenerateTokens, GenerateTokens>();
             services.AddScoped<IServicesValidateUsers, ServicesValidateUsers>();
             return services;

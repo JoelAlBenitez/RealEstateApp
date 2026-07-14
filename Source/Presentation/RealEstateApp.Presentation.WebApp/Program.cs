@@ -23,7 +23,7 @@ builder.Services.AddApplicationDepdencies();
 builder.Services.AddInfraestructurePersistence(builder.Configuration);
 builder.Services.AddInfraestructrueShared(builder.Configuration);
 builder.Services.AddWebAppServicesIdentity(builder.Configuration);
-builder.Services.AddDependenciesCommon();
+builder.Services.AddDependenciesCommon(builder.Configuration);
 builder.Services.AddDependenciesWebApp();
 
 builder.Services.AddScoped<IUserSession,UserSession>();

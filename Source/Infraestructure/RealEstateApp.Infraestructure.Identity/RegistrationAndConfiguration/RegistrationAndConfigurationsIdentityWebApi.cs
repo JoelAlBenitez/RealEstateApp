@@ -25,7 +25,6 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
 
             GeneralConfiguration.AddGeneralConfiguration(services, configuration);
             #region Configurations
-            services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
             #endregion
             #region Configurations Options identity
 
