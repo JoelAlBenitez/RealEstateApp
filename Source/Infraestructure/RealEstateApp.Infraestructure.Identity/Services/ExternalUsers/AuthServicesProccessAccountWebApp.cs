@@ -13,14 +13,14 @@ using System.Text;
 
 namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
 {
-    public sealed class AuthServicesPrcocessAccountWebApp : IAuthProcesssAccountWebApp
+    public sealed class AuthServicesProcccessAccountWebApp : IAuthProcesssAccountWebApp
     {
         private readonly UserManager<AppUsers> _userManager;
         private readonly SignInManager<AppUsers> _signInManager;
         private readonly IGenerateTokens _generateTokens;
         private readonly IEmailService _emailServices;
             
-        public AuthServicesPrcocessAccountWebApp(UserManager<AppUsers
+        public AuthServicesProcccessAccountWebApp(UserManager<AppUsers
             > userManager, SignInManager<AppUsers> signInManager,
             IGenerateTokens generateTokens,
             IEmailService emailService
