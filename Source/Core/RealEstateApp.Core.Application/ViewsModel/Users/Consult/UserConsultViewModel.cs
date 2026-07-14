@@ -1,4 +1,4 @@
-﻿namespace RealEstateApp.Core.Application.ViewsModel.Users.Consult.Base
+namespace RealEstateApp.Core.Application.ViewsModel.Users.Consult
 {
     public  class UserConsultViewModel 
     {
