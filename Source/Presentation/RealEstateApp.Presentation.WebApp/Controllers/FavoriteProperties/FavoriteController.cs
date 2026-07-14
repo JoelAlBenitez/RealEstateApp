@@ -4,6 +4,7 @@ using RealEstateApp.Core.Application.Contracts.FavoriteProperties;
 using RealEstateApp.Core.Application.DTOs.FavoriteProperty;
 using RealEstateApp.Core.Application.ViewsModel.FavoriteProperty;
 using RealEstateApp.Core.Application.ViewsModel.Property;
+using AutoMapper;
 
 namespace RealEstateApp.Presentation.WebApp.Controllers.FavoriteProperties
 {
@@ -11,10 +12,12 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.FavoriteProperties
     public class FavoriteController : Controller
     {
         private readonly IFavoritePropertyService _favoritePropertyService;
+        private readonly IMapper _mapper;
 
-        public FavoriteController(IFavoritePropertyService favoritePropertyService)
+        public FavoriteController(IFavoritePropertyService favoritePropertyService, IMapper mapper)
         {
             _favoritePropertyService = favoritePropertyService;
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index()
@@ -25,26 +28,14 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.FavoriteProperties
                 return View(new List<FavoritePropertyViewModel>());
             }
 
-            var viewModels = result.Value!.Select(f => new FavoritePropertyViewModel
+            var viewModels = _mapper.Map<List<FavoritePropertyViewModel>>(result.Value);
+            viewModels.ForEach(vm =>
             {
-                Id = f.Id,
-                CustomerId = f.CustomerId,
-                PropertyId = f.PropertyId,
-                Property = f.Property != null ? new PropertyCardViewModel
+                if (vm.Property != null)
                 {
-                    Id = f.Property.Id,
-                    Code = f.Property.Code,
-                    Price = f.Property.Price,
-                    Description = f.Property.Description,
-                    Size = f.Property.Size,
-                    Bedrooms = f.Property.Bedrooms,
-                    Bathrooms = f.Property.Bathrooms,
-                    AgentId = f.Property.AgentId,
-                    Status = f.Property.Status,
-                    ImageUrl = f.Property.Images != null && f.Property.Images.Any() ? f.Property.Images.First().Url : null,
-                    IsFavorite = true
-                } : null
-            }).ToList();
+                    vm.Property.IsFavorite = true;
+                }
+            });
 
             return View(viewModels);
         }

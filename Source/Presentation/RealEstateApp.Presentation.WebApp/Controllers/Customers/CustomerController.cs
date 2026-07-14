@@ -7,6 +7,7 @@ using RealEstateApp.Core.Application.DTOs.Property;
 using RealEstateApp.Core.Application.ViewsModel.Property;
 using RealEstateApp.Core.Application.ViewsModel.Offer;
 using RealEstateApp.Core.Domain.Common.Enums.OfferStatus;
+using AutoMapper;
 
 namespace RealEstateApp.Presentation.WebApp.Controllers
 {
@@ -16,15 +17,18 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
         private readonly IPropertyService _propertyService;
         private readonly IFavoritePropertyService _favoritePropertyService;
         private readonly IOfferService _offerService;
+        private readonly IMapper _mapper;
 
         public CustomerController(
             IPropertyService propertyService,
             IFavoritePropertyService favoritePropertyService,
-            IOfferService offerService)
+            IOfferService offerService,
+            IMapper mapper)
         {
             _propertyService = propertyService;
             _favoritePropertyService = favoritePropertyService;
             _offerService = offerService;
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index(PropertyFilterDto filters)
@@ -40,20 +44,8 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
                 ? favoritesResult.Value.Select(f => f.PropertyId).ToHashSet()
                 : new HashSet<int>();
 
-            var viewModels = result.Value!.Select(p => new PropertyCardViewModel
-            {
-                Id = p.Id,
-                Code = p.Code,
-                Price = p.Price,
-                Description = p.Description,
-                Size = p.Size,
-                Bedrooms = p.Bedrooms,
-                Bathrooms = p.Bathrooms,
-                AgentId = p.AgentId,
-                Status = p.Status,
-                ImageUrl = p.Images != null && p.Images.Any() ? p.Images.First().Url : null,
-                IsFavorite = favoriteIds.Contains(p.Id)
-            }).ToList();
+            var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
+            viewModels.ForEach(vm => vm.IsFavorite = favoriteIds.Contains(vm.Id));
 
             return View(viewModels);
         }
@@ -78,38 +70,13 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
 
             var propertyOffersResult = await _offerService.GetPendingByPropertyAsync(id);
             var propertyOffers = propertyOffersResult.IsValid && propertyOffersResult.Value != null
-                ? propertyOffersResult.Value.Select(o => new OfferViewModel
-                {
-                    Id = o.Id,
-                    CustomerId = o.CustomerId,
-                    PropertyId = o.PropertyId,
-                    Amount = o.Amount,
-                    Status = o.Status,
-                    CreateAt = o.CreateAt,
-                    CustomerName = o.CustomerName
-                }).ToList()
+                ? _mapper.Map<List<OfferViewModel>>(propertyOffersResult.Value)
                 : new List<OfferViewModel>();
 
-            var viewModel = new PropertyDetailViewModel
-            {
-                Id = p.Id,
-                Code = p.Code,
-                Price = p.Price,
-                Description = p.Description,
-                Size = p.Size,
-                Bedrooms = p.Bedrooms,
-                Bathrooms = p.Bathrooms,
-                AgentId = p.AgentId,
-                Status = p.Status,
-                AgentName = p.AgentName,
-                AgentPhone = p.AgentPhone,
-                AgentEmail = p.AgentEmail,
-                AgentPhotoUrl = p.AgentPhotoUrl,
-                ImageUrls = p.Images != null ? p.Images.Select(i => i.Url).ToList() : new List<string>(),
-                IsFavorite = isFavorite,
-                HasPendingOffer = hasPendingOffer,
-                Offers = propertyOffers
-            };
+            var viewModel = _mapper.Map<PropertyDetailViewModel>(p);
+            viewModel.IsFavorite = isFavorite;
+            viewModel.HasPendingOffer = hasPendingOffer;
+            viewModel.Offers = propertyOffers;
 
             return View(viewModel);
         }

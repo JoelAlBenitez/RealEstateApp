@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.Offers;
 using RealEstateApp.Core.Application.DTOs.Offer;
 using RealEstateApp.Core.Application.ViewsModel.Offer;
+using AutoMapper;
 
 namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
 {
@@ -10,10 +11,12 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
     public class OfferController : Controller
     {
         private readonly IOfferService _offerService;
+        private readonly IMapper _mapper;
 
-        public OfferController(IOfferService offerService)
+        public OfferController(IOfferService offerService, IMapper mapper)
         {
             _offerService = offerService;
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index()
@@ -24,18 +27,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
                 return View(new List<OfferViewModel>());
             }
 
-            var viewModels = result.Value!.Select(o => new OfferViewModel
-            {
-                Id = o.Id,
-                CustomerId = o.CustomerId,
-                PropertyId = o.PropertyId,
-                Amount = o.Amount,
-                Status = o.Status,
-                CreateAt = o.CreateAt,
-                CustomerName = o.CustomerName,
-                CustomerEmail = o.CustomerEmail,
-                PropertyCode = o.Property != null ? o.Property.Code : null
-            }).ToList();
+            var viewModels = _mapper.Map<List<OfferViewModel>>(result.Value);
 
             return View(viewModels);
         }

@@ -4,6 +4,7 @@ using RealEstateApp.Core.Application.Contracts.Messages;
 using RealEstateApp.Core.Application.DTOs.MessageAtC;
 using RealEstateApp.Core.Application.ViewsModel.MessageAtC;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
+using AutoMapper;
 
 namespace RealEstateApp.Presentation.WebApp.Controllers
 {
@@ -12,11 +13,13 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
     {
         private readonly IMessageAtCService _messageService;
         private readonly IUserSession _userSession;
+        private readonly IMapper _mapper;
 
-        public MessagesController(IMessageAtCService messageService, IUserSession userSession)
+        public MessagesController(IMessageAtCService messageService, IUserSession userSession, IMapper mapper)
         {
             _messageService = messageService;
             _userSession = userSession;
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index()
@@ -27,18 +30,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
                 return View(new List<MessageAtCViewModel>());
             }
 
-            var viewModels = result.Value!.Select(m => new MessageAtCViewModel
-            {
-                Id = m.Id,
-                CustomerId = m.CustomerId,
-                AgentId = m.AgentId,
-                PropertyId = m.PropertyId,
-                Content = m.Content,
-                SentAt = m.SentAt,
-                CreateAt = m.CreateAt,
-                CustomerName = m.CustomerName,
-                AgentName = m.AgentName
-            }).ToList();
+            var viewModels = _mapper.Map<List<MessageAtCViewModel>>(result.Value);
 
             return View(viewModels);
         }
@@ -52,18 +44,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var viewModels = result.Value!.Select(m => new MessageAtCViewModel
-            {
-                Id = m.Id,
-                CustomerId = m.CustomerId,
-                AgentId = m.AgentId,
-                PropertyId = m.PropertyId,
-                Content = m.Content,
-                SentAt = m.SentAt,
-                CreateAt = m.CreateAt,
-                CustomerName = m.CustomerName,
-                AgentName = m.AgentName
-            }).ToList();
+            var viewModels = _mapper.Map<List<MessageAtCViewModel>>(result.Value);
 
             ViewBag.AgentId = agentId;
             ViewBag.PropertyId = propertyId;

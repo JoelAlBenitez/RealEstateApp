@@ -10,6 +10,14 @@ using RealEstateApp.Core.Application.Services.MessagesAtC;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Auth;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Consult;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Operational;
+using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Properties;
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Property;
+using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.FavoriteProperty;
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.FavoriteProperty;
+using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Offer;
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Offer;
+using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Message;
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Message;
 
 namespace RealStateApp.IOC
 {
@@ -30,6 +38,17 @@ namespace RealStateApp.IOC
                 configuration.AddMaps(typeof(EditExternalUserDtoToViewModelAndReverse).Assembly);
                 configuration.AddMaps(typeof(EditInternalUserDtoToViewModelAndReverse).Assembly);
                 #endregion 
+
+                #region maper customer
+                configuration.AddProfile<PropertyMappingProfile>();
+                configuration.AddProfile<PropertyDtoToViewModelAndReverse>();
+                configuration.AddProfile<FavoritePropertyMappingProfile>();
+                configuration.AddProfile<FavoritePropertyDtoToViewModelAndReverse>();
+                configuration.AddProfile<OfferMappingProfile>();
+                configuration.AddProfile<OfferDtoToViewModelAndReverse>();
+                configuration.AddProfile<MessageMappingProfile>();
+                configuration.AddProfile<MessageDtoToViewModelAndReverse>();
+                #endregion
             });
 
             services.AddScoped<IPropertyService, PropertyService>();
