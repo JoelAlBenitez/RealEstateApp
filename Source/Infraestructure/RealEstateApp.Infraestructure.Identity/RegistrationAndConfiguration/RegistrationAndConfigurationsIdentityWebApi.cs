@@ -98,14 +98,14 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
                         c.HandleResponse();
                         c.Response.StatusCode = 401;
                         c.Response.ContentType = "application/json";
-                        var result = JsonConvert.SerializeObject(new JwtResponseDto { HasError = true, Errors = "You are not Authorized" });
+                        var result = JsonConvert.SerializeObject(new JwtResponseDto { HasError = true, Errors = "No tienes autorizacion para acceder a este elemento" });
                         return c.Response.WriteAsync(result);
                     },
                     OnForbidden = c =>
                     {
                         c.Response.StatusCode = 403;
                         c.Response.ContentType = "application/json";
-                        var result = JsonConvert.SerializeObject(new JwtResponseDto { HasError = true, Errors = "You are not Authorized to access this resource" });
+                        var result = JsonConvert.SerializeObject(new JwtResponseDto { HasError = true, Errors = "No tienes autorizacion para acceder a este recurso." });
                         return c.Response.WriteAsync(result);
                     }
                 };

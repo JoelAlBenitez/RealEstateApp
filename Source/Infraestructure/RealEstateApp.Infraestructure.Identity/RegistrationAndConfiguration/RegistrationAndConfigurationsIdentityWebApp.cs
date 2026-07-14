@@ -1,20 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
-using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
-using RealEstateApp.Core.Application.Contracts.Users.Validation;
 using RealEstateApp.Infraestructure.Identity.Context;
 using RealEstateApp.Infraestructure.Identity.Entities;
-using RealEstateApp.Infraestructure.Identity.Interfaces;
-using RealEstateApp.Infraestructure.Identity.Seeds;
-using RealEstateApp.Infraestructure.Identity.Services.ExternalUsers;
-using RealEstateApp.Infraestructure.Identity.Services.GenerateTokens;
-using RealEstateApp.Infraestructure.Identity.Services.Validate;
 using RealEstateApp.Infrastructure.Identity.EmailProvider;
 
 namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration

@@ -29,7 +29,6 @@ namespace RealEstateApp.Infraestructure.Identity.Services.GenerateTokens
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
-
             var rolesClaims = new List<Claim>();
             foreach (var role in roles)
             {

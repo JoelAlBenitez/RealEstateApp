@@ -1,22 +1,32 @@
 ﻿using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
+using System.Security.Claims;
 
 namespace RealEstateApp.Presentation.WebApp.Helpers
 {
     public class UserSession : IUserSession
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public UserSession(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
         public string GetIdCurrentUser()
         {
-            throw new NotImplementedException();
+            return _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)!;
         }
 
         public List<string> GetRolesCurrentUser()
         {
-            throw new NotImplementedException();
-        }
+            return _httpContextAccessor.HttpContext?.User?
+                .FindAll(ClaimTypes.Role)
+                .Select(r => r.Value).ToList() ?? new List<string>();
 
+        }
         public string GetUserName()
         {
-            throw new NotImplementedException();
+            return _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name)!;
         }
     }
 }

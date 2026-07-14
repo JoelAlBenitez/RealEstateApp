@@ -23,7 +23,7 @@ namespace RealStateApp.IOC
             configuration.AddMaps(typeof(CreateInternalUserDtoToViewModelAndReverse).Assembly);
             configuration.AddMaps(typeof(EditExternalUserDtoToViewModelAndReverse).Assembly);
             configuration.AddMaps(typeof(EditInternalUserDtoToViewModelAndReverse).Assembly);
-
+            configuration.AddMaps(typeof(ResendEmailConfirmDtoToViewModelAndReverse).Assembly);
 
                 #endregion 
             });
