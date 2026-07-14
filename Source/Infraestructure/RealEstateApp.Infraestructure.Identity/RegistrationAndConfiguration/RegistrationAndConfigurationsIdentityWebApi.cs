@@ -73,6 +73,7 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
             {
                 opt.RequireHttpsMetadata = false;
                 opt.SaveToken = false;
+                
                 opt.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -98,20 +99,23 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
                         c.HandleResponse();
                         c.Response.StatusCode = 401;
                         c.Response.ContentType = "application/json";
-                        var result = JsonConvert.SerializeObject(new JwtResponseDto { HasError = true, Errors = "No tienes autorizacion para acceder a este elemento" });
+                        var result = JsonConvert.SerializeObject(new JwtResponseDto
+                        { HasError = true, Errors = "No tienes autorizacion para acceder a este elemento" });
                         return c.Response.WriteAsync(result);
                     },
                     OnForbidden = c =>
                     {
                         c.Response.StatusCode = 403;
                         c.Response.ContentType = "application/json";
-                        var result = JsonConvert.SerializeObject(new JwtResponseDto { HasError = true, Errors = "No tienes autorizacion para acceder a este recurso." });
+                        var result = JsonConvert.SerializeObject(new JwtResponseDto
+                        { HasError = true, Errors = "No tienes autorizacion para acceder a este recurso." });
                         return c.Response.WriteAsync(result);
                     }
                 };
             }).AddCookie(IdentityConstants.ApplicationScheme, opt =>
             {
                 opt.ExpireTimeSpan = TimeSpan.FromMinutes(180);
+              
             });
 
             services.Configure<SecurityStampValidatorOptions>(opt =>
