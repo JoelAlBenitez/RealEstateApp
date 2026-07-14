@@ -4,9 +4,9 @@ using RealEstateApp.Core.Application.DTOs.MessageAtC;
 
 namespace RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Message
 {
-    public sealed class MessageEntityToDtoAndReverse : Profile
+    public sealed class MessageMappingProfile : Profile
     {
-        public MessageEntityToDtoAndReverse()
+        public MessageMappingProfile()
         {
             CreateMap<Domain.Entities.Message, MessageAtCDto>().ReverseMap();
             CreateMap<Domain.Entities.Message, SaveMessageAtCDto>().ReverseMap();
