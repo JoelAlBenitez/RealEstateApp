@@ -176,7 +176,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             if (result == null) return [];
             var select = result.Select(s => new GetInternalUserDto
             {
-                IDCard = s.IDCard,
+                IDCard = s.IDCard!,
                 State = s.IsActive,
                 Name = s.Name,
                 Id = s.Id,

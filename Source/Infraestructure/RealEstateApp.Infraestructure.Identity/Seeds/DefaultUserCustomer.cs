@@ -16,9 +16,9 @@ namespace RealEstateApp.Infraestructure.Identity.Seeds
                 UserName = "ABrito",
                 IsActive = true,
                 ProfileImg = "Img/Users/bbdcf1d9-c6e0-438d-a508-a69fb0d6b718/bbdcf1d9-c6e0-438d-a508-a69fb0d6b718.jpg",
-                IDCard = "NA",
+                IDCard = null,
                 EmailConfirmed = true,
-                PhoneNumber = "829-000-000",
+                PhoneNumber = "8290000001",
                 Email = "adrian@gmail.com",
                 CreateAt = DateTimeOffset.UtcNow
             };

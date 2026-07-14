@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RealEstateApp.Infraestructure.Identity.Context;
 
@@ -11,9 +12,11 @@ using RealEstateApp.Infraestructure.Identity.Context;
 namespace RealEstateApp.Infraestructure.Identity.Migrations
 {
     [DbContext(typeof(DbContextIdentityRealStateApp))]
-    partial class DbContextIdentityRealStateAppModelSnapshot : ModelSnapshot
+    [Migration("20260714225300_IDCardNullable")]
+    partial class IDCardNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

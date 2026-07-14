@@ -72,7 +72,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                 PhoneNumber = registerUserDto.PhoneNumber,
                 Email = registerUserDto.Email,
                 IsActive = false,
-                IDCard = "NA"
+                IDCard = null
             };
             //..
             var create = await _userManager.CreateAsync(user, registerUserDto.Password);
