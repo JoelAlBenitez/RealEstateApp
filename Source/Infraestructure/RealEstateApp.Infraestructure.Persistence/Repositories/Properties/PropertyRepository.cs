@@ -14,30 +14,31 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         public async Task<IReadOnlyCollection<Property>> GetAvailablePropertiesAsync(int pageNumber = 1, int pageSize = 10)
         {
             return await _context.Properties
+                .AsNoTracking()
                 .Include(p => p.Images)
                 .Where(p => p.Status == PropertyState.Available)
                 .OrderByDescending(p => p.CreateAt)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .AsNoTracking()
                 .ToListAsync();
         }
 
         public async Task<IReadOnlyCollection<Property>> GetAvailablePropertiesByAgentAsync(string agentId, int pageNumber = 1, int pageSize = 10)
         {
             return await _context.Properties
+                .AsNoTracking()
                 .Include(p => p.Images)
                 .Where(p => p.AgentId == agentId && p.Status == PropertyState.Available)
                 .OrderByDescending(p => p.CreateAt)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .AsNoTracking()
                 .ToListAsync();
         }
 
         public async Task<Property?> GetAvailablePropertyByCodeAsync(string code)
         {
             return await _context.Properties
+                .AsNoTracking()
                 .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Code == code && p.Status == PropertyState.Available);
         }
@@ -45,6 +46,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         public async Task<IReadOnlyCollection<Property>> GetFilteredPropertiesAsync(PropertyFilterCriteria criteria, int pageNumber = 1, int pageSize = 10)
         {
             var query = _context.Properties
+                .AsNoTracking()
                 .Include(p => p.Images)
                 .Where(p => p.Status == PropertyState.Available);
 
@@ -72,7 +74,6 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
                 .OrderByDescending(p => p.CreateAt)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .AsNoTracking()
                 .ToListAsync();
         }
 

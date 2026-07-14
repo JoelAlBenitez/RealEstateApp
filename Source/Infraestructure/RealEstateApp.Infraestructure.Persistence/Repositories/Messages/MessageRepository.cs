@@ -13,27 +13,27 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Messages
         public async Task<IReadOnlyCollection<Message>> GetConversationAsync(string customerId, string agentId, int propertyId)
         {
             return await _context.Messages
+                .AsNoTracking()
                 .Where(m => m.CustomerId == customerId && m.AgentId == agentId && m.PropertyId == propertyId)
                 .OrderBy(m => m.SentAt)
-                .AsNoTracking()
                 .ToListAsync();
         }
 
         public async Task<IReadOnlyCollection<Message>> GetMessagesByAgentAsync(string agentId)
         {
             return await _context.Messages
+                .AsNoTracking()
                 .Where(m => m.AgentId == agentId)
                 .OrderByDescending(m => m.SentAt)
-                .AsNoTracking()
                 .ToListAsync();
         }
 
         public async Task<IReadOnlyCollection<Message>> GetMessagesByCustomerAsync(string customerId)
         {
             return await _context.Messages
+                .AsNoTracking()
                 .Where(m => m.CustomerId == customerId)
                 .OrderByDescending(m => m.SentAt)
-                .AsNoTracking()
                 .ToListAsync();
         }
     }

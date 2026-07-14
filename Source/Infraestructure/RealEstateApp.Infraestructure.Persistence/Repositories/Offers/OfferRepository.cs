@@ -26,19 +26,19 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Offers
         public async Task<IReadOnlyCollection<Offer>> GetOffersByClientAsync(string customerId)
         {
             return await _context.Offers
+                .AsNoTracking()
                 .Include(o => o.Property)
                     .ThenInclude(p => p!.Images)
                 .Where(o => o.CustomerId == customerId)
-                .AsNoTracking()
                 .ToListAsync();
         }
 
         public async Task<IReadOnlyCollection<Offer>> GetPendingOffersByPropertyAsync(int propertyId)
         {
             return await _context.Offers
+                .AsNoTracking()
                 .Include(o => o.Property)
                 .Where(o => o.PropertyId == propertyId && o.Status == OfferState.Pending)
-                .AsNoTracking()
                 .ToListAsync();
         }
 

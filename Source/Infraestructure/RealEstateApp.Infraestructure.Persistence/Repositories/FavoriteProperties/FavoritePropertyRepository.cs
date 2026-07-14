@@ -19,10 +19,10 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.FavoritePropert
         public async Task<IReadOnlyCollection<FavoriteProperty>> GetFavoritesByCustomerAsync(string customerId)
         {
             return await _context.FavoriteProperties
+                .AsNoTracking()
                 .Include(fp => fp.Property)
                     .ThenInclude(p => p!.Images)
                 .Where(fp => fp.CustomerId == customerId)
-                .AsNoTracking()
                 .ToListAsync();
         }
     }
