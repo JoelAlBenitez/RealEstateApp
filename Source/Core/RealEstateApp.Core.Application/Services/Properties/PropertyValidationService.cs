@@ -94,11 +94,6 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 errors.Add(new Error("Propiedad.NoSePuedeEditarVendida", "No se puede editar una propiedad que ya ha sido vendida."));
             }
 
-            if (property.Status == PropertyState.Sold)
-            {
-                errors.Add(new Error("Property.CannotUpdateSold", "No se puede editar una propiedad que ya ha sido vendida."));
-            }
-
             if (dto.Price <= 0)
                 errors.Add(new Error("Propiedad.PrecioInvalido", "El precio de la propiedad debe ser mayor a cero."));
 

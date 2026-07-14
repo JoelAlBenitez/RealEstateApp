@@ -10,6 +10,7 @@ namespace RealEstateApp.Core.Application.Contracts.Properties
         Task<ValidationResult<PropertyDto>> GetByCodeAsync(string code);
         Task<ValidationResult<PropertyDto>> GetByIdWithDetailsAsync(int id);
         Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAvailableByAgentAsync(string agentId);
+        Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetPropertiesByAgentAsync(string agentId, int pageNumber = 1, int pageSize = 10);
         Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAllWithDetailsAsync();
         Task<ValidationResult<PropertyTotalsDto>> GetTotalsByStatusAsync();
         Task<ValidationResult<int>> CountByAgentAsync(string agentId);

@@ -25,6 +25,9 @@ namespace RealEstateApp.Infraestructure.Persistence.Context.Configurations
             builder.Property(m => m.SentAt)
                 .IsRequired();
 
+            builder.Property(m => m.IsFromAgent)
+                .IsRequired();
+
             builder.HasOne(m => m.Property)
                 .WithMany()
                 .HasForeignKey(m => m.PropertyId)

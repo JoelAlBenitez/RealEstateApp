@@ -1,4 +1,4 @@
-﻿namespace RealEstateApp.Core.Application.DTOs.MessageAtC
+namespace RealEstateApp.Core.Application.DTOs.MessageAtC
 {
     public sealed class SaveMessageAtCDto
     {
@@ -8,5 +8,6 @@
         public int PropertyId { get; set; }
         public required string Content { get; set; }
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
+        public bool IsFromAgent { get; set; }
     }
 }

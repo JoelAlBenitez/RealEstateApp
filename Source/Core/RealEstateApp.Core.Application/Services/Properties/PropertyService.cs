@@ -178,6 +178,20 @@ namespace RealEstateApp.Core.Application.Services.Properties
             }
         }
 
+        public async Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetPropertiesByAgentAsync(string agentId, int pageNumber = 1, int pageSize = 10)
+        {
+            try
+            {
+                var properties = await _propertyRepository.GetPropertiesByAgentAsync(agentId, pageNumber, pageSize);
+                var dtos = _mapper.Map<IReadOnlyCollection<PropertyDto>>(properties);
+                return ValidationResult<IReadOnlyCollection<PropertyDto>>.Success(dtos);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<IReadOnlyCollection<PropertyDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
+        }
+
         public async Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAllWithDetailsAsync()
         {
             try
