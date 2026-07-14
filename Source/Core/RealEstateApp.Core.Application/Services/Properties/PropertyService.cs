@@ -16,17 +16,20 @@ namespace RealEstateApp.Core.Application.Services.Properties
         private readonly IPropertyRepository _propertyRepository;
         private readonly IPropertyValidationService _validationService;
         private readonly IFileManager _fileManager;
+        private readonly IPropertyImprovementRepository _propertyImprovementRepository;
 
         public PropertyService(
             IPropertyRepository propertyRepository,
             IPropertyValidationService validationService,
             IMapper mapper,
-            IFileManager fileManager)
+            IFileManager fileManager,
+            IPropertyImprovementRepository propertyImprovementRepository)
             : base(propertyRepository, mapper)
         {
             _propertyRepository = propertyRepository;
             _validationService = validationService;
             _fileManager = fileManager;
+            _propertyImprovementRepository = propertyImprovementRepository;
         }
 
         public override async Task<ValidationResult> AddAsync(SavePropertyDto dto)
@@ -53,6 +56,20 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var property = _mapper.Map<Property>(dto);
                 property.CreateAt = DateTimeOffset.UtcNow;
                 property.UpdateAt = DateTimeOffset.UtcNow;
+
+                var improvements = new List<PropertyImprovement>();
+                if (dto.ImprovementIds != null && dto.ImprovementIds.Any())
+                {
+                    foreach (var improvementId in dto.ImprovementIds)
+                    {
+                        improvements.Add(new PropertyImprovement
+                        {
+                            PropertyId = property.Id,
+                            ImprovementId = improvementId
+                        });
+                    }
+                }
+                property.PropertyImprovements = improvements;
 
                 var images = new List<PropertyImage>();
                 if (dto.ImageFiles != null && dto.ImageFiles.Any())
@@ -279,7 +296,29 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 property.Size = dto.Size;
                 property.Bedrooms = dto.Bedrooms;
                 property.Bathrooms = dto.Bathrooms;
+                property.PropertyTypeId = dto.PropertyTypeId;
+                property.SaleTypeId = dto.SaleTypeId;
                 property.UpdateAt = DateTimeOffset.UtcNow;
+
+                var currentImprovements = property.PropertyImprovements?.ToList() ?? new List<PropertyImprovement>();
+                var toRemove = currentImprovements
+                    .Where(pi => !dto.ImprovementIds.Contains(pi.ImprovementId))
+                    .ToList();
+                foreach (var relation in toRemove)
+                {
+                    await _propertyImprovementRepository.DeleteAsync(relation);
+                }
+
+                var currentIds = currentImprovements.Select(pi => pi.ImprovementId).ToList();
+                var toAdd = dto.ImprovementIds.Except(currentIds);
+                foreach (var improvementId in toAdd)
+                {
+                    await _propertyImprovementRepository.AddAsync(new PropertyImprovement
+                    {
+                        PropertyId = property.Id,
+                        ImprovementId = improvementId
+                    });
+                }
 
                 var currentImages = property.Images.ToList();
                 var urlsToKeep = dto.ExistingImageUrls ?? new List<string>();

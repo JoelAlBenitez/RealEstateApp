@@ -125,6 +125,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         {
             return await _context.Properties
                 .Include(p => p.Images)
+                .Include(p => p.PropertyImprovements)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 

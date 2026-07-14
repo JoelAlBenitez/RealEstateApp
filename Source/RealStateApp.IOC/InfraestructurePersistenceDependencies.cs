@@ -8,6 +8,7 @@ using RealEstateApp.Infraestructure.Persistence.Repositories.Properties;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Offers;
 using RealEstateApp.Infraestructure.Persistence.Repositories.FavoriteProperties;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Messages;
+using RealEstateApp.Infraestructure.Persistence.Repositories.PropertyImprovements;
 
 namespace RealStateApp.IOC
 {
@@ -23,6 +24,7 @@ namespace RealStateApp.IOC
             services.AddScoped<IOfferRepository, OfferRepository>();
             services.AddScoped<IFavoritePropertyRepository, FavoritePropertyRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IPropertyImprovementRepository, PropertyImprovementRepository>();
 
             return services;
         }
