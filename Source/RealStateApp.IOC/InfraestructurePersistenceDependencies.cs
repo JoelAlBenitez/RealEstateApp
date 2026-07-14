@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RealEstateApp.Core.Domain.Interfaces.GenericRepository;
-using RealEstateApp.Infraestructure.Persistence.Repositories.Generic;
+
 
 namespace RealStateApp.IOC
 {
@@ -11,7 +10,7 @@ namespace RealStateApp.IOC
             this IServiceCollection services, IConfiguration configuration)
         {
 
-            services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
+            //services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 
             ///
 

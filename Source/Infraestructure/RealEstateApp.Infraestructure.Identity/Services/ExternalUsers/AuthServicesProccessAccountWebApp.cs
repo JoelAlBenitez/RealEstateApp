@@ -211,7 +211,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
 
                 response.HasError = true;
                 response.Errors.Add("Inexistencia de cuenta, Este usuario  no se encuentra asociada a ninguna cuenta," +
-                    " favor registrese y disfrute de Link Up.");
+                    " favor registrese y disfrute de Real Estate App.");
                 return response;
             }
             if (resetPasswordDto.NewPassword != resetPasswordDto.ConfirmNewPassword)

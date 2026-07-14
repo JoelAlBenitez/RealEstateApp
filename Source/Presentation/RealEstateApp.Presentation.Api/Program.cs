@@ -30,12 +30,12 @@ builder.Services.AddDependenciesCommon();
 builder.Services.AddDependenciesWebApi();
 
 builder.Services.AddScoped<IUserSession, UserSession>();
-builder.Services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 //.....
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(); // quitar esta confiracion mas adelante cuando se trabaje con la Api
 builder.Services.AddHealthChecks();
-
 
 //builder.Services.AddAppiVersioningExtension();
 //builder.Services.AddSwaggerExtension();
@@ -54,12 +54,20 @@ await app.Services.GenerateDataSeedUsers();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Mi API V1");
+    options.RoutePrefix = string.Empty;
+});
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 app.UseHealthChecks("/health");
 
 app.MapControllers();
