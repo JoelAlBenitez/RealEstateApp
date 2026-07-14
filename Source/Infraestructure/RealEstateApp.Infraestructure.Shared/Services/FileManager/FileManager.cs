@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Org.BouncyCastle.Crypto;
 using RealEstateApp.Core.Application.Contracts.FileManager;
 using RealEstateApp.Core.Application.DTOs.FileManager;
 
@@ -6,28 +7,108 @@ namespace RealEstateApp.Infraestructure.Shared.Services.FileManager
 {
     public sealed class FileManager : IFileManager
     {
-        //por impletar metodos de almacenamientos de imagenes en el wwwroot / agregar
-        //metodo de extraccion de Ids pertinentes y folder para facilitar la eliminacion de las imagenes al
-        //momentpo de fallos de creacion del registro en la bd o eliminaciones por solicitud del usuario
+
 
         public Task<bool> DeleteAsync(string folderName, string Id)
         {
-            throw new NotImplementedException();
+            string basePath = $"Img/{folderName}/{Id}";
+            string path = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/{basePath}");
+            if (Directory.Exists(path))
+            {
+
+                Directory.Delete(path, true);
+                return Task.FromResult(true);
+            }
+            return Task.FromResult(false);
         }
+        
 
         public Task<bool> DeleteManyAsync(IEnumerable<string> Ids, string folderName)
         {
-            throw new NotImplementedException();
+            bool deletedAny = false;
+
+            foreach (var id in Ids)
+            {
+                string path = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    "Img",
+                    folderName,
+                    id);
+
+                if (Directory.Exists(path))
+                {
+                    Directory.Delete(path, true);
+                    deletedAny = true;
+                }
+            }
+
+            return Task.FromResult(deletedAny);
+
         }
 
-        public Task<string?> SaveAsync(IFormFile fileManager, string folderName, string Id)
+        public async Task<string> SaveAsync(IFormFile fileManager, string folderName, string Id)
         {
-            throw new NotImplementedException();
+            string basePath = $"Img/{folderName}/{Id}";
+            string path = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/{basePath}");
+
+            if (fileManager == null) return string.Empty;
+            if (fileManager.Length > 5 * 1024 * 1024) return string.Empty;
+
+            //extension permitidas
+            var extension = Path.GetExtension(fileManager.FileName).ToLowerInvariant();
+            var allowExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var allowdTypes = new[] { "image/jpg", "image/jpeg", "image/png", "image/webp" };
+            if (!allowExtensions.Contains(extension) || !allowdTypes.Contains(fileManager.ContentType)) return string.Empty;
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+
+            //ruta completa creada y lectura de la imagen pertinente
+
+            FileInfo fileInfo = new(fileManager.FileName);
+            string fileName = Id + fileInfo.Extension;
+            var fullFilePath = Path.Combine(path, fileName);
+            await using (var stream = new FileStream(fullFilePath, FileMode.Create))
+            {
+                await fileManager.CopyToAsync(stream);
+
+            }
+           
+            return $"{basePath}/{fileName}";
         }
 
-        public Task<FileManagersMultipleFiles> SaveManyAsync(IEnumerable<IFormFile> files, string folderName)
+        public async Task<FileManagersMultipleFiles> SaveManyAsync(IEnumerable<IFormFile> files, string folderName)
         {
-            throw new NotImplementedException();
+            List<string> urls = [];
+            List<string> ids = [];
+            int count = 0;
+            foreach (var file in files)
+            {
+                string id = Guid.NewGuid().ToString();
+                string url = await SaveAsync(file, folderName, id);
+     
+                if (string.IsNullOrWhiteSpace(url))
+                {
+                    count++;
+                    // Eliminar las imágenes que ya se habían guardado
+                   await DeleteManyAsync(ids, folderName);
+
+                    return new FileManagersMultipleFiles
+                    {
+                        Files = urls,
+                        NumberFailed = count
+                    };
+                }
+
+                ids.Add(id);
+                urls.Add(url);
+            }
+
+            return new FileManagersMultipleFiles
+            {
+                Files = urls,
+                NumberFailed = count
+            };
         }
     }
 }

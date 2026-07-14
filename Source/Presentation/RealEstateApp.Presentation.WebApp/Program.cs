@@ -5,7 +5,17 @@ using RealStateApp.IOC;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+#region manager session
+builder.Services.AddSession(opt =>
+{
+    opt.Cookie.HttpOnly = true;
+    opt.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    opt.Cookie.SameSite = SameSiteMode.Lax;
+    opt.IOTimeout = TimeSpan.FromSeconds(60);
+    opt.IdleTimeout = TimeSpan.FromMinutes(30);
+});
+#endregion
+
 
 #region composition root
 builder.Services.AddControllersWithViews();
@@ -15,30 +25,31 @@ builder.Services.AddInfraestructrueShared(builder.Configuration);
 builder.Services.AddWebAppServicesIdentity(builder.Configuration);
 builder.Services.AddDependenciesCommon();
 builder.Services.AddDependenciesWebApp();
+
 builder.Services.AddScoped<IUserSession,UserSession>();
-builder.Services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-
+builder.Services.AddSession();
 #endregion
+
 var app = builder.Build();
 await app.Services.GenerateDataSeedUsers();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 app.MapStaticAssets();
 
-app.MapControllerRoute(
+
+app.MapControllerRoute( //cambiar page default
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
