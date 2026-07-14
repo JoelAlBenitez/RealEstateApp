@@ -10,17 +10,31 @@ using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Entities;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
+using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
+using RealEstateApp.Core.Domain.Common.Enums;
 
 namespace RealEstateApp.Core.Application.Services.PropertyType
 {
     public sealed class PropertyTypeService : GenericServices<SavePropertyTypeDto, RealEstateApp.Core.Domain.Entities.PropertyType, int>, IPropertyTypeService
     {
         private readonly IPropertyTypeRepository _propertyTypeRepository;
+        private readonly IUserSession _userSession;
 
-        public PropertyTypeService(IPropertyTypeRepository propertyTypeRepository, IMapper mapper)
+        public PropertyTypeService(IPropertyTypeRepository propertyTypeRepository, IMapper mapper, IUserSession userSession)
             : base(propertyTypeRepository, mapper)
         {
             _propertyTypeRepository = propertyTypeRepository;
+            _userSession = userSession;
+        }
+
+        private ValidationResult? ValidateAdminRole()
+        {
+            var roles = _userSession.GetRolesCurrentUser();
+            if (roles == null || !roles.Contains(Roles.Administrador.ToString()))
+            {
+                return ValidationResult.Failure(new Error("Forbidden", "No tiene permisos para realizar esta acción."));
+            }
+            return null;
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<PropertyTypeDto>>> GetAllWithCountAsync()
@@ -52,6 +66,9 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
 
         public override async Task<ValidationResult> AddAsync(SavePropertyTypeDto dto)
         {
+            var roleCheck = ValidateAdminRole();
+            if (roleCheck != null) return roleCheck;
+
             // Validación de negocio del documento funcional: nombre requerido, sin
             // espacios en blanco, y único (no registrado previamente)
             var trimmedName = dto.Name?.Trim() ?? string.Empty;
@@ -74,6 +91,9 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
 
         public override async Task<ValidationResult?> UpdateAsync(SavePropertyTypeDto dto)
         {
+            var roleCheck = ValidateAdminRole();
+            if (roleCheck != null) return roleCheck;
+
             var trimmedName = dto.Name?.Trim() ?? string.Empty;
             if (string.IsNullOrEmpty(trimmedName))
             {
