@@ -33,14 +33,13 @@ namespace RealEstateApp.Core.Application.Services.Generic
                 if(result > 0)
                     return ValidationResult.Success();
 
-                _errors.Add(new Error("Oops",
-                    "Ocurrio un error al procesar la solicitud. Favor intentelo de nuevo mas tarde."));
-                return ValidationResult.Failure(_errors); 
+                _errors.Add(new Error("Error",
+                    "Ocurrió un error al procesar la solicitud. Intente nuevamente más tarde."));
+                return ValidationResult.Failure(_errors);
             }
             catch (Exception) {
-                _errors.Add(new Error("Oops",
-                       "Al parecer esta funcion no esta disponible en este momento." +
-                       " Favor intente de muevo mas tarde."));
+                _errors.Add(new Error("Error",
+                       "Esta función no se encuentra disponible en este momento. Intente nuevamente más tarde."));
                 return ValidationResult.Failure(_errors);
             }
         }
@@ -55,9 +54,8 @@ namespace RealEstateApp.Core.Application.Services.Generic
             }
             catch (Exception) {
 
-                _errors.Add(new Error("Oops",
-                   "Al parecer esta funcion no esta disponible en este momento." +
-                   " Favor intente de muevo mas tarde."));
+                _errors.Add(new Error("Error",
+                   "Esta función no se encuentra disponible en este momento. Intente nuevamente más tarde."));
                 return ValidationResult<IReadOnlyCollection<TDtoModel>>.Failure(_errors);
             }
         }
@@ -72,9 +70,8 @@ namespace RealEstateApp.Core.Application.Services.Generic
             }
             catch (Exception) {
 
-                _errors.Add(new Error("Oops",
-                    "Al parecer esta opcion no se encuentra disponible en este momento," +
-                    " intente de nuevo mas tarde"));
+                _errors.Add(new Error("Error",
+                    "Esta opción no se encuentra disponible en este momento. Intente nuevamente más tarde."));
                 return ValidationResult<TDtoModel>.Failure(_errors);
             }
         }
@@ -86,27 +83,25 @@ namespace RealEstateApp.Core.Application.Services.Generic
                 var entity = await _genericRepository.GetByIdAsync(id);
                 if(entity == null)
                 {
-                    _errors.Add(new Error("Oops",
-                        "Al parecer el elemento seleccionado ya no se encuentra disponible," +
-                        " favor verificar e intente de nuevo."
+                    _errors.Add(new Error("Error",
+                        "El elemento seleccionado ya no se encuentra disponible. Verifique e intente de nuevo."
                         ));
                     return ValidationResult.Failure(_errors);
                 }
                 var resut = await _genericRepository.DeleteAsync(entity);
                 if (!resut)
                 {
-                    _errors.Add(new Error("Oops",
-                        "Ocurrió un error al eliminar el elemento. Inténtalo de nuevo más tarde."));
+                    _errors.Add(new Error("Error",
+                        "Ocurrió un error al eliminar el elemento. Intente nuevamente más tarde."));
                     return ValidationResult.Failure(_errors);
                 }
 
                 return ValidationResult.Success();
             }
-            catch (Exception) { 
-                
-                _errors.Add(new Error("Oops", 
-                    "Al parecer esta funcion no esta disponible en este momento." +
-                    " Favor intente de muevo mas tarde."));
+            catch (Exception) {
+
+                _errors.Add(new Error("Error",
+                    "Esta función no se encuentra disponible en este momento. Intente nuevamente más tarde."));
                 return ValidationResult.Failure(_errors);
             }
         }
@@ -119,8 +114,8 @@ namespace RealEstateApp.Core.Application.Services.Generic
                 var result = await _genericRepository.UpdateAsync(mapEntity);
                 if (!result)
                 {
-                    _errors.Add(new Error("Oops",
-                        "Ocurrió un error al eliminar el elemento. Inténtalo de nuevo más tarde."));
+                    _errors.Add(new Error("Error",
+                        "Ocurrió un error al actualizar el elemento. Intente nuevamente más tarde."));
                     return ValidationResult.Failure(_errors);
                 }
 
@@ -129,9 +124,8 @@ namespace RealEstateApp.Core.Application.Services.Generic
             }
             catch (Exception)
             {
-                _errors.Add(new Error("Oops",
-                   "Al parecer esta funcion no esta disponible en este momento." +
-                   " Favor intente de muevo mas tarde."));
+                _errors.Add(new Error("Error",
+                   "Esta función no se encuentra disponible en este momento. Intente nuevamente más tarde."));
                 return ValidationResult.Failure(_errors);
 
             }

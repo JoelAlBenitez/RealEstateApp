@@ -46,14 +46,14 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             if (user == null) { 
                
                 response.HasError = true;
-                response.Errors.Add("Oops, Al parecer su usuario no se encuentra habilitado para realizar esta operacion");
+                response.Errors.Add("Su usuario no se encuentra habilitado para realizar esta operación.");
                 return response;
             }
             var rolesCurrentUser = await _userManager.GetRolesAsync(user);
             if (!rolesCurrentUser.Contains(Roles.Administrador.ToString()))
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, Al parecer no cuenta con los privilegios necesarios para realizar esta operacion.");
+                response.Errors.Add("No cuenta con los privilegios necesarios para realizar esta operación.");
                 return response;
             }
             var validate = await _servicesValidateUsers.CreateInternalValidateUserAsync(register, response);
@@ -77,7 +77,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             if (!create.Succeeded)
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, Al parecer la solicitud no pudo ser procesada favor intente de nuevo mas tarde.");
+                response.Errors.Add("La solicitud no pudo ser procesada. Intente nuevamente más tarde.");
                 return response;
             }
             var rol = register.TypeUser == (int)Roles.Desarrollador
@@ -103,7 +103,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             if(user == null)
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, Al parecer a ocurrido un error al seleccionar el uusario.");
+                response.Errors.Add("Ha ocurrido un error al seleccionar el usuario.");
                 return response;
             }
             user.Email = edit.Email;
@@ -116,7 +116,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
                 if (!changePassword.Succeeded)
                 {
                     response.HasError = true;
-                    response.Errors.Add("Oops, Al parecer a ocurrido un error inesperado al editar el usuario");
+                    response.Errors.Add("Ha ocurrido un error inesperado al editar el usuario.");
                     return response;
                 }
                 return response;
@@ -126,7 +126,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             if (!update.Succeeded)
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, Al parecer a ocurrido un error inesperado al editar el usuario");
+                response.Errors.Add("Ha ocurrido un error inesperado al editar el usuario.");
                 return response;
             }
 

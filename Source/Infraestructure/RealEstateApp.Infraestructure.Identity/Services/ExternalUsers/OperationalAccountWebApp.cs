@@ -79,25 +79,23 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
             if (!create.Succeeded)
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, al parecer a ocurrido un error al procesar la solucitud favor intente de lo de nuevo mas tarde.");
+                response.Errors.Add("No fue posible completar el registro. Intente nuevamente más tarde.");
                 return response;
             }
 
             var verifiyTokens = await _generateTokens.GenerateTokenConfirmEmail(user, registerUserDto.Origin);
             var sendEmail = await _emailService.SendEmailAsync(new MessageDto
             {
-                Subject = "Real State App",
+                Subject = "RealEstateApp",
                 To =user.Email,
-                Body = $"<p>¡Bienvenido a <strong>RealStateApp</strong>!</p>" +
+                Body = $"<p>¡Bienvenido a <strong>RealEstateApp</strong>!</p>" +
                 $"<p><a href='{verifiyTokens}'>Haz clic aquí para confirmar tu cuenta.</a></p>"
             });
 
             if (!sendEmail)
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, " +
-                    "Al parecer el correo de confirmacion no puede ser enviado, " +
-                    "favor intente de nuevo mas tarde.");
+                response.Errors.Add("No fue posible enviar el correo de confirmación. Intente nuevamente más tarde.");
                 return response;
             }
 
@@ -125,7 +123,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                 if (existUser == null)
                 {
                     response.HasError = true;
-                    response.Errors.Add("Oops, la solicutd no pudo se procesada favor intentelo de nuevo mas tarde.");
+                    response.Errors.Add("La solicitud no pudo ser procesada. Intente nuevamente más tarde.");
                     return response;
                 }
 
@@ -147,7 +145,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                 {
                     await transaction.RollbackAsync();
                     response.HasError = true;
-                    response.Errors.Add("Su perfil no pudo ser modificado, favor intente de nuevo mas tarde.");
+                    response.Errors.Add("Su perfil no pudo ser modificado. Intente nuevamente más tarde.");
                     return response;
                 }
 
@@ -161,7 +159,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
             {
 
                 response.HasError = true;
-                response.Errors.Add("Oops, A ocurrido un error inesperado al procesar la solicitud, fsavor intente de nuevo mas tarde");
+                response.Errors.Add("Ha ocurrido un error inesperado al procesar la solicitud. Intente nuevamente más tarde.");
                 return response;
             }
 
@@ -263,7 +261,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                 return true;
 
             response.HasError = true;
-            response.Errors.Add("La imagen no pudo ser procesada, favor intente de nuevo mas tarde");
+            response.Errors.Add("La imagen no pudo ser procesada. Intente nuevamente más tarde.");
 
             await contextTransaction.RollbackAsync();
             return false;

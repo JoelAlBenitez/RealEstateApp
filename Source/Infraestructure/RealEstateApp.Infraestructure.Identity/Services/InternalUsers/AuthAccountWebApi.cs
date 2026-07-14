@@ -63,7 +63,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
 
             }
             response.HasError = true;
-            response.Errors.Add("Las credenciales ingresadas son invalidas favor intente de nuevo.");
+            response.Errors.Add("Los datos de acceso son inválidos.");
             return response;
         }
 
@@ -75,25 +75,22 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             if (string.IsNullOrWhiteSpace(dto.Password) || string.IsNullOrWhiteSpace(dto.EmailOrNameUser))
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, Los datos de acceso son inválidos.");
+                response.Errors.Add("Los datos de acceso son inválidos.");
                 return response;
             }
             if (!user.EmailConfirmed && !user.IsActive)
             {
                 response.HasError = true;
-                response.Errors.Add("Su cuenta se encuentra inactiva." +
-                    "Pongase en contacto con un administrador.");
+                response.Errors.Add("El usuario se encuentra inactivo y no puede autenticarse.");
                 return response;
             }
             var rolesUser = await _userManager.GetRolesAsync(user);
-            if (rolesUser.Contains(Roles.Desarrollador.ToString()) 
-                || rolesUser.Contains(Roles.Agente.ToString())
+            if (rolesUser.Contains(Roles.Agente.ToString())
                 || rolesUser.Contains(Roles.Cliente.ToString())
                 )
             {
                 response.HasError = true;
-                response.Errors.Add("No posee permisos para ingresar a este modulo." +
-                    " Póngase en contacto con un administrador.");
+                response.Errors.Add("El usuario no tiene permisos para acceder a esta API.");
                 return response;
             }
 
@@ -103,13 +100,12 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
                 response.HasError = true;
                 if (verifyUser.IsLockedOut)
                 {
-                    response.Errors.Add("Su cuenta se encuentra bloqueada por multiples intentos repetidos fallidos." +
-                        " Favor intente nuevamente dentro de 15 minutos o contacte con un administrador.");
+                    response.Errors.Add("Su cuenta se encuentra bloqueada por múltiples intentos fallidos. Intente nuevamente en 15 minutos o contacte con un administrador.");
                     return response;
                 }
                 else
                 {
-                    response.Errors.Add("El nombre de usuario o la contraseña son incorrectos.");
+                    response.Errors.Add("Los datos de acceso son inválidos.");
                     return response;
                 }
             }

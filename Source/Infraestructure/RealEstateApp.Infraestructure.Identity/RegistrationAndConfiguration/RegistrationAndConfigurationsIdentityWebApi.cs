@@ -90,9 +90,11 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
                     OnAuthenticationFailed = af =>
                     {
                         af.NoResult();
-                        af.Response.StatusCode = 500;
-                        af.Response.ContentType = "text/plain";
-                        return af.Response.WriteAsync(af.Exception.Message.ToString());
+                        af.Response.StatusCode = 401;
+                        af.Response.ContentType = "application/json";
+                        var result = JsonConvert.SerializeObject(new JwtResponseDto
+                        { HasError = true, Errors = "No tiene autorización para acceder a este recurso." });
+                        return af.Response.WriteAsync(result);
                     },
                     OnChallenge = c =>
                     {
@@ -100,7 +102,7 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
                         c.Response.StatusCode = 401;
                         c.Response.ContentType = "application/json";
                         var result = JsonConvert.SerializeObject(new JwtResponseDto
-                        { HasError = true, Errors = "No tienes autorizacion para acceder a este elemento" });
+                        { HasError = true, Errors = "No tiene autorización para acceder a este recurso." });
                         return c.Response.WriteAsync(result);
                     },
                     OnForbidden = c =>
@@ -108,7 +110,7 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
                         c.Response.StatusCode = 403;
                         c.Response.ContentType = "application/json";
                         var result = JsonConvert.SerializeObject(new JwtResponseDto
-                        { HasError = true, Errors = "No tienes autorizacion para acceder a este recurso." });
+                        { HasError = true, Errors = "No tiene permisos para acceder a este recurso." });
                         return c.Response.WriteAsync(result);
                     }
                 };

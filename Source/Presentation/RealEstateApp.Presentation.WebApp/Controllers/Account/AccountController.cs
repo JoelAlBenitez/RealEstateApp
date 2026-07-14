@@ -106,7 +106,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
         //access deniged
         public async Task<IActionResult> AccessDeniged()
         {
-            TempData["Message"] = "No tiene permisos ni priviligios para acceder a estas funciones, favor autentifiquese y continue";
+            TempData["Message"] = "No tiene permisos para acceder a esta sección.";
             await _operationalAccountWebApp.SignOutAsync();
             return RedirectToAction(nameof(Login));
         }
@@ -131,20 +131,25 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
             {
                 vm.Password = "";
                 vm.ConfirmPassword = "";
-                ModelState.AddModelError("", "Rellene correctamente todos los campos requeridos");
+                ModelState.AddModelError("", "Debe completar todos los campos requeridos.");
                 return View(vm);
             }
             var file = await _fileManager.SaveAsync(vm.ProfileImg, "Users", Guid.NewGuid().ToString());
             var map = _mapper.Map<RegisterExternalUsersDto>(vm);
             map.ProfileImg = file;
             var result = await _operationalAccountWebApp.CreateExternalAsync(map);
-            if(result != null & result!.HasError)
-            { 
+            if(result != null && result.HasError)
+            {
+                vm.Password = "";
+                vm.ConfirmPassword = "";
                 foreach (var error in result.Errors) {
                     ModelState.AddModelError("Error", error);
                 }
+                return View(vm);
             }
-            TempData["Message"] = "Su cuenta fue creada con exito, favor inicie sesion y disfrute de Real Estate App";
+            TempData["Message"] = vm.TypeUser == (int)Roles.Cliente
+                ? "Su cuenta ha sido creada correctamente. Revise su correo electrónico para activar su usuario."
+                : "Su cuenta de agente ha sido creada correctamente. Un administrador debe activar su usuario antes de que pueda iniciar sesión.";
             return RedirectToAction(nameof(Login));
         }
 
@@ -154,20 +159,20 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
         {
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Favor rellene todos los campos pertinentes del formulario.");
+                ModelState.AddModelError("", "Debe completar todos los campos requeridos.");
                 return View(vm);
             }
             var map = _mapper.Map<ResendActivationEmailDto>(vm);
             var result = await _authProcesssAccountWebApp.ResendActivationEmailAsync(map);
             map.Origin = Request?.Headers?.Origin.ToString() ?? string.Empty;
-            if (result != null & result!.HasError)
+            if (result != null && result.HasError)
             {
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("Error", error);
                 }
             }
-            TempData["Message"] = "Si la cuenta existe y posee un correo valido, recibiria un correo de confirmación. Favor revise su bandeja de entrada.";
+            TempData["Message"] = "Si la cuenta existe y posee un correo válido, recibirá un correo de confirmación. Revise su bandeja de entrada.";
             return RedirectToAction(nameof(Login));
         }
 
@@ -177,7 +182,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
         {
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Favor rellene todos los campos pertinentes del formulario.");
+                ModelState.AddModelError("", "Debe completar todos los campos requeridos.");
                 return View(vm);
             }
             var map = _mapper.Map<ForgoutPasswordDto>(vm);
@@ -191,8 +196,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
                     return View(vm);
                 }
             }
-            TempData["Message"] = "Si la cuenta existe y posee un correo valido, " +
-                "recibiria un correo de restablecimiento de contraseña. Favor revise su bandeja de entrada.";
+            TempData["Message"] = "Si la cuenta existe y posee un correo válido, recibirá un correo de restablecimiento de contraseña. Revise su bandeja de entrada.";
 
             return RedirectToAction(nameof(Login));
         }
@@ -203,7 +207,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
         {
          if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Favor rellene todos los campos pertinentes del formulario.");
+                ModelState.AddModelError("", "Debe completar todos los campos requeridos.");
                 return View(vm);
             }
          var map = _mapper.Map<ResetPasswordDto>(vm);
@@ -216,7 +220,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
                     return View(vm);
                 }
             }
-            TempData["Message"] = "Contraseña cambiado con exito, favor autentifiquese y continue.";
+            TempData["Message"] = "Su contraseña fue cambiada correctamente. Inicie sesión y continúe.";
             return RedirectToAction(nameof(Login));
         }
 
@@ -227,16 +231,17 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
             if (!ModelState.IsValid)
             {
                 vm.Password = "";
-                ModelState.AddModelError("", "Favor rellene todos los campos del formulario.");
+                ModelState.AddModelError("", "Debe ingresar su correo o nombre de usuario y contraseña.");
                 return View(vm);
             }
             var dto = _mapper.Map<LoginDto>(vm);
             var result = await _authProcesssAccountWebApp.LoginUser(dto);
             if (result != null && result.HasError)
             {
+                vm.Password = "";
                 foreach (var item in result.Errors)
                 {
-                    ModelState.AddModelError("Validaciones del usuario", item);
+                    ModelState.AddModelError("", item);
                 }
                 return View(vm);
             }
@@ -248,8 +253,8 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
             else if (result!.Roles.Contains(Roles.Administrador.ToString()))
                 return RedirectToRoute(new { controller = "Admin", action = "Index" });
             vm.Password = "";
-            ModelState.AddModelError("Oops", "Al parecer al ocurrido un error inesperado.");
-            return RedirectToAction(nameof(Login));
+            ModelState.AddModelError("", "Ha ocurrido un error inesperado.");
+            return View(vm);
             #endregion
 
         }
