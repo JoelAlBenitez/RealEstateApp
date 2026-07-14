@@ -11,4 +11,10 @@
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\RealEstateApp.Core.Application\RealEstateApp.Core.Application.csproj" />
+    <ProjectReference Include="..\..\Infraestructure\RealEstateApp.Infraestructure.Identity\RealEstateApp.Infraestructure.Identity.csproj" />
+    <ProjectReference Include="..\..\RealStateApp.IOC\RealStateApp.IOC.csproj" />
+  </ItemGroup>
+
 </Project>

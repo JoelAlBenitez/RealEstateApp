@@ -11,8 +11,29 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.17" />
   </ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Asp.Versioning.Http" Version="8.1.0" />
+		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.17" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.17" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.17">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="9.0.6" />
+		<PackageReference Include="System.Text.Json" Version="9.0.17" />
+		
+	</ItemGroup>
+	
+	
   <ItemGroup>
     <Folder Include="Controllers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Infraestructure\RealEstateApp.Infraestructure.Identity\RealEstateApp.Infraestructure.Identity.csproj" />
+    <ProjectReference Include="..\..\RealStateApp.IOC\RealStateApp.IOC.csproj" />
   </ItemGroup>
 
 </Project>

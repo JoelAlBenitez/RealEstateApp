@@ -6,7 +6,6 @@ using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Domain.Settings.JWT;
 using RealEstateApp.Infraestructure.Identity.Context;
 using RealEstateApp.Infraestructure.Identity.Entities;
-using RealEstateApp.Infraestructure.Identity.Services.InternalUsers;
 using Newtonsoft.Json;
 using System.Text;
 using RealEstateApp.Core.Application.DTOs.Users.Auth;
