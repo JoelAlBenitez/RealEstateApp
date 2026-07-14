@@ -85,7 +85,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
                 : Roles.Administrador.ToString();
             var list = new List<string>();
             list.Add(rol);
-            var roles = await _userManager.AddToRolesAsync(user,list);
+            var roles = await _userManager.AddToRolesAsync(userC,list);
             return response;
         }
 
@@ -99,28 +99,20 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             var validate = await _servicesValidateUsers
                 .UpdateInternalValidateUserAsync(edit, response);
             if (validate != null && validate.HasError) return validate;
-            var existUser = await _userManager.FindByIdAsync(edit.Id);
-            if(existUser == null)
+            var user = await _userManager.FindByIdAsync(edit.Id);
+            if(user == null)
             {
                 response.HasError = true;
                 response.Errors.Add("Oops, Al parecer a ocurrido un error al seleccionar el uusario.");
                 return response;
             }
-            var user = new AppUsers
-            {
-                CreateAt = DateTimeOffset.UtcNow,
-                Name = edit.Name,
-                LastName = edit.LastName,
-                UserName = edit.UserName,
-                IDCard = edit.IdCard,
-                BlockedEmailSending = null,
-                Email = edit.Email,
-                IsActive = true,
-                ProfileImg = "NA"
-            };
-
+            user.Email = edit.Email;
+            user.IDCard = edit.IdCard;
+            user.Name = edit.Name;
+            user.UserName = edit.UserName;
+            user.LastName = edit.LastName;
             if (!string.IsNullOrWhiteSpace(edit.NewPassword)) {
-                var changePassword = await _userManager.ChangePasswordAsync(user, existUser.PasswordHash!,edit.NewPassword);
+                var changePassword = await _userManager.ChangePasswordAsync(user, user.PasswordHash!,edit.NewPassword);
                 if (!changePassword.Succeeded)
                 {
                     response.HasError = true;

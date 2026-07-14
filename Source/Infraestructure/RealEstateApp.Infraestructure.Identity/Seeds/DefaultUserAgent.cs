@@ -24,7 +24,7 @@ namespace RealEstateApp.Infraestructure.Identity.Seeds
 
             };
 
-            if(userManager.Users.Any(u => u.Id == user.Id))
+            if(!userManager.Users.Any(u => u.Id == user.Id))
             {
                 var en = await userManager.FindByEmailAsync(user.Email);
                 if(en == null)

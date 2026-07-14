@@ -23,7 +23,7 @@ namespace RealEstateApp.Infraestructure.Identity.Seeds
                 CreateAt = DateTimeOffset.UtcNow
             };
 
-            if(userManager.Users.Any(u => u.Id == users.Id))
+            if(!userManager.Users.Any(u => u.Id == users.Id))
             {
                 var en = await userManager.FindByEmailAsync(users.Email);
                 if(en == null)

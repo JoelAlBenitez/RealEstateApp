@@ -34,17 +34,17 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
         }
 
         #region Load Views
-        public IActionResult Login(bool expire = false)
+        public IActionResult Login(bool expired = false)
         {
             #region redirection home
             if (User.IsInRole(Roles.Agente.ToString()))
-                return RedirectToRoute(new { controller = "Home", action = "Index" });
+                return RedirectToRoute(new { controller = "Agent", action = "Index" });
             else if(User.IsInRole(Roles.Cliente.ToString()))
-                return RedirectToRoute(new {controller = "Home", action = "Index"});
+                return RedirectToRoute(new {controller = "Customer", action = "Index"});
             else if (User.IsInRole(Roles.Administrador.ToString()))
-                return RedirectToRoute(new {controller = "Home", action = "Index"});
+                return RedirectToRoute(new {controller = "Admin", action = "Index"});
             #endregion
-            if (expire)
+            if (expired)
                 TempData["Message"] = "Su sesión finalizó por inactividad. Inicie sesión nuevamente para continuar.";
 
             return View(new LoginUserViewModel
@@ -241,12 +241,12 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
                 return View(vm);
             }
             #region redirection home
-            if (User.IsInRole(Roles.Agente.ToString()))
-                return RedirectToRoute(new { controller = "Home", action = "Index" });
-            else if (User.IsInRole(Roles.Cliente.ToString()))
-                return RedirectToRoute(new { controller = "Home", action = "Index" });
-            else if (User.IsInRole(Roles.Administrador.ToString()))
-                return RedirectToRoute(new { controller = "Home", action = "Index" });
+            if (result!.Roles.Contains((Roles.Agente.ToString())))
+                return RedirectToRoute(new { controller = "Agent", action = "Index" });
+            else if (result!.Roles.Contains(Roles.Cliente.ToString()))
+                return RedirectToRoute(new { controller = "Customer", action = "Index" });
+            else if (result!.Roles.Contains(Roles.Administrador.ToString()))
+                return RedirectToRoute(new { controller = "Admin", action = "Index" });
             vm.Password = "";
             ModelState.AddModelError("Oops", "Al parecer al ocurrido un error inesperado.");
             return RedirectToAction(nameof(Login));

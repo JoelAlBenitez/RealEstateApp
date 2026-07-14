@@ -58,7 +58,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Validate
                     " si la misma tiene un formato valido (JPG, PNG, JPEG) y no mauor a 5 mb ");
 
             if (externalUsersDto.TypeUser != (int)Roles.Agente
-                || externalUsersDto.TypeUser != (int)Roles.Cliente)
+                && externalUsersDto.TypeUser != (int)Roles.Cliente)
                 response.Errors.Add("El tipo de usuario especificado no es valido");
 
             if (!Regex.IsMatch(externalUsersDto.PhoneNumber, "^(809|829|849)-\\d{3}-\\d{4}$"))
@@ -85,7 +85,8 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Validate
                 response.Errors.Add("El email ingresado ya se encuentra asociado, favor prueve con otro correo");
                 return response;
             }
-            if (exitsEmail!.UserName == externalUsersDto.NameUser)
+            var exitsByUserName = await _userManager.FindByNameAsync(externalUsersDto.NameUser);
+            if (exitsByUserName != null)
             {
                 response.HasError = true;
                 response.Errors.Add("El nombre de usuario ingresado ya se encuentra ocupado, favor intente de nuevo mas tarde");

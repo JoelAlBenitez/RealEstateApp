@@ -114,7 +114,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Base
 
             var id = _userSession.GetIdCurrentUser();
             var existUser = await _userManager.FindByIdAsync(id);
-            if (existUser == null || existUser.IsActive)
+            if (existUser == null || !existUser.IsActive)
             {
                 response.HasError = true;
                 response.Errors.Add("Oops, Al parecer su usuario no cuenta con los priviligios para realizar esta operacion," +
