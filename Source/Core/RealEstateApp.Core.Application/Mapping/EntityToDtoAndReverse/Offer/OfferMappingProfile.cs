@@ -4,9 +4,9 @@ using RealEstateApp.Core.Application.DTOs.Offer;
 
 namespace RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Offer
 {
-    public sealed class OfferEntityToDtoAndReverse : Profile
+    public sealed class OfferMappingProfile : Profile
     {
-        public OfferEntityToDtoAndReverse()
+        public OfferMappingProfile()
         {
             CreateMap<Domain.Entities.Offer, OfferDto>().ReverseMap();
             CreateMap<Domain.Entities.Offer, SaveOfferDto>().ReverseMap();
