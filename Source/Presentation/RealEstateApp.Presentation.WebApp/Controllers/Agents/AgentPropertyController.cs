@@ -55,10 +55,9 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             return View(availableProperties);
         }
 
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
             var viewModel = new SavePropertyViewModel { Description = string.Empty };
-            // await PopulateDropdownsAsync(viewModel); // Comentado por limites de modulo (esperando catalogos de Joel)
             return View(viewModel);
         }
 

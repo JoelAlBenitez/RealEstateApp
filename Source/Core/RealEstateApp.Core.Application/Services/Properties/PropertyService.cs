@@ -397,7 +397,7 @@ namespace RealEstateApp.Core.Application.Services.Properties
         {
             try
             {
-                return ValidationResult<int>.Success(0);
+                return await Task.FromResult(ValidationResult<int>.Success(0));
             }
             catch (Exception)
             {
