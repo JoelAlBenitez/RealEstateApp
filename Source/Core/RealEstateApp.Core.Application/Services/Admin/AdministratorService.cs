@@ -17,14 +17,11 @@ namespace RealEstateApp.Core.Application.Services.Admin
     public sealed class AdministratorService : IAdministratorService
     {
         private readonly IOperationalAccountWebApi _internalAccountApi;
-        // IBaseAccountUser aún no está registrado en el contenedor de DI (RegistrationAndConfigurationsIdentity.cs sigue vacío) — compilará pero no funcionará en runtime hasta que Joel complete ese registro.
-        private readonly IBaseAccountUser _baseAccount;
         private readonly IAdministratorValidationService _administratorValidationService;
 
-        public AdministratorService(IOperationalAccountWebApi internalAccountApi, IBaseAccountUser baseAccount, IAdministratorValidationService administratorValidationService)
+        public AdministratorService(IOperationalAccountWebApi internalAccountApi, IAdministratorValidationService administratorValidationService)
         {
             _internalAccountApi = internalAccountApi;
-            _baseAccount = baseAccount;
             _administratorValidationService = administratorValidationService;
         }
 
@@ -36,12 +33,12 @@ namespace RealEstateApp.Core.Application.Services.Admin
 
         public async Task<ValidationResult> CreateAsync(RegisterInternalUsersDto dto)
         {
-            // PENDIENTE DE CONFIRMAR: RegisterInternalUserAsync() en IOperationalAccountWebApi de Joel
-            return await Task.FromResult(
-                ValidationResult.Failure(
-                    ErrorPendingIntegration.AdminCreate
-                )
-            );
+            var result = await _internalAccountApi.CreateInternalUserAsync(dto);
+            if (result.HasError)
+            {
+                return ValidationResult.Failure(new Error("Identity_Error", string.Join(", ", result.Errors ?? new List<string>())));
+            }
+            return ValidationResult.Success();
         }
 
         public async Task<ValidationResult> EditAsync(EditInternalUserDto dto, string currentAdminId)
@@ -52,17 +49,12 @@ namespace RealEstateApp.Core.Application.Services.Admin
                 return validationResult;
             }
 
-            // PENDIENTE DE CONFIRMAR: validar existencia del administrador vía
-            // IOperationalAccountWebApi antes de editar. Si el administrador no existe,
-            // retornar ValidationResult.Failure(ErrorAdministrator.NotFound).
-            // Como el método de Joel para verificar esto todavía no existe, se deja como placeholder.
-
-            // PENDIENTE DE CONFIRMAR: EditInternalUserAsync() en IOperationalAccountWebApi de Joel
-            return await Task.FromResult(
-                ValidationResult.Failure(
-                    ErrorPendingIntegration.AdminEdit
-                )
-            );
+            var result = await _internalAccountApi.UpdateInternalUserAsync(dto);
+            if (result.HasError)
+            {
+                return ValidationResult.Failure(new Error("Identity_Error", string.Join(", ", result.Errors ?? new List<string>())));
+            }
+            return ValidationResult.Success();
         }
 
         public async Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto, string currentAdminId)
@@ -73,12 +65,7 @@ namespace RealEstateApp.Core.Application.Services.Admin
                 return validationResult;
             }
 
-            // PENDIENTE DE CONFIRMAR: validar existencia del administrador vía
-            // IOperationalAccountWebApi antes de cambiar estado. Si el administrador no existe,
-            // retornar ValidationResult.Failure(ErrorAdministrator.NotFound).
-            // Como el método de Joel para verificar esto todavía no existe, se deja como placeholder.
-
-            var result = await _baseAccount.ChangeStateAsync(dto);
+            var result = await _internalAccountApi.ChangeStateAsync(dto);
             
             if (result.HasError)
             {
