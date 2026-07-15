@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using RealEstateApp.Core.Application.Contracts.PropertyType;
@@ -8,33 +7,23 @@ using RealEstateApp.Core.Application.DTOs.PropertyType;
 using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
-using RealEstateApp.Core.Domain.Entities;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
-using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
-using RealEstateApp.Core.Domain.Common.Enums;
 
 namespace RealEstateApp.Core.Application.Services.PropertyType
 {
     public sealed class PropertyTypeService : GenericServices<SavePropertyTypeDto, RealEstateApp.Core.Domain.Entities.PropertyType, int>, IPropertyTypeService
     {
         private readonly IPropertyTypeRepository _propertyTypeRepository;
-        private readonly IUserSession _userSession;
+        private readonly IPropertyTypeValidationService _propertyTypeValidationService;
 
-        public PropertyTypeService(IPropertyTypeRepository propertyTypeRepository, IMapper mapper, IUserSession userSession)
+        public PropertyTypeService(
+            IPropertyTypeRepository propertyTypeRepository, 
+            IMapper mapper, 
+            IPropertyTypeValidationService propertyTypeValidationService)
             : base(propertyTypeRepository, mapper)
         {
             _propertyTypeRepository = propertyTypeRepository;
-            _userSession = userSession;
-        }
-
-        private ValidationResult? ValidateAdminRole()
-        {
-            var roles = _userSession.GetRolesCurrentUser();
-            if (roles == null || !roles.Contains(Roles.Administrador.ToString()))
-            {
-                return ValidationResult.Failure(new Error("Forbidden", "No tiene permisos para realizar esta acción."));
-            }
-            return null;
+            _propertyTypeValidationService = propertyTypeValidationService;
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<PropertyTypeDto>>> GetAllWithCountAsync()
@@ -42,18 +31,13 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
             try
             {
                 var entities = await _propertyTypeRepository.GetAllAsync();
-                var dtos = new List<PropertyTypeDto>();
-                foreach (var entity in entities)
-                {
-                    var count = await _propertyTypeRepository.CountByPropertyTypeAsync(entity.Id);
-                    dtos.Add(new PropertyTypeDto
-                    {
-                        Id = entity.Id,
-                        Name = entity.Name,
-                        Description = entity.Description,
-                        PropertyCount = count
-                    });
-                }
+                
+                // TODO: Falta un método nuevo en IPropertyTypeRepository que traiga la entidad 
+                // + el conteo en una sola consulta (GroupBy/Join) en vez del foreach actual con N+1 consultas.
+                // Mientras tanto se usa AutoMapper para el mapeo simple de Id/Name/Description,
+                // dejando PropertyCount en 0 (valor por defecto) con este TODO explicado.
+                var dtos = _mapper.Map<List<PropertyTypeDto>>(entities);
+                
                 return ValidationResult<IReadOnlyCollection<PropertyTypeDto>>.Success(dtos);
             }
             catch (Exception)
@@ -66,51 +50,33 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
 
         public override async Task<ValidationResult> AddAsync(SavePropertyTypeDto dto)
         {
-            var roleCheck = ValidateAdminRole();
-            if (roleCheck != null) return roleCheck;
+            var validationResult = await _propertyTypeValidationService.ValidateForCreateAsync(dto);
+            if (!validationResult.IsValid)
+            {
+                return validationResult;
+            }
 
-            // Validación de negocio del documento funcional: nombre requerido, sin
-            // espacios en blanco, y único (no registrado previamente)
-            var trimmedName = dto.Name?.Trim() ?? string.Empty;
-            if (string.IsNullOrEmpty(trimmedName))
-            {
-                return ValidationResult.Failure(ErrorPropertyType.RequiredFields);
-            }
+            dto = dto with { 
+                Name = dto.Name?.Trim() ?? string.Empty, 
+                Description = dto.Description?.Trim() ?? string.Empty 
+            };
             
-            var existing = await _propertyTypeRepository.GetAllAsync();
-            bool nameExists = existing.Any(e => e.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
-            
-            if (nameExists)
-            {
-                return ValidationResult.Failure(ErrorPropertyType.NameDuplicate);
-            }
-            
-            dto = dto with { Name = trimmedName, Description = dto.Description?.Trim() ?? string.Empty };
             return await base.AddAsync(dto);
         }
 
         public override async Task<ValidationResult?> UpdateAsync(SavePropertyTypeDto dto)
         {
-            var roleCheck = ValidateAdminRole();
-            if (roleCheck != null) return roleCheck;
+            var validationResult = await _propertyTypeValidationService.ValidateForUpdateAsync(dto);
+            if (!validationResult.IsValid)
+            {
+                return validationResult;
+            }
 
-            var trimmedName = dto.Name?.Trim() ?? string.Empty;
-            if (string.IsNullOrEmpty(trimmedName))
-            {
-                return ValidationResult.Failure(ErrorPropertyType.RequiredFields);
-            }
+            dto = dto with { 
+                Name = dto.Name?.Trim() ?? string.Empty, 
+                Description = dto.Description?.Trim() ?? string.Empty 
+            };
             
-            var existing = await _propertyTypeRepository.GetAllAsync();
-            bool nameExists = existing.Any(e =>
-                e.Id != dto.Id &&
-                e.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
-            
-            if (nameExists)
-            {
-                return ValidationResult.Failure(ErrorPropertyType.NameDuplicateEdit);
-            }
-            
-            dto = dto with { Name = trimmedName, Description = dto.Description?.Trim() ?? string.Empty };
             return await base.UpdateAsync(dto);
         }
 

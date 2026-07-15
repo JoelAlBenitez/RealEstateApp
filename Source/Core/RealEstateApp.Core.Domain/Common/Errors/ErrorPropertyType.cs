@@ -11,5 +11,6 @@ namespace RealEstateApp.Core.Domain.Common.Errors
         public static readonly Error NotFound = new("PropertyType.NotFound", "El tipo de propiedad seleccionado no existe.");
         public static readonly Error DeleteFailed = new("PropertyType.DeleteFailed", "No fue posible eliminar el tipo de propiedad. Intente nuevamente más tarde.");
         public static readonly Error NotExists = new("PropertyType.NotExists", "No existen tipos de propiedades registrados.");
+        public static readonly Error Forbidden = new("PropertyType.Forbidden", "No tiene permisos para realizar esta acción.");
     }
 }
