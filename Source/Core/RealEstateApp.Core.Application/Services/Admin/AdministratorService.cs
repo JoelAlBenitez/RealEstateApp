@@ -3,6 +3,8 @@ using RealEstateApp.Core.Domain.Common.Enums;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
@@ -17,11 +19,13 @@ namespace RealEstateApp.Core.Application.Services.Admin
         private readonly IOperationalAccountWebApi _internalAccountApi;
         // IBaseAccountUser aún no está registrado en el contenedor de DI (RegistrationAndConfigurationsIdentity.cs sigue vacío) — compilará pero no funcionará en runtime hasta que Joel complete ese registro.
         private readonly IBaseAccountUser _baseAccount;
+        private readonly IAdministratorValidationService _administratorValidationService;
 
-        public AdministratorService(IOperationalAccountWebApi internalAccountApi, IBaseAccountUser baseAccount)
+        public AdministratorService(IOperationalAccountWebApi internalAccountApi, IBaseAccountUser baseAccount, IAdministratorValidationService administratorValidationService)
         {
             _internalAccountApi = internalAccountApi;
             _baseAccount = baseAccount;
+            _administratorValidationService = administratorValidationService;
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<GetInternalUserDto>>> GetAdministratorsAsync()
@@ -42,12 +46,10 @@ namespace RealEstateApp.Core.Application.Services.Admin
 
         public async Task<ValidationResult> EditAsync(EditInternalUserDto dto, string currentAdminId)
         {
-            // Regla de auto-protección: no se puede editar a sí mismo
-            if (dto.Id == currentAdminId)
+            var validationResult = _administratorValidationService.ValidateSelfEdit(dto, currentAdminId);
+            if (!validationResult.IsValid)
             {
-                return ValidationResult.Failure(
-                    ErrorAdministrator.SelfEdit
-                );
+                return validationResult;
             }
 
             // PENDIENTE DE CONFIRMAR: validar existencia del administrador vía
@@ -65,16 +67,10 @@ namespace RealEstateApp.Core.Application.Services.Admin
 
         public async Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto, string currentAdminId)
         {
-            // Regla de auto-protección: no se puede inactivar a sí mismo
-            // Auto-inactivación: se valida localmente comparando IDs porque no depende de ningún
-            // dato externo — solo necesitamos saber si el admin está intentando inactivarse a sí mismo.
-            // La regla de mínimo-un-admin-activo NO se valida aquí porque requiere GetUserCountersAsync()
-            // de Joel para conocer el conteo actual de admins activos, y ese método aún no existe.
-            if (dto.Id == currentAdminId && !dto.State)
+            var validationResult = _administratorValidationService.ValidateSelfInactivation(dto, currentAdminId);
+            if (!validationResult.IsValid)
             {
-                return ValidationResult.Failure(
-                    ErrorAdministrator.SelfInactivation
-                );
+                return validationResult;
             }
 
             // PENDIENTE DE CONFIRMAR: validar existencia del administrador vía
