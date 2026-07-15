@@ -1,12 +1,14 @@
 using RealEstateApp.Core.Application.Contracts.Properties;
-using RealEstateApp.Core.Application.Contracts.Users;
+using RealEstateApp.Core.Application.Contracts.Agent;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Common.Errors;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace RealEstateApp.Core.Application.Services
+namespace RealEstateApp.Core.Application.Services.Agent
 {
     // Servicio para la pantalla de listado de agentes
     public sealed class AgentManagementService : IAgentManagementService
