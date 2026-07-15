@@ -25,7 +25,7 @@ namespace RealEstateApp.Infraestructure.Identity.Seeds
 
             if(!userManager.Users.Any(u => u.Id == users.Id))
             {
-                var en = userManager.FindByEmailAsync(users.Email);
+                var en = await userManager.FindByEmailAsync(users.Email);
                 if(en == null){
                     await userManager.CreateAsync(users, "passWord1234!");
                     await userManager.AddToRoleAsync(users, Roles.Administrador.ToString());

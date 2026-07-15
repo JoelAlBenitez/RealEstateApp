@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.Contracts.Users.Validation;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
@@ -18,6 +19,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
 
         private readonly IServicesValidateUsers _servicesValidateUsers;
 
+
         public OperationalAccountWebApi(
             UserManager<AppUsers> userManager,
             SignInManager<AppUsers> signInManager,
@@ -30,9 +32,126 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             _servicesValidateUsers = servicesValidateUsers;
         }
 
-        public Task<UserResponseDto> CreateInternalUserAsync(RegisterInternalUsersDto register)
+
+        #region method operational
+        public async Task<UserResponseDto> CreateInternalUserAsync(
+            RegisterInternalUsersDto register)
         {
-            throw new NotImplementedException();
+            var response = new UserResponseDto
+            {
+                Errors = new List<string>(),
+                Roles = null!,
+                HasError = false
+            };
+            var user = await _userManager.FindByIdAsync(_userSession.GetIdCurrentUser());
+            if (user == null) { 
+               
+                response.HasError = true;
+                response.Errors.Add("Su usuario no se encuentra habilitado para realizar esta operación.");
+                return response;
+            }
+            var rolesCurrentUser = await _userManager.GetRolesAsync(user);
+            if (!rolesCurrentUser.Contains(Roles.Administrador.ToString()))
+            {
+                response.HasError = true;
+                response.Errors.Add("No cuenta con los privilegios necesarios para realizar esta operación.");
+                return response;
+            }
+            var validate = await _servicesValidateUsers.CreateInternalValidateUserAsync(register, response);
+            if (validate != null && validate.HasError) return validate;
+
+            var userC = new AppUsers
+            {
+                Name = register.Name,
+                BlockedEmailSending = null,
+                LastName = register.LastName,
+                UserName = register.NameUser,
+                Email = register.Email,
+                ProfileImg = "NA",
+                IsActive  = true,
+                EmailConfirmed = true,
+                IDCard = register.IDCard,
+                CreateAt = DateTimeOffset.UtcNow
+            };;
+
+            var create = await _userManager.CreateAsync(userC, register.Password);
+            if (!create.Succeeded)
+            {
+                response.HasError = true;
+                response.Errors.Add("La solicitud no pudo ser procesada. Intente nuevamente más tarde.");
+                return response;
+            }
+            var rol = register.TypeUser == (int)Roles.Desarrollador
+                ? Roles.Desarrollador.ToString()
+                : Roles.Administrador.ToString();
+            var list = new List<string>();
+            list.Add(rol);
+            var roles = await _userManager.AddToRolesAsync(userC,list);
+            return response;
+        }
+
+        public async Task<EditResponseDto> UpdateInternalUserAsync(EditInternalUserDto edit)
+        {
+            var response = new EditResponseDto
+            {
+                Errors = new List<string>(),
+                HasError = false   
+            };
+            var validate = await _servicesValidateUsers
+                .UpdateInternalValidateUserAsync(edit, response);
+            if (validate != null && validate.HasError) return validate;
+            var user = await _userManager.FindByIdAsync(edit.Id);
+            if(user == null)
+            {
+                response.HasError = true;
+                response.Errors.Add("Ha ocurrido un error al seleccionar el usuario.");
+                return response;
+            }
+            user.Email = edit.Email;
+            user.IDCard = edit.IdCard;
+            user.Name = edit.Name;
+            user.UserName = edit.UserName;
+            user.LastName = edit.LastName;
+            if (!string.IsNullOrWhiteSpace(edit.NewPassword)) {
+                var changePassword = await _userManager.ChangePasswordAsync(user, user.PasswordHash!,edit.NewPassword);
+                if (!changePassword.Succeeded)
+                {
+                    response.HasError = true;
+                    response.Errors.Add("Ha ocurrido un error inesperado al editar el usuario.");
+                    return response;
+                }
+                return response;
+            }
+            
+            var update = await _userManager.UpdateAsync(user);
+            if (!update.Succeeded)
+            {
+                response.HasError = true;
+                response.Errors.Add("Ha ocurrido un error inesperado al editar el usuario.");
+                return response;
+            }
+
+            return response;
+        }
+
+        #endregion
+        #region get methods
+        public async Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAgentPendientConfirmAccount()
+        {
+            var result = await _userManager.Users
+                 .AsNoTracking()
+                 .Where(u => !u.EmailConfirmed && !u.IsActive).ToListAsync();
+            if (result == null) return [];
+            var select = result.Select(s => new AdminConsultAgentDto
+            {
+                Email = s.Email!,
+                Id = s.Id,
+                State = s.IsActive,
+                LastName = s.LastName,
+                Name = s.Name,
+                Properties = 0
+            }).ToList();
+            return select;
         }
 
         public async Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAllAgentesByConsultAdmin()
@@ -58,7 +177,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             if (result == null) return [];
             var select = result.Select(s => new GetInternalUserDto
             {
-                IDCard = s.IDCard,
+                IDCard = s.IDCard!,
                 State = s.IsActive,
                 Name = s.Name,
                 Id = s.Id,
@@ -69,9 +188,27 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             return select;
         }
 
-        public Task<UserResponseDto> UpdateInternalUserAsync(EditInternalUserDto edit)
+        public async Task<int> GetUserAgentActiverOrInactive(bool isActive = true)
         {
-            throw new NotImplementedException();
+            var users = await _userManager.GetUsersInRoleAsync(Roles.Agente.ToString());
+            return users.Count(u => u.IsActive == isActive);
         }
+
+        public async Task<int> GetUserClientAciveOrInactive(bool isActive = true)
+        {
+            var users = await _userManager.GetUsersInRoleAsync(Roles.Cliente.ToString());
+            return users.Count(u => u.IsActive == isActive);
+        }
+
+        public async Task<int> GetUserDevelopersActiveOrInactive(bool isActive = true)
+        {
+            var users = await _userManager.GetUsersInRoleAsync(Roles.Desarrollador.ToString());
+            return users.Count(u => u.IsActive == isActive);
+        }
+
+       
+
+        #endregion
+        
     }
 }

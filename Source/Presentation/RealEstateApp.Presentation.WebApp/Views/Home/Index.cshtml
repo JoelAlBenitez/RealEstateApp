@@ -1,0 +1,20 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home/home.css" asp-append-version="true" />
+}
+
+<section class="home-hero">
+    <span class="home-hero__badge">Propiedades verificadas</span>
+    <h1 class="home-hero__title">Encuentra el lugar que se siente como hogar</h1>
+    <p class="home-hero__subtitle">
+        Explora casas, apartamentos y alquileres publicados por agentes verificados.
+        Tu próximo hogar está a un par de clics.
+    </p>
+    <div class="home-hero__actions">
+        <a class="rea-btn rea-btn--primary" asp-controller="Account" asp-action="RegisterExternalUser">Únete a nosotros</a>
+        <a class="rea-btn rea-btn--secondary" asp-controller="Agent" asp-action="Index">Conoce a los agentes</a>
+    </div>
+</section>

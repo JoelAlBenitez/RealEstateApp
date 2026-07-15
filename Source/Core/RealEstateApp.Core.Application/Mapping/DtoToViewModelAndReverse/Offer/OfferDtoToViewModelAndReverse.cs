@@ -8,7 +8,10 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Offer
     {
         public OfferDtoToViewModelAndReverse()
         {
-            CreateMap<OfferDto, OfferViewModel>().ReverseMap();
+            CreateMap<OfferDto, OfferViewModel>()
+                .ForMember(dest => dest.PropertyCode, opt => opt.MapFrom(src => src.Property != null ? src.Property.Code : null))
+                .ReverseMap();
+
             CreateMap<SaveOfferDto, CreateOfferViewModel>().ReverseMap();
         }
     }
