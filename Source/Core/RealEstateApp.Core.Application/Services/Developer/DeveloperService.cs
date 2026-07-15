@@ -14,12 +14,10 @@ namespace RealEstateApp.Core.Application.Services.Developer
     public sealed class DeveloperService : IDeveloperService
     {
         private readonly IOperationalAccountWebApi _internalAccountApi;
-        private readonly IBaseAccountUser _baseAccount;
 
-        public DeveloperService(IOperationalAccountWebApi internalAccountApi, IBaseAccountUser baseAccount)
+        public DeveloperService(IOperationalAccountWebApi internalAccountApi)
         {
             _internalAccountApi = internalAccountApi;
-            _baseAccount = baseAccount;
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<GetInternalUserDto>>> GetDevelopersAsync()
@@ -30,23 +28,27 @@ namespace RealEstateApp.Core.Application.Services.Developer
 
         public async Task<ValidationResult> CreateAsync(RegisterInternalUsersDto dto)
         {
-            // PENDIENTE DE CONFIRMAR: RegisterInternalUserAsync() en IOperationalAccountWebApi de Joel
-            // TODO: reemplazar por ErrorPendingIntegration cuando llegue via merge de AdminBase
-            return await Task.FromResult(
-                ValidationResult.Failure(new Error("Dev_Pending", "Pendiente de Joel")));
+            var result = await _internalAccountApi.CreateInternalUserAsync(dto);
+            if (result.HasError)
+            {
+                return ValidationResult.Failure(new Error("Identity_Error", string.Join(", ", result.Errors ?? new List<string>())));
+            }
+            return ValidationResult.Success();
         }
 
         public async Task<ValidationResult> EditAsync(EditInternalUserDto dto)
         {
-            // PENDIENTE DE CONFIRMAR: EditInternalUserAsync() en IOperationalAccountWebApi de Joel
-            // TODO: reemplazar por ErrorPendingIntegration cuando llegue via merge de AdminBase
-            return await Task.FromResult(
-                ValidationResult.Failure(new Error("Dev_Pending", "Pendiente de Joel")));
+            var result = await _internalAccountApi.UpdateInternalUserAsync(dto);
+            if (result.HasError)
+            {
+                return ValidationResult.Failure(new Error("Identity_Error", string.Join(", ", result.Errors ?? new List<string>())));
+            }
+            return ValidationResult.Success();
         }
 
         public async Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto)
         {
-            var result = await _baseAccount.ChangeStateAsync(dto);
+            var result = await _internalAccountApi.ChangeStateAsync(dto);
             if (result.HasError)
                 return ValidationResult.Failure(new Error("Identity_Error", string.Join(", ", result.Errors ?? new List<string>())));
             return ValidationResult.Success();
