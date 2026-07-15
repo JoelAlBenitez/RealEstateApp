@@ -136,6 +136,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
             }
             var file = await _fileManager.SaveAsync(vm.ProfileImg, "Users", Guid.NewGuid().ToString());
             var map = _mapper.Map<RegisterExternalUsersDto>(vm);
+            map.Origin = Request?.Headers?.Origin.ToString() ?? string.Empty;
             map.ProfileImg = file;
             var result = await _operationalAccountWebApp.CreateExternalAsync(map);
             if(result != null && result.HasError)
@@ -163,8 +164,8 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
                 return View(vm);
             }
             var map = _mapper.Map<ResendActivationEmailDto>(vm);
-            var result = await _authProcesssAccountWebApp.ResendActivationEmailAsync(map);
             map.Origin = Request?.Headers?.Origin.ToString() ?? string.Empty;
+            var result = await _authProcesssAccountWebApp.ResendActivationEmailAsync(map);
             if (result != null && result.HasError)
             {
                 foreach (var error in result.Errors)
@@ -209,7 +210,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
             {
                 ModelState.AddModelError("", "Debe completar todos los campos requeridos.");
                 return View(vm);
-            }
+          }
          var map = _mapper.Map<ResetPasswordDto>(vm);
          var result = await _authProcesssAccountWebApp.ResetPasswordAsync(map);
          if (result != null && result.HasError)

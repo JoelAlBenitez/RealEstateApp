@@ -65,39 +65,48 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
             var existUser = await _userManager.FindByNameAsync(forgoutPasswordDto.UserName);
             var validate = ValidateFields(response, forgoutPasswordDto, existUser!);
             if (validate != null && validate.HasError) return validate;
-            
-            if(existUser!.EmailConfirmed && existUser.IsActive)
+
+            if (existUser!.EmailConfirmed && existUser.IsActive)
             {
-                var generateTokenResetPassword = await _generateTokens.GenerateTokenResetPassword(existUser,forgoutPasswordDto.Origin);
-                if(string.IsNullOrWhiteSpace(generateTokenResetPassword))
+                var generateTokenResetPassword = await _generateTokens.GenerateTokenResetPassword(existUser, forgoutPasswordDto.Origin);
+                if (string.IsNullOrWhiteSpace(generateTokenResetPassword))
                 {
                     response.HasError = true;
                     response.Errors.Add("La solicitud no pudo ser procesada en este momento. Intente nuevamente más tarde.");
                     return response;
                 }
-                var sendEmail = await _emailServices.SendEmailAsync(new MessageDto
-                {
-                    To = existUser.Email!,
-                    Subject = "RealEstateApp",
-                    Body = "<div style = 'background:#4f46e5;color:white;padding:20px;" +
-                    "text-align:center;font-size:20px;' >" +
-                               "<h2> RealEstateApp </h2> " +
-                               "<p> Ha solicitado un cambio de contraseña para su cuenta </p>" +
-                               $"<p style = 'color:#fff;' >{generateTokenResetPassword}<p>" +
-                               "<p><b>Nota:</b> Si usted no ha realizado esta solicitud ignore este mensaje.</p>" +
-                               " </div>"
-
-                });
-                if (!sendEmail)
+                existUser.BlockedEmailSending = DateTimeOffset.UtcNow.AddMinutes(5);
+                var update = await _userManager.UpdateAsync(existUser);
+                if (!update.Succeeded)
                 {
                     response.HasError = true;
-                    response.Errors.Add("Este servicio no se encuentra disponible en este momento. Intente nuevamente más tarde.");
+                    response.Errors.Add("La solicitud no pudo ser procesada en este momento. Intente nuevamente más tarde.");
                     return response;
                 }
+                {
+                    var sendEmail = await _emailServices.SendEmailAsync(new MessageDto
+                    {
+                        To = existUser.Email!,
+                        Subject = "RealEstateApp",
+                        Body = "<div style = 'background:#4f46e5;color:white;padding:20px;" +
+                                    "text-align:center;font-size:20px;' >" +
+                                               "<h2> RealEstateApp </h2> " +
+                                               "<p> Ha solicitado un cambio de contraseña para su cuenta </p>" +
+                                               $"<p style = 'color:#fff;' >{generateTokenResetPassword}<p>" +
+                                               "<p><b>Nota:</b> Si usted no ha realizado esta solicitud ignore este mensaje.</p>" +
+                                               " </div>"
+
+                    });
+                    if (!sendEmail)
+                    {
+                        response.HasError = true;
+                        response.Errors.Add("Este servicio no se encuentra disponible en este momento. Intente nuevamente más tarde.");
+                        return response;
+                    }
 
 
+                }
             }
-
             return response;
         }
 

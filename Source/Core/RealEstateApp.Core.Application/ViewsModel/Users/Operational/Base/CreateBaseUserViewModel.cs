@@ -22,8 +22,10 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.Base
         [DataType(DataType.EmailAddress)]
         public required string Email { get; set; }
 
-        [Required(ErrorMessage = "La contraseña es requerida y debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula y un carácter especial.")]
+        [Required(ErrorMessage = "La contraseña es requerida y debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un carácter especial.")]
         [StringLength(100, ErrorMessage = "La contraseña debe tener al menos 8 caracteres.", MinimumLength = 8)]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$",
+            ErrorMessage = "La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un carácter especial.")]
         [DataType(DataType.Password)]
         [Display(Name = "Contraseña")]
         public required string Password { get; set; }
@@ -38,6 +40,8 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.Base
         [Required(ErrorMessage = "El nombre de usuario es requerido.")]
         [DataType(DataType.Text)]
         [StringLength(25, ErrorMessage = "El nombre de usuario debe tener entre 5 y 25 caracteres.", MinimumLength = 5)]
+        [RegularExpression(@"^[a-zA-Z0-9._@+-]+$",
+            ErrorMessage = "El nombre de usuario solo puede contener letras sin acentos, números y los caracteres - . _ @ +, sin espacios.")]
         [Display(Name = "Nombre de usuario")]
 
         public required string NameUser { get; set; }

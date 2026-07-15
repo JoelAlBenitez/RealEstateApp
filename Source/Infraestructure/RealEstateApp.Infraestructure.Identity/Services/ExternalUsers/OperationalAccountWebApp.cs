@@ -79,10 +79,15 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
             if (!create.Succeeded)
             {
                 response.HasError = true;
-                response.Errors.Add("No fue posible completar el registro. Intente nuevamente más tarde.");
+                if (create.Errors.Any())
+                    response.Errors.AddRange(create.Errors.Select(e => e.Description));
+                else
+                    response.Errors.Add("No fue posible completar el registro. Intente nuevamente más tarde.");
                 return response;
             }
-
+            var rol = registerUserDto.TypeUser == (int)Roles.Agente ?
+                Roles.Agente.ToString() : Roles.Cliente.ToString();
+            await _userManager.AddToRoleAsync(user, rol);
             var verifiyTokens = await _generateTokens.GenerateTokenConfirmEmail(user, registerUserDto.Origin);
             var sendEmail = await _emailService.SendEmailAsync(new MessageDto
             {

@@ -60,7 +60,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Validate
                 && externalUsersDto.TypeUser != (int)Roles.Cliente)
                 response.Errors.Add("Debe indicar un tipo de usuario válido.");
 
-            if (!Regex.IsMatch(externalUsersDto.PhoneNumber, "^(809|829|849)-\\d{3}-\\d{4}$"))
+            if (!Regex.IsMatch(externalUsersDto.PhoneNumber, @"^(809|829|849)\d{7}$"))
                 response.Errors.Add("Debe ingresar un número de teléfono válido de República Dominicana.");
             if (!Regex.IsMatch(externalUsersDto.Email, EmailRegex))
                 response.Errors.Add("Debe ingresar un correo electrónico válido.");

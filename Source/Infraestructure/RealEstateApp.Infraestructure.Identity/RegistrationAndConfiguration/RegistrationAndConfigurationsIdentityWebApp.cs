@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RealEstateApp.Infraestructure.Identity.Context;
 using RealEstateApp.Infraestructure.Identity.Entities;
+using RealEstateApp.Infraestructure.Identity.Errors;
 using RealEstateApp.Infrastructure.Identity.EmailProvider;
 
 namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
@@ -91,6 +92,7 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
             })
               .AddRoles<IdentityRole>()
               .AddSignInManager()
+              .AddErrorDescriber<SpanishIdentityErrorDescriber>()
               .AddEntityFrameworkStores<DbContextIdentityRealStateApp>()
               .AddTokenProvider<EmailConfirmProviderTokensConfigurations>("EmailConfirmProviderOptions")
               .AddTokenProvider<DataProtectorTokenProvider<AppUsers>>(TokenOptions.DefaultProvider);
