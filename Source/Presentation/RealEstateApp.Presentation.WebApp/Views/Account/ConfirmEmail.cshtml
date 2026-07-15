@@ -1,0 +1,142 @@
+@model string
+@{
+    Layout = "_AccountLayout";
+    ViewData["Title"] = "Confirmación de cuenta";
+}
+
+<div class="account-shell">
+    <div class="account-stage">
+        <section class="account-panel">
+            <div class="account-card">
+                <div class="account-card__top">
+                    <a class="account-back" asp-controller="Home" asp-action="Index" data-account-nav aria-label="Volver al inicio">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M19 12H5" />
+                            <path d="m12 19-7-7 7-7" />
+                        </svg>
+                    </a>
+                    <span class="account-brand">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M3 10.5 12 3l9 7.5" />
+                            <path d="M5 9.5V21h14V9.5" />
+                            <path d="M9.5 21v-6h5v6" />
+                        </svg>
+                        Real Estate App
+                    </span>
+                </div>
+
+                <header class="account-card__head">
+                    <h1 class="account-card__title">Confirmación de cuenta</h1>
+                    <p class="account-card__subtitle">Verificación de tu correo electrónico.</p>
+                </header>
+
+                <div class="account-message">
+                    <span class="account-message__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="m8.5 12.5 2.5 2.5 5-6" />
+                        </svg>
+                    </span>
+                    <p class="account-message__text" role="status">@Model</p>
+                    <div class="account-message__actions">
+                        <a class="account-btn account-btn--primary" asp-controller="Account" asp-action="Login" data-account-nav>Iniciar Sesión</a>
+                        <a class="account-btn account-btn--ghost" asp-controller="Home" asp-action="Index" data-account-nav>Ir al inicio</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <aside class="account-scene" aria-hidden="true">
+            <div class="scene-headlines" data-scene-rotate>
+                <p class="scene-headline is-active">¡Bienvenido a bordo!</p>
+                <p class="scene-headline">Tu próximo hogar te espera</p>
+                <p class="scene-headline">Explora nuevas oportunidades</p>
+            </div>
+            <p class="scene-sub">Tu cuenta está lista para comenzar la experiencia.</p>
+
+            <div class="scene-widget scene-widget--pos1">
+                <span class="scene-widget__icon scene-widget__icon--success">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="m8.5 12.5 2.5 2.5 5-6" />
+                    </svg>
+                </span>
+                <span class="scene-widget__body">
+                    <span class="scene-widget__title">Email verificado</span>
+                    <span class="scene-widget__hint">Todo en orden</span>
+                </span>
+            </div>
+
+            <div class="scene-widget scene-widget--pos2">
+                <span class="scene-widget__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                </span>
+                <span class="scene-widget__body">
+                    <span class="scene-widget__title">Cuenta activada</span>
+                    <span class="scene-widget__hint">Ya puedes iniciar sesión</span>
+                </span>
+            </div>
+
+            <div class="scene-widget scene-widget--pos3">
+                <span class="scene-widget__icon scene-widget__icon--accent">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z" />
+                    </svg>
+                </span>
+                <span class="scene-widget__body">
+                    <span class="scene-widget__title">Bienvenido</span>
+                    <span class="scene-widget__hint">Nos alegra tenerte aquí</span>
+                </span>
+            </div>
+
+            <div class="scene-widget scene-widget--pos4">
+                <span class="scene-widget__icon scene-widget__icon--secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 10.5 12 3l9 7.5" />
+                        <path d="M5 9.5V21h14V9.5" />
+                        <path d="M9.5 21v-6h5v6" />
+                    </svg>
+                </span>
+                <span class="scene-widget__body">
+                    <span class="scene-widget__title">Miles de propiedades</span>
+                    <span class="scene-widget__hint">Listas para explorar</span>
+                </span>
+            </div>
+
+            <span class="scene-float scene-float--1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="m8.5 12.5 2.5 2.5 5-6" />
+                </svg>
+            </span>
+            <span class="scene-float scene-float--2">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+            </span>
+            <span class="scene-float scene-float--3">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 10.5 12 3l9 7.5" />
+                    <path d="M5 9.5V21h14V9.5" />
+                    <path d="M9.5 21v-6h5v6" />
+                </svg>
+            </span>
+            <span class="scene-float scene-float--4">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m21 2-9.6 9.6" />
+                    <circle cx="7.5" cy="15.5" r="5.5" />
+                    <path d="m21 2-1 1" />
+                    <path d="m15.5 7.5 3 3L22 7l-3-3" />
+                </svg>
+            </span>
+            <span class="scene-float scene-float--5">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z" />
+                </svg>
+            </span>
+        </aside>
+    </div>
+</div>

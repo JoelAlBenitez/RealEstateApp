@@ -489,4 +489,5 @@ obj/
 bin/
 .vs/
 docs/
-/.agents
+.agents/
+.claudes/
