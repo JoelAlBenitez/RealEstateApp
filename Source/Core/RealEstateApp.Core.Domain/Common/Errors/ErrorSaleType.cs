@@ -17,5 +17,6 @@ namespace RealEstateApp.Core.Domain.Common.Errors
         
         // Supuesto de Diseño — el documento no lo cita explícitamente para esta sección, pero es consistente con el patrón de éxito usado en Crear/Editar y con ErrorPropertyType.Deleted
         public static readonly Error Deleted = new("SaleType.Deleted", "El tipo de venta fue eliminado correctamente.");
+        public static readonly Error Forbidden = new("SaleType.Forbidden", "No tiene permisos para realizar esta acción.");
     }
 }

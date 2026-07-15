@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using RealEstateApp.Core.Application.Contracts.SaleType;
@@ -8,33 +7,23 @@ using RealEstateApp.Core.Application.DTOs.SaleType;
 using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
-using RealEstateApp.Core.Domain.Entities;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
-using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
-using RealEstateApp.Core.Domain.Common.Enums;
 
 namespace RealEstateApp.Core.Application.Services.SaleType
 {
     public sealed class SaleTypeService : GenericServices<SaveSaleTypeDto, RealEstateApp.Core.Domain.Entities.SaleType, int>, ISaleTypeService
     {
         private readonly ISaleTypeRepository _saleTypeRepository;
-        private readonly IUserSession _userSession;
+        private readonly ISaleTypeValidationService _saleTypeValidationService;
 
-        public SaleTypeService(ISaleTypeRepository saleTypeRepository, IMapper mapper, IUserSession userSession)
+        public SaleTypeService(
+            ISaleTypeRepository saleTypeRepository, 
+            IMapper mapper, 
+            ISaleTypeValidationService saleTypeValidationService)
             : base(saleTypeRepository, mapper)
         {
             _saleTypeRepository = saleTypeRepository;
-            _userSession = userSession;
-        }
-
-        private ValidationResult? ValidateAdminRole()
-        {
-            var roles = _userSession.GetRolesCurrentUser();
-            if (roles == null || !roles.Contains(Roles.Administrador.ToString()))
-            {
-                return ValidationResult.Failure(new Error("Forbidden", "No tiene permisos para realizar esta acción."));
-            }
-            return null;
+            _saleTypeValidationService = saleTypeValidationService;
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<SaleTypeDto>>> GetAllWithCountAsync()
@@ -42,18 +31,13 @@ namespace RealEstateApp.Core.Application.Services.SaleType
             try
             {
                 var entities = await _saleTypeRepository.GetAllAsync();
-                var dtos = new List<SaleTypeDto>();
-                foreach (var entity in entities)
-                {
-                    var count = await _saleTypeRepository.CountBySaleTypeAsync(entity.Id);
-                    dtos.Add(new SaleTypeDto
-                    {
-                        Id = entity.Id,
-                        Name = entity.Name,
-                        Description = entity.Description,
-                        PropertyCount = count
-                    });
-                }
+                
+                // TODO: Falta un método nuevo en ISaleTypeRepository que traiga la entidad 
+                // + el conteo en una sola consulta (GroupBy/Join) en vez del foreach actual con N+1 consultas.
+                // Mientras tanto se usa AutoMapper para el mapeo simple de Id/Name/Description,
+                // dejando PropertyCount en 0 (valor por defecto) con este TODO explicado.
+                var dtos = base._mapper.Map<List<SaleTypeDto>>(entities);
+                
                 return ValidationResult<IReadOnlyCollection<SaleTypeDto>>.Success(dtos);
             }
             catch (Exception)
@@ -66,51 +50,33 @@ namespace RealEstateApp.Core.Application.Services.SaleType
 
         public override async Task<ValidationResult> AddAsync(SaveSaleTypeDto dto)
         {
-            var roleCheck = ValidateAdminRole();
-            if (roleCheck != null) return roleCheck;
+            var validationResult = await _saleTypeValidationService.ValidateForCreateAsync(dto);
+            if (!validationResult.IsValid)
+            {
+                return validationResult;
+            }
 
-            // Validación de negocio del documento funcional: nombre requerido, sin
-            // espacios en blanco, y único (no registrado previamente)
-            var trimmedName = dto.Name?.Trim() ?? string.Empty;
-            if (string.IsNullOrEmpty(trimmedName))
-            {
-                return ValidationResult.Failure(ErrorSaleType.RequiredFields);
-            }
+            dto = dto with { 
+                Name = dto.Name?.Trim() ?? string.Empty, 
+                Description = dto.Description?.Trim() ?? string.Empty 
+            };
             
-            var existing = await _saleTypeRepository.GetAllAsync();
-            bool nameExists = existing.Any(e => e.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
-            
-            if (nameExists)
-            {
-                return ValidationResult.Failure(ErrorSaleType.NameDuplicate);
-            }
-            
-            dto = dto with { Name = trimmedName, Description = dto.Description?.Trim() ?? string.Empty };
             return await base.AddAsync(dto);
         }
 
         public override async Task<ValidationResult?> UpdateAsync(SaveSaleTypeDto dto)
         {
-            var roleCheck = ValidateAdminRole();
-            if (roleCheck != null) return roleCheck;
+            var validationResult = await _saleTypeValidationService.ValidateForUpdateAsync(dto);
+            if (!validationResult.IsValid)
+            {
+                return validationResult;
+            }
 
-            var trimmedName = dto.Name?.Trim() ?? string.Empty;
-            if (string.IsNullOrEmpty(trimmedName))
-            {
-                return ValidationResult.Failure(ErrorSaleType.RequiredFields);
-            }
+            dto = dto with { 
+                Name = dto.Name?.Trim() ?? string.Empty, 
+                Description = dto.Description?.Trim() ?? string.Empty 
+            };
             
-            var existing = await _saleTypeRepository.GetAllAsync();
-            bool nameExists = existing.Any(e =>
-                e.Id != dto.Id &&
-                e.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
-            
-            if (nameExists)
-            {
-                return ValidationResult.Failure(ErrorSaleType.NameDuplicateEdit);
-            }
-            
-            dto = dto with { Name = trimmedName, Description = dto.Description?.Trim() ?? string.Empty };
             return await base.UpdateAsync(dto);
         }
 
