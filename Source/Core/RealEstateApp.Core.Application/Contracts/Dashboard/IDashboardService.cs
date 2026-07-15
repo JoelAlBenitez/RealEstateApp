@@ -9,6 +9,6 @@ namespace RealEstateApp.Core.Application.Contracts.Dashboard
     public interface IDashboardService
     {
         // Obtiene las estadísticas consolidadas de propiedades y usuarios
-        Task<ValidationResult<DashboardDto>> GetDashboardStatsAsync();
+        Task<ValidationResult<DashboardDto>> GetDashboardStatsAsync(bool showActive = true);
     }
 }

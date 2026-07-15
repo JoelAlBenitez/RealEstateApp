@@ -4,6 +4,7 @@ using RealEstateApp.Core.Application.Contracts.Dashboard;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.DTOs.Dashboard;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
+using System.Threading.Tasks;
 
 namespace RealEstateApp.Core.Application.Services.Dashboard
 {
@@ -19,27 +20,22 @@ namespace RealEstateApp.Core.Application.Services.Dashboard
             _internalAccountApi = internalAccountApi;
         }
 
-        public async Task<ValidationResult<DashboardDto>> GetDashboardStatsAsync()
+        public async Task<ValidationResult<DashboardDto>> GetDashboardStatsAsync(bool showActive = true)
         {
             var propertyTotals = await _propertyService.GetTotalsByStatusAsync();
             if (!propertyTotals.IsValid)
                 return ValidationResult<DashboardDto>.Failure(propertyTotals.Errors.ToArray());
 
-            var dto = new DashboardDto
-            {
-                AvailableProperties = propertyTotals.Value.AvailableProperties,
-                SoldProperties = propertyTotals.Value.SoldProperties,
-                
-                // PENDIENTE: Joel no ha expuesto GetUserCountersAsync() en IOperationalAccountWebApi todavía
-                ActiveAgents = 0,
-                InactiveAgents = 0,
-                ActiveClients = 0,
-                InactiveClients = 0,
-                ActiveDevelopers = 0,
-                InactiveDevelopers = 0
-            };
-
-            return ValidationResult<DashboardDto>.Success(dto);
+            // TODO: IOperationalAccountWebApi todavía no tiene estos 3 métodos mergeados a development 
+            // (están en un PR sin aprobar de Joel).
+            // Firmas exactas esperadas:
+            // Task<int> GetUserAgentActiverOrInactive(bool isActive = true);
+            // Task<int> GetUserDevelopersActiveOrInactive(bool isActive = true);
+            // Task<int> GetUserClientAciveOrInactive(bool isActive = true);
+            
+            return await Task.FromResult(
+                ValidationResult<DashboardDto>.Failure(ErrorPendingIntegration.DashboardStats)
+            );
         }
     }
 }
