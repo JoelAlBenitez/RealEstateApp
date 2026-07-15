@@ -88,20 +88,24 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
             var rol = registerUserDto.TypeUser == (int)Roles.Agente ?
                 Roles.Agente.ToString() : Roles.Cliente.ToString();
             await _userManager.AddToRoleAsync(user, rol);
-            var verifiyTokens = await _generateTokens.GenerateTokenConfirmEmail(user, registerUserDto.Origin);
-            var sendEmail = await _emailService.SendEmailAsync(new MessageDto
-            {
-                Subject = "RealEstateApp",
-                To =user.Email,
-                Body = $"<p>¡Bienvenido a <strong>RealEstateApp</strong>!</p>" +
-                $"<p><a href='{verifiyTokens}'>Haz clic aquí para confirmar tu cuenta.</a></p>"
-            });
 
-            if (!sendEmail)
+            if (rol == Roles.Cliente.ToString())
             {
-                response.HasError = true;
-                response.Errors.Add("No fue posible enviar el correo de confirmación. Intente nuevamente más tarde.");
-                return response;
+                var verifiyTokens = await _generateTokens.GenerateTokenConfirmEmail(user, registerUserDto.Origin);
+                var sendEmail = await _emailService.SendEmailAsync(new MessageDto
+                {
+                    Subject = "RealEstateApp",
+                    To = user.Email,
+                    Body = $"<p>¡Bienvenido a <strong>RealEstateApp</strong>!</p>" +
+                    $"<p><a href='{verifiyTokens}'>Haz clic aquí para confirmar tu cuenta.</a></p>"
+                });
+
+                if (!sendEmail)
+                {
+                    response.HasError = true;
+                    response.Errors.Add("No fue posible enviar el correo de confirmación. Intente nuevamente más tarde.");
+                    return response;
+                }
             }
 
             return response;

@@ -108,7 +108,13 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
         {
             TempData["Message"] = "No tiene permisos para acceder a esta sección.";
             await _operationalAccountWebApp.SignOutAsync();
-            return RedirectToAction(nameof(Login));
+            if (User.IsInRole(Roles.Agente.ToString()))
+                return RedirectToRoute(new { controller = "Agent", action = "Index" });
+            else if (User.IsInRole(Roles.Cliente.ToString()))
+                return RedirectToRoute(new { controller = "Customer", action = "Index" });
+            else if (User.IsInRole(Roles.Administrador.ToString()))
+                return RedirectToRoute(new { controller = "Admin", action = "Index" });
+            return RedirectToAction("Index", "Home");
         }
 
         #endregion
@@ -120,7 +126,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
         public async Task<IActionResult> Logout()
         {
             await _operationalAccountWebApp.SignOutAsync();
-            return RedirectToAction(nameof(Login));
+            return RedirectToAction("Index", "Home");
         }
 
         [ValidateAntiForgeryToken]

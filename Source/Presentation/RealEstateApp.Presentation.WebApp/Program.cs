@@ -25,7 +25,7 @@ builder.Services.AddInfraestructrueShared(builder.Configuration);
 builder.Services.AddWebAppServicesIdentity(builder.Configuration);
 builder.Services.AddDependenciesCommon(builder.Configuration);
 builder.Services.AddDependenciesWebApp();
-
+builder.Services.AddDependenciesWebApi();
 builder.Services.AddScoped<IUserSession,UserSession>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

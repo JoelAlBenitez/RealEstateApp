@@ -19,6 +19,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
 
         private readonly IServicesValidateUsers _servicesValidateUsers;
 
+
         public OperationalAccountWebApi(
             UserManager<AppUsers> userManager,
             SignInManager<AppUsers> signInManager,
@@ -189,21 +190,24 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
 
         public async Task<int> GetUserAgentActiverOrInactive(bool isActive = true)
         {
-            return await _userManager.Users.AsNoTracking()
-                .CountAsync(u => u.IsActive == isActive);
+            var users = await _userManager.GetUsersInRoleAsync(Roles.Agente.ToString());
+            return users.Count(u => u.IsActive == isActive);
         }
 
         public async Task<int> GetUserClientAciveOrInactive(bool isActive = true)
         {
-            return await _userManager.Users.AsNoTracking()
-                .CountAsync(u => u.IsActive == isActive);
+            var users = await _userManager.GetUsersInRoleAsync(Roles.Cliente.ToString());
+            return users.Count(u => u.IsActive == isActive);
         }
 
         public async Task<int> GetUserDevelopersActiveOrInactive(bool isActive = true)
         {
-            return await _userManager.Users.AsNoTracking()
-               .CountAsync(u => u.IsActive == isActive);
+            var users = await _userManager.GetUsersInRoleAsync(Roles.Desarrollador.ToString());
+            return users.Count(u => u.IsActive == isActive);
         }
+
+       
+
         #endregion
         
     }

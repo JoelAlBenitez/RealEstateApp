@@ -39,18 +39,23 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
             if (existUser == null) {
                 return "No fue posible verificar su cuenta. Intente nuevamente más tarde.";
             }
-            var tokerVery = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
-            var result = await _userManager.ConfirmEmailAsync(existUser, tokerVery);
-            if (!result.Succeeded)
+            var roles = await _userManager.GetRolesAsync(existUser);
+            if (roles.Contains(Roles.Cliente.ToString()))
             {
-                return "Ocurrió un error al verificar su cuenta. Intente nuevamente más tarde.";
+                var tokerVery = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+                var result = await _userManager.ConfirmEmailAsync(existUser, tokerVery);
+                if (!result.Succeeded)
+                {
+                    return "Ocurrió un error al verificar su cuenta. Intente nuevamente más tarde.";
+                }
+
+                existUser.BlockedEmailSending = null;
+                existUser.IsActive = true;
+                await _userManager.UpdateSecurityStampAsync(existUser);
+                return "Su cuenta fue confirmada correctamente. Ya puede iniciar sesión y disfrutar de RealEstateApp.";
             }
 
-            existUser.BlockedEmailSending = null;
-            existUser.IsActive = true;
-            await _userManager.UpdateSecurityStampAsync(existUser);
-            return "Su cuenta fue confirmada correctamente. Ya puede iniciar sesión y disfrutar de RealEstateApp.";
-
+            return "Su cuenta no puede ser activada deste apartado. Favor de contactar con un administrador.";
         }
 
         public async Task<UserResponseDto> ForgoutPasswordAsync(
@@ -154,51 +159,54 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                 Roles = null!,
                 Errors = new List<string>(),
             };
-
             var existUser = await _userManager.FindByNameAsync(resendActivationEmailDto.UserName);
-            await _userManager.UpdateSecurityStampAsync(existUser!);
-            var generateTokens = await _generateTokens.GenerateTokenConfirmEmail(existUser!, resendActivationEmailDto.Origin);
+            var validate = await ValidateResentEmailConfirm(response, existUser!, resendActivationEmailDto);
+            if (validate != null && validate.HasError) return validate;
+           
+                await _userManager.UpdateSecurityStampAsync(existUser!);
+                var generateTokens = await _generateTokens.GenerateTokenConfirmEmail(existUser!, resendActivationEmailDto.Origin);
 
-            if(string.IsNullOrWhiteSpace(generateTokens))
-            {
-                response.HasError = true;
-                response.Errors.Add("Esta función no se encuentra disponible en este momento. Intente nuevamente más tarde.");
-                return response;
-            }
-
-            existUser!.EmailConfirmed = false;
-            existUser.IsActive = false;
-            var update =  await _userManager.UpdateAsync(existUser);
-
-            if (update.Succeeded)
-            {
-                existUser.BlockedEmailSending = DateTimeOffset.UtcNow.AddMinutes(5);
-                var send = await _emailServices.SendEmailAsync(new MessageDto
-                {
-                    To = existUser.Email!,
-                    Subject = "RealEstateApp",
-                    Body = "<div style = 'background:#4f46e5;color:white;padding:20px;text-align:center;font-size:20px;' >" +
-                        "<h2> RealEstateApp </h2> " +
-                        "<p> Ha solicitado un email de confirmación para su cuenta </p>" +
-                        $"<p style = 'color:#fff;' >{generateTokens}<p>" +
-                        "<p><b>Nota:</b> Si usted no ha realizado esta solicitud ignore este mensaje.</p>" +
-                        " </div>",
-                });
-                if (!send)
+                if (string.IsNullOrWhiteSpace(generateTokens))
                 {
                     response.HasError = true;
                     response.Errors.Add("Esta función no se encuentra disponible en este momento. Intente nuevamente más tarde.");
                     return response;
                 }
 
-                await _userManager.UpdateAsync(existUser);
-                return response;
-            }
+                existUser!.EmailConfirmed = false;
+                existUser.IsActive = false;
+                var update = await _userManager.UpdateAsync(existUser);
 
-            response.HasError = true;
-            response.Errors.Add("Esta función no se encuentra disponible en este momento. Intente nuevamente más tarde.");
-            return response;
-        }
+                if (update.Succeeded)
+                {
+                    existUser.BlockedEmailSending = DateTimeOffset.UtcNow.AddMinutes(5);
+                    var send = await _emailServices.SendEmailAsync(new MessageDto
+                    {
+                        To = existUser.Email!,
+                        Subject = "RealEstateApp",
+                        Body = "<div style = 'background:#4f46e5;color:white;padding:20px;text-align:center;font-size:20px;' >" +
+                            "<h2> RealEstateApp </h2> " +
+                            "<p> Ha solicitado un email de confirmación para su cuenta </p>" +
+                            $"<p style = 'color:#fff;' >{generateTokens}<p>" +
+                            "<p><b>Nota:</b> Si usted no ha realizado esta solicitud ignore este mensaje.</p>" +
+                            " </div>",
+                    });
+                    if (!send)
+                    {
+                        response.HasError = true;
+                        response.Errors.Add("Esta función no se encuentra disponible en este momento. Intente nuevamente más tarde.");
+                        return response;
+                    }
+
+                    await _userManager.UpdateAsync(existUser);
+                    return response;
+                }
+
+                response.HasError = true;
+                response.Errors.Add("Esta función no se encuentra disponible en este momento. Intente nuevamente más tarde.");
+                return response;
+          
+       }
 
         public async Task<UserResponseDto> ResetPasswordAsync(ResetPasswordDto resetPasswordDto)
         {
@@ -278,26 +286,30 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
         private async Task<UserResponseDto> ValidateLogin(UserResponseDto response,
             AppUsers user, LoginDto dto)
         {
-            if(string.IsNullOrWhiteSpace(dto.Password) || string.IsNullOrWhiteSpace(dto.EmailOrNameUser))
+            var rolesUser = await _userManager.GetRolesAsync(user);
+
+            if (string.IsNullOrWhiteSpace(dto.Password) || string.IsNullOrWhiteSpace(dto.EmailOrNameUser))
             {
                 response.HasError = true;
                 response.Errors.Add("Debe ingresar su correo o nombre de usuario y contraseña.");
                 return response;
             }
-            if (!user.EmailConfirmed && !user.IsActive)
-            {
-                response.HasError = true;
-                response.Errors.Add("El usuario se encuentra inactivo y no puede iniciar sesión.");
-                return response;
-            }
-            var rolesUser = await _userManager.GetRolesAsync(user);
             if (rolesUser.Contains(Roles.Desarrollador.ToString()))
             {
                 response.HasError = true;
                 response.Errors.Add("El usuario no tiene permisos para acceder a la aplicación web.");
                 return response;
             }
-
+            if (!user.EmailConfirmed || !user.IsActive)
+            {
+                response.HasError = true;
+                var message = rolesUser.Contains(Roles.Cliente.ToString()) ?
+                    "Su usuario se encuentra inactivo, solicte un correo de confirmación. Si el problema persiste contacte con el equipo de soporte."
+                    : "Su usuario se encuentra inactivo y no puede iniciar sesión. Favor contactar con un Administrador";
+                response.Errors.Add(message);
+                return response;
+            }
+           
             var verifyUser = await _signInManager.PasswordSignInAsync(user, dto.Password, false, true);
             if (!verifyUser.Succeeded)
             {
@@ -328,6 +340,13 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                 response.Errors.Add("Datos inválidos. Complete la solicitud correctamente.");
                 return response;
             }
+            if (existUser == null)
+            {
+                response.HasError = true;
+                response.Errors.Add("Debe ingresar un nombre de usuario válido.");
+                return response;
+            }
+
             if (string.IsNullOrWhiteSpace(resendActivationEmailDto.Origin))
             {
                 response.HasError = true;
@@ -335,12 +354,6 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                 return response;
             }
 
-            if (existUser == null)
-            {
-                response.HasError = true;
-                response.Errors.Add("Debe ingresar un nombre de usuario válido.");
-                return response;
-            }
             if (existUser.BlockedEmailSending.HasValue &&
               existUser.BlockedEmailSending!.Value > DateTimeOffset.UtcNow
               )
@@ -354,7 +367,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                 || roles.Contains(Roles.Desarrollador.ToString()))
             {
                 response.HasError = true;
-                response.Errors.Add("Esta funcionalidad se encuentra bloqueada para su usuario. Comuníquese con un administrador.");
+                response.Errors.Add("Esta funcionalidad se encuentra bloqueada para su usuario. Comuníquese con un Administrador.");
                 return response;
             }
             #endregion
