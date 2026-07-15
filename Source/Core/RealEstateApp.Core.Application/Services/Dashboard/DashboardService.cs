@@ -1,4 +1,5 @@
 using RealEstateApp.Core.Application.Common.Errors;
+using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.Contracts.Dashboard;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
@@ -23,19 +24,27 @@ namespace RealEstateApp.Core.Application.Services.Dashboard
         public async Task<ValidationResult<DashboardDto>> GetDashboardStatsAsync(bool showActive = true)
         {
             var propertyTotals = await _propertyService.GetTotalsByStatusAsync();
-            if (!propertyTotals.IsValid)
-                return ValidationResult<DashboardDto>.Failure(propertyTotals.Errors.ToArray());
+            if (!propertyTotals.IsValid || propertyTotals.Value == null)
+            {
+                return ValidationResult<DashboardDto>.Failure(
+                    propertyTotals.Errors.Count > 0 
+                        ? propertyTotals.Errors.ToArray() 
+                        : new[] { new Error("Oops", "No fue posible obtener las estadísticas de propiedades.") });
+            }
 
-            // TODO: IOperationalAccountWebApi todavía no tiene estos 3 métodos mergeados a development 
-            // (están en un PR sin aprobar de Joel).
-            // Firmas exactas esperadas:
-            // Task<int> GetUserAgentActiverOrInactive(bool isActive = true);
-            // Task<int> GetUserDevelopersActiveOrInactive(bool isActive = true);
-            // Task<int> GetUserClientAciveOrInactive(bool isActive = true);
-            
-            return await Task.FromResult(
-                ValidationResult<DashboardDto>.Failure(ErrorPendingIntegration.DashboardStats)
-            );
+            var agentsCount = await _internalAccountApi.GetUserAgentActiverOrInactive(showActive);
+            var devsCount = await _internalAccountApi.GetUserDevelopersActiveOrInactive(showActive);
+            var clientsCount = await _internalAccountApi.GetUserClientAciveOrInactive(showActive);
+
+            return ValidationResult<DashboardDto>.Success(new DashboardDto
+            {
+                AvailableProperties = propertyTotals.Value.AvailableProperties,
+                SoldProperties = propertyTotals.Value.SoldProperties,
+                AgentsCount = agentsCount,
+                ClientsCount = clientsCount,
+                DevelopersCount = devsCount,
+                ShowingActive = showActive
+            });
         }
     }
 }
