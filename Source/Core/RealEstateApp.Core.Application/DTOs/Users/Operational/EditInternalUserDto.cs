@@ -9,5 +9,6 @@ namespace RealEstateApp.Core.Application.DTOs.Users.Operational
         public required string UserName { get; set; }
         public  string? NewPassword { get; set; }
         public  string? ConfirmNewPassword { get; set; }
+        
     }
 }

@@ -5,6 +5,6 @@ namespace RealEstateApp.Core.Application.Contracts.Users.InternalUsers
 {
     public interface IAutheAccountWebApi
     {
-        Task<UserResponseDto> LoginAsync(LoginDto loginDto);
+        Task<LoginApiDtoResponse> LoginAsync(LoginDto loginDto);
     }
 }
