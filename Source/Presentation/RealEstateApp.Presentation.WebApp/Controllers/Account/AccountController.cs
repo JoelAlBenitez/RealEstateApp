@@ -103,18 +103,23 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
             return View("ConfirmEmail", response);
         }
 
-        //access deniged
-        public async Task<IActionResult> AccessDeniged()
+        //access denied
+        public IActionResult AccessDenied()
         {
-            TempData["Message"] = "No tiene permisos para acceder a esta sección.";
-            await _operationalAccountWebApp.SignOutAsync();
+            string homeController = "Home";
             if (User.IsInRole(Roles.Agente.ToString()))
-                return RedirectToRoute(new { controller = "Agent", action = "Index" });
+                homeController = "Agent";
             else if (User.IsInRole(Roles.Cliente.ToString()))
-                return RedirectToRoute(new { controller = "Customer", action = "Index" });
+                homeController = "Customer";
             else if (User.IsInRole(Roles.Administrador.ToString()))
-                return RedirectToRoute(new { controller = "Admin", action = "Index" });
-            return RedirectToAction("Index", "Home");
+                homeController = "Admin";
+
+            return View(new AccessDeniedViewModel
+            {
+                Message = "No tiene permisos para acceder a esta sección.",
+                HomeController = homeController,
+                HomeAction = "Index"
+            });
         }
 
         #endregion

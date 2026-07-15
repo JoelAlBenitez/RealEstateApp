@@ -112,7 +112,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Validate
                 response.Errors.Add("Datos inválidos. Complete los datos correctamente.");
                 return response;
             }
-            if (!Regex.IsMatch(editAgentUserDto.PhoneNumber, "^(809|829|849)-\\d{3}-\\d{4}$"))
+            if (!Regex.IsMatch(editAgentUserDto.PhoneNumber, @"^(809|829|849)\d{7}$"))
                 response.Errors.Add("Debe ingresar un número de teléfono válido de República Dominicana.");
 
             if (editAgentUserDto.ChangePorfileImg && string.IsNullOrWhiteSpace(editAgentUserDto.ProfileImg))

@@ -303,10 +303,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
             if (!user.EmailConfirmed || !user.IsActive)
             {
                 response.HasError = true;
-                var message = rolesUser.Contains(Roles.Cliente.ToString()) ?
-                    "Su usuario se encuentra inactivo, solicte un correo de confirmación. Si el problema persiste contacte con el equipo de soporte."
-                    : "Su usuario se encuentra inactivo y no puede iniciar sesión. Favor contactar con un Administrador";
-                response.Errors.Add(message);
+                response.Errors.Add("El usuario se encuentra inactivo y no puede iniciar sesión.");
                 return response;
             }
            

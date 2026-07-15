@@ -57,7 +57,7 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
                 opt.Cookie.HttpOnly = true;
                 opt.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 opt.Cookie.SameSite = SameSiteMode.Lax;
-                opt.AccessDeniedPath = "/Account/AccessDeniged";
+                opt.AccessDeniedPath = "/Account/AccessDenied";
                 opt.LoginPath = "/Account/Login";
                 opt.Events.OnRedirectToLogin = context =>
                 {
