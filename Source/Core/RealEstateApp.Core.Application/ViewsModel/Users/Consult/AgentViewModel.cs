@@ -1,4 +1,4 @@
-﻿using RealEstateApp.Core.Application.ViewsModel.Users.Consult.Base;
+using RealEstateApp.Core.Application.ViewsModel.Users.Consult;
 
 namespace RealEstateApp.Core.Application.ViewsModel.Users.Consult
 {
