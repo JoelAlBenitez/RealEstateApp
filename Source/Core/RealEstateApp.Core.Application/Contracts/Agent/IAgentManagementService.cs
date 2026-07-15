@@ -1,3 +1,4 @@
+
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
@@ -5,8 +6,7 @@ using RealEstateApp.Core.Domain.Common.ValidationResult;
 namespace RealEstateApp.Core.Application.Contracts.Agent
 {
     
-    // Trazabilidad: Corresponde a la pantalla "Listado de los agentes" del documento funcional.
-  
+
     public interface IAgentManagementService
     {
         // Obtiene el listado de agentes registrados
