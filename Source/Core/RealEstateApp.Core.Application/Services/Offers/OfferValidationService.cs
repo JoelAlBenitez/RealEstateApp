@@ -8,6 +8,7 @@ using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
+using RealEstateApp.Core.Domain.Common.Enums;
 
 namespace RealEstateApp.Core.Application.Services.Offers
 {
@@ -31,6 +32,13 @@ namespace RealEstateApp.Core.Application.Services.Offers
         {
             var errors = new List<Error>();
 
+            var roles = _userSession.GetRolesCurrentUser();
+            if (!roles.Contains(Roles.Cliente.ToString()))
+            {
+                errors.Add(new Error("Oferta.UsuarioNoAutorizado", "Solo los clientes pueden crear ofertas."));
+                return ValidationResult.Failure(errors);
+            }
+
             if (dto.Amount <= 0)
             {
                 errors.Add(OfferErrors.InvalidAmount);
@@ -40,7 +48,7 @@ namespace RealEstateApp.Core.Application.Services.Offers
             var isAvailable = await _propertyService.IsAvailableAsync(dto.PropertyId);
             if (!isAvailable)
             {
-                errors.Add(new Error("Offer.PropertyNotFound", "La propiedad especificada no existe o no está disponible."));
+                errors.Add(new Error("Oferta.PropiedadNoEncontrada", "La propiedad especificada no existe o no está disponible."));
                 return ValidationResult.Failure(errors);
             }
 
@@ -66,12 +74,20 @@ namespace RealEstateApp.Core.Application.Services.Offers
         public async Task<ValidationResult> ValidateForAcceptAsync(int offerId)
         {
             var errors = new List<Error>();
+
+            var roles = _userSession.GetRolesCurrentUser();
+            if (!roles.Contains(Roles.Agente.ToString()))
+            {
+                errors.Add(new Error("Oferta.UsuarioNoAutorizado", "Solo los agentes pueden aceptar ofertas."));
+                return ValidationResult.Failure(errors);
+            }
+
             var agentId = _userSession.GetIdCurrentUser();
 
             var offer = await _offerRepository.GetByIdAsync(offerId);
             if (offer == null)
             {
-                errors.Add(new Error("Offer.NotFound", "La oferta no existe."));
+                errors.Add(new Error("Oferta.NoEncontrada", "La oferta no existe."));
                 return ValidationResult.Failure(errors);
             }
 
@@ -84,7 +100,7 @@ namespace RealEstateApp.Core.Application.Services.Offers
             var propertyResult = await _propertyService.GetByIdAsync(offer.PropertyId);
             if (!propertyResult.IsValid || propertyResult.Value == null)
             {
-                errors.Add(new Error("Offer.PropertyNotFound", "La propiedad asociada a la oferta no existe."));
+                errors.Add(new Error("Oferta.PropiedadNoEncontrada", "La propiedad asociada a la oferta no existe."));
                 return ValidationResult.Failure(errors);
             }
             var property = propertyResult.Value;
@@ -96,7 +112,7 @@ namespace RealEstateApp.Core.Application.Services.Offers
 
             if (property.AgentId != agentId)
             {
-                errors.Add(new Error("Offer.UnauthorizedAgent", "No tiene permisos para gestionar ofertas en esta propiedad."));
+                errors.Add(new Error("Oferta.AgenteNoAutorizado", "No tiene permisos para gestionar ofertas en esta propiedad."));
             }
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();
@@ -105,6 +121,14 @@ namespace RealEstateApp.Core.Application.Services.Offers
         public async Task<ValidationResult> ValidateForRejectAsync(int offerId)
         {
             var errors = new List<Error>();
+
+            var roles = _userSession.GetRolesCurrentUser();
+            if (!roles.Contains(Roles.Agente.ToString()))
+            {
+                errors.Add(new Error("Oferta.UsuarioNoAutorizado", "Solo los agentes pueden rechazar ofertas."));
+                return ValidationResult.Failure(errors);
+            }
+
             var agentId = _userSession.GetIdCurrentUser();
 
             var offer = await _offerRepository.GetByIdAsync(offerId);
@@ -123,7 +147,7 @@ namespace RealEstateApp.Core.Application.Services.Offers
             var propertyResult = await _propertyService.GetByIdAsync(offer.PropertyId);
             if (!propertyResult.IsValid || propertyResult.Value == null || propertyResult.Value.AgentId != agentId)
             {
-                errors.Add(new Error("Offer.UnauthorizedAgent", "No tiene permisos para gestionar ofertas en esta propiedad."));
+                errors.Add(new Error("Oferta.AgenteNoAutorizado", "No tiene permisos para gestionar ofertas en esta propiedad."));
             }
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();
@@ -132,12 +156,20 @@ namespace RealEstateApp.Core.Application.Services.Offers
         public async Task<ValidationResult> ValidateForCancelAsync(int offerId)
         {
             var errors = new List<Error>();
+
+            var roles = _userSession.GetRolesCurrentUser();
+            if (!roles.Contains(Roles.Cliente.ToString()))
+            {
+                errors.Add(new Error("Oferta.UsuarioNoAutorizado", "Solo los clientes pueden cancelar ofertas."));
+                return ValidationResult.Failure(errors);
+            }
+
             var customerId = _userSession.GetIdCurrentUser();
 
             var offer = await _offerRepository.GetByIdAsync(offerId);
             if (offer == null)
             {
-                errors.Add(new Error("Offer.NotFound", "La oferta no existe."));
+                errors.Add(new Error("Oferta.NoEncontrada", "La oferta no existe."));
                 return ValidationResult.Failure(errors);
             }
 
@@ -148,7 +180,7 @@ namespace RealEstateApp.Core.Application.Services.Offers
 
             if (offer.CustomerId != customerId)
             {
-                errors.Add(new Error("Offer.UnauthorizedCustomer", "No tiene permisos para cancelar esta oferta."));
+                errors.Add(new Error("Oferta.ClienteNoAutorizado", "No tiene permisos para cancelar esta oferta."));
             }
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();

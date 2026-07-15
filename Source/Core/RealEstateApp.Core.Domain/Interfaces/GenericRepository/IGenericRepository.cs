@@ -1,4 +1,4 @@
-﻿namespace RealEstateApp.Core.Domain.Interfaces.GenericRepository
+namespace RealEstateApp.Core.Domain.Interfaces.GenericRepository
 {
     public interface IGenericRepository<TEntity, TKey> where  TEntity : class
     {
