@@ -15,5 +15,10 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
         Task DeletePropertiesByAgentAsync(string agentId);
         Task DeletePropertiesByPropertyTypeAsync(int propertyTypeId);
         Task DeletePropertiesBySaleTypeAsync(int saleTypeId);
+        Task<IReadOnlyCollection<int>> GetPropertyIdsByTypeAsync(int propertyTypeId);
+        Task<IReadOnlyCollection<int>> GetPropertyIdsBySaleTypeAsync(int saleTypeId);
+        Task<IReadOnlyCollection<Property>> GetPropertiesByPropertyTypeWithImagesAsync(int propertyTypeId);
+        Task<IReadOnlyCollection<Property>> GetPropertiesBySaleTypeWithImagesAsync(int saleTypeId);
+        Task<IReadOnlyCollection<Property>> GetPropertiesByAgentWithImagesAsync(string agentId);
     }
 }

@@ -149,5 +149,49 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
                 .Where(p => p.SaleTypeId == saleTypeId)
                 .ExecuteDeleteAsync();
         }
+        public async Task<IReadOnlyCollection<int>> GetPropertyIdsByTypeAsync(int propertyTypeId)
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .Where(p => p.PropertyTypeId == propertyTypeId)
+                .Select(p => p.Id)
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyCollection<int>> GetPropertyIdsBySaleTypeAsync(int saleTypeId)
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .Where(p => p.SaleTypeId == saleTypeId)
+                .Select(p => p.Id)
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyCollection<Property>> GetPropertiesByPropertyTypeWithImagesAsync(int propertyTypeId)
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .Include(p => p.Images)
+                .Where(p => p.PropertyTypeId == propertyTypeId)
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyCollection<Property>> GetPropertiesBySaleTypeWithImagesAsync(int saleTypeId)
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .Include(p => p.Images)
+                .Where(p => p.SaleTypeId == saleTypeId)
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyCollection<Property>> GetPropertiesByAgentWithImagesAsync(string agentId)
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .Include(p => p.Images)
+                .Where(p => p.AgentId == agentId)
+                .ToListAsync();
+        }
     }
 }

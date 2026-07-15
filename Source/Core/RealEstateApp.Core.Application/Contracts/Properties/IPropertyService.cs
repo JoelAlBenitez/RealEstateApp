@@ -19,7 +19,9 @@ namespace RealEstateApp.Core.Application.Contracts.Properties
         Task<ValidationResult<int>> CountByPropertyTypeAsync(int propertyTypeId);
         Task<ValidationResult<int>> CountBySaleTypeAsync(int saleTypeId);
         Task<ValidationResult<int>> CountByImprovementAsync(int improvementId);
-        Task<ValidationResult> DeleteByPropertyTypeAsync(int propertyTypeId);
-        Task<ValidationResult> DeleteBySaleTypeAsync(int saleTypeId);
+        Task<ValidationResult<IReadOnlyCollection<int>>> GetPropertyIdsByTypeAsync(int propertyTypeId);
+        Task<ValidationResult<IReadOnlyCollection<int>>> GetPropertyIdsBySaleTypeAsync(int saleTypeId);
+        Task<ValidationResult> DeletePropertiesByTypeAsync(int propertyTypeId);
+        Task<ValidationResult> DeletePropertiesBySaleTypeAsync(int saleTypeId);
     }
 }

@@ -259,7 +259,17 @@ namespace RealEstateApp.Core.Application.Services.Properties
         {
             try
             {
-                await _propertyRepository.DeletePropertiesByAgentAsync(agentId);
+                var properties = await _propertyRepository.GetPropertiesByAgentWithImagesAsync(agentId);
+                foreach (var property in properties)
+                {
+                    if (property.Images != null && property.Images.Any())
+                    {
+                        var urls = property.Images.Select(img => img.ImageUrl).ToList();
+                        await _fileManager.DeleteManyAsync(urls, "Properties");
+                    }
+                    await _propertyRepository.DeleteAsync(property);
+                }
+                await _propertyRepository.SaveAsync();
                 return ValidationResult.Success();
             }
             catch (Exception)
@@ -405,11 +415,47 @@ namespace RealEstateApp.Core.Application.Services.Properties
             }
         }
 
-        public async Task<ValidationResult> DeleteByPropertyTypeAsync(int propertyTypeId)
+        public async Task<ValidationResult<IReadOnlyCollection<int>>> GetPropertyIdsByTypeAsync(int propertyTypeId)
         {
             try
             {
-                await _propertyRepository.DeletePropertiesByPropertyTypeAsync(propertyTypeId);
+                var ids = await _propertyRepository.GetPropertyIdsByTypeAsync(propertyTypeId);
+                return ValidationResult<IReadOnlyCollection<int>>.Success(ids);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<IReadOnlyCollection<int>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
+            }
+        }
+
+        public async Task<ValidationResult<IReadOnlyCollection<int>>> GetPropertyIdsBySaleTypeAsync(int saleTypeId)
+        {
+            try
+            {
+                var ids = await _propertyRepository.GetPropertyIdsBySaleTypeAsync(saleTypeId);
+                return ValidationResult<IReadOnlyCollection<int>>.Success(ids);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<IReadOnlyCollection<int>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
+            }
+        }
+
+        public async Task<ValidationResult> DeletePropertiesByTypeAsync(int propertyTypeId)
+        {
+            try
+            {
+                var properties = await _propertyRepository.GetPropertiesByPropertyTypeWithImagesAsync(propertyTypeId);
+                foreach (var property in properties)
+                {
+                    if (property.Images != null && property.Images.Any())
+                    {
+                        var urls = property.Images.Select(img => img.ImageUrl).ToList();
+                        await _fileManager.DeleteManyAsync(urls, "Properties");
+                    }
+                    await _propertyRepository.DeleteAsync(property);
+                }
+                await _propertyRepository.SaveAsync();
                 return ValidationResult.Success();
             }
             catch (Exception)
@@ -418,11 +464,21 @@ namespace RealEstateApp.Core.Application.Services.Properties
             }
         }
 
-        public async Task<ValidationResult> DeleteBySaleTypeAsync(int saleTypeId)
+        public async Task<ValidationResult> DeletePropertiesBySaleTypeAsync(int saleTypeId)
         {
             try
             {
-                await _propertyRepository.DeletePropertiesBySaleTypeAsync(saleTypeId);
+                var properties = await _propertyRepository.GetPropertiesBySaleTypeWithImagesAsync(saleTypeId);
+                foreach (var property in properties)
+                {
+                    if (property.Images != null && property.Images.Any())
+                    {
+                        var urls = property.Images.Select(img => img.ImageUrl).ToList();
+                        await _fileManager.DeleteManyAsync(urls, "Properties");
+                    }
+                    await _propertyRepository.DeleteAsync(property);
+                }
+                await _propertyRepository.SaveAsync();
                 return ValidationResult.Success();
             }
             catch (Exception)
