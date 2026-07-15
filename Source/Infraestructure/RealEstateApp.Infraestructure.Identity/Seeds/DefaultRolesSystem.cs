@@ -7,10 +7,19 @@ namespace RealEstateApp.Infraestructure.Identity.Seeds
     {
         public static async Task AddDefaultRolesSystem(RoleManager<IdentityRole> userRole)
         {
-            await userRole.CreateAsync(new IdentityRole(Roles.Agente.ToString()));
-            await userRole.CreateAsync(new IdentityRole(Roles.Desarrollador.ToString()));
-            await userRole.CreateAsync(new IdentityRole(Roles.Administrador.ToString()));
-            await userRole.CreateAsync(new IdentityRole(Roles.Cliente.ToString()));
+            string[] defaultRoles =
+            [
+                Roles.Agente.ToString(),
+                Roles.Desarrollador.ToString(),
+                Roles.Administrador.ToString(),
+                Roles.Cliente.ToString()
+            ];
+
+            foreach (var role in defaultRoles)
+            {
+                if (!await userRole.RoleExistsAsync(role))
+                    await userRole.CreateAsync(new IdentityRole(role));
+            }
         }
     }
 }

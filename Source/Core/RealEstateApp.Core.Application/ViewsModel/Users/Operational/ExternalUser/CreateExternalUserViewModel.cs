@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using RealEstateApp.Core.Application.ViewsModel.Users.Operational.Base;
 using System.ComponentModel.DataAnnotations;
 
@@ -7,14 +7,14 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Operational.ExternalUs
     public sealed class CreateExternalUserViewModel : CreateBaseUserViewModel
     {
 
-        [Required(ErrorMessage = "El numero de telefono ingresado debe ser valido y cumplir con el formato de republica dominicana")]
-        [StringLength(10, ErrorMessage = "El numero de telefono debe tener exactamente 10 caracteres sin guion", MinimumLength =10)]
-        [Phone]
+        [Required(ErrorMessage = "El número de teléfono es requerido y debe cumplir con el formato de República Dominicana.")]
+        [StringLength(10, ErrorMessage = "El número de teléfono debe tener exactamente 10 dígitos, sin guiones.", MinimumLength = 10)]
+        [Phone(ErrorMessage = "Debe ingresar un número de teléfono válido.")]
         [DataType(DataType.PhoneNumber)]
-        [Display(Name = "Numero telefonico")]
+        [Display(Name = "Número de teléfono")]
         public required string PhoneNumber { get; set; }
 
-        [Required(ErrorMessage = "Debe ingresar una imagen de perfil valida para ser procesada (PNG, JPEG, JPG)")]
+        [Required(ErrorMessage = "El archivo seleccionado no tiene un formato de imagen válido.")]
         [Display(Name = "Imagen de perfil")]
         public required IFormFile ProfileImg { get; set; }
     }

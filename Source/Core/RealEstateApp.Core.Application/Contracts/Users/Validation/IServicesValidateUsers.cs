@@ -15,7 +15,7 @@ namespace RealEstateApp.Core.Application.Contracts.Users.Validation
             );
         Task<EditResponseDto> UpdateInternalValidateUserAsync (
             EditInternalUserDto editInternalUserDto,
-            UserResponseDto response
+            EditResponseDto response
             );
         Task<EditResponseDto> UpdateExternalValidateUserAsync(
             EditAgentUserDto editAgentUserDto,
