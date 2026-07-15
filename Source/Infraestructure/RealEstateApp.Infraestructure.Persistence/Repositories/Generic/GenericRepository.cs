@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RealEstateApp.Core.Domain.Interfaces.GenericRepository;
 using RealEstateApp.Infraestructure.Persistence.Context;
 

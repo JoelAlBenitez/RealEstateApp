@@ -1,4 +1,4 @@
-﻿namespace RealEstateApp.Core.Domain.Common.Errors
+namespace RealEstateApp.Core.Domain.Common.Errors
 {
     public sealed record Error(string Code, string Description);
 
