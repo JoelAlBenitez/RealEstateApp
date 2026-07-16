@@ -101,7 +101,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var result = await _accountService.UpdateAgentAsync(editDto);
             if (result.HasError)
             {
-                TempData["ErrorMessage"] = "Ocurrió un error al actualizar el perfil.";
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault() ?? "Ocurrió un error al actualizar el perfil.";
                 return View(model);
             }
 

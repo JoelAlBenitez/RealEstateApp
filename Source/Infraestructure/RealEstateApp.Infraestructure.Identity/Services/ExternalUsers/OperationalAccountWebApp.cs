@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using RealEstateApp.Core.Application.Contracts.EmailServices;
@@ -136,11 +136,16 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                     return response;
                 }
 
-                string Id = "";
-                if (!string.IsNullOrWhiteSpace(editAgent.ProfileImg))
+                string oldImgFolderId = "";
+                if (editAgent.ChangePorfileImg && !string.IsNullOrWhiteSpace(existUser.ProfileImg))
                 {
-                    Id = editAgent.ProfileImg.Split('/')[2];
+                    var segments = existUser.ProfileImg.Split('/');
+                    if (segments.Length > 2)
+                    {
+                        oldImgFolderId = segments[2];
+                    }
                 }
+
                 existUser.Name = editAgent.Name;
                 existUser.LastName = editAgent.LastName;
                 existUser.PhoneNumber = editAgent.PhoneNumber;
@@ -158,8 +163,11 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                     return response;
                 }
 
-                if (!await DeleteProfileImgAsync(response, Id, editAgent, transaction))
-                    return response;
+                if (editAgent.ChangePorfileImg && !string.IsNullOrWhiteSpace(oldImgFolderId))
+                {
+                    if (!await DeleteProfileImgAsync(response, oldImgFolderId, editAgent, transaction))
+                        return response;
+                }
 
                 await transaction.CommitAsync();
                 return response;

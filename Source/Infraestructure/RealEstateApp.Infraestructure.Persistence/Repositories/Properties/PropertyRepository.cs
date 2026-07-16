@@ -43,6 +43,11 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
                 .FirstOrDefaultAsync(p => p.Code == code && p.Status == PropertyState.Available);
         }
 
+        public async Task<bool> ExistsCodeAsync(string code)
+        {
+            return await _context.Properties.AnyAsync(p => p.Code == code);
+        }
+
         public async Task<IReadOnlyCollection<Property>> GetFilteredPropertiesAsync(PropertyFilterCriteria criteria, int pageNumber = 1, int pageSize = 10)
         {
             var query = _context.Properties

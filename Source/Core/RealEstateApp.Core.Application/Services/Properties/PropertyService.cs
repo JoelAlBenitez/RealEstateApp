@@ -52,8 +52,7 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 do
                 {
                     code = random.Next(100000, 999999).ToString();
-                    var existProperty = await _propertyRepository.GetAvailablePropertyByCodeAsync(code);
-                    codeExists = existProperty != null;
+                    codeExists = await _propertyRepository.ExistsCodeAsync(code);
                 } while (codeExists);
                 dto.Code = code;
 
@@ -117,6 +116,17 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 {
                     return validation;
                 }
+
+                var property = await _propertyRepository.GetByIdWithImagesAsync(id);
+                if (property != null && property.Images != null && property.Images.Any())
+                {
+                    var ids = property.Images
+                        .Select(img => System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(img.ImageUrl)))
+                        .Where(name => !string.IsNullOrEmpty(name))
+                        .ToList();
+                    await _fileManager.DeleteManyAsync(ids!, "Properties");
+                }
+
                 return await base.RemoveAsync(id);
             }
             catch (Exception ex)
@@ -278,8 +288,11 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 {
                     if (property.Images != null && property.Images.Any())
                     {
-                        var urls = property.Images.Select(img => img.ImageUrl).ToList();
-                        await _fileManager.DeleteManyAsync(urls, "Properties");
+                        var ids = property.Images
+                            .Select(img => System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(img.ImageUrl)))
+                            .Where(name => !string.IsNullOrEmpty(name))
+                            .ToList();
+                        await _fileManager.DeleteManyAsync(ids!, "Properties");
                     }
                     await _propertyRepository.DeleteAsync(property);
                 }
@@ -354,7 +367,11 @@ namespace RealEstateApp.Core.Application.Services.Properties
 
                 if (urlsToRemove.Any())
                 {
-                    await _fileManager.DeleteManyAsync(urlsToRemove, "Properties");
+                    var idsToRemove = urlsToRemove
+                        .Select(url => System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(url)))
+                        .Where(name => !string.IsNullOrEmpty(name))
+                        .ToList();
+                    await _fileManager.DeleteManyAsync(idsToRemove!, "Properties");
                 }
 
                 var updatedImagesList = currentImages.Where(img => urlsToKeep.Contains(img.ImageUrl)).ToList();
@@ -464,8 +481,11 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 {
                     if (property.Images != null && property.Images.Any())
                     {
-                        var urls = property.Images.Select(img => img.ImageUrl).ToList();
-                        await _fileManager.DeleteManyAsync(urls, "Properties");
+                        var ids = property.Images
+                            .Select(img => System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(img.ImageUrl)))
+                            .Where(name => !string.IsNullOrEmpty(name))
+                            .ToList();
+                        await _fileManager.DeleteManyAsync(ids!, "Properties");
                     }
                     await _propertyRepository.DeleteAsync(property);
                 }
@@ -487,8 +507,11 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 {
                     if (property.Images != null && property.Images.Any())
                     {
-                        var urls = property.Images.Select(img => img.ImageUrl).ToList();
-                        await _fileManager.DeleteManyAsync(urls, "Properties");
+                        var ids = property.Images
+                            .Select(img => System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(img.ImageUrl)))
+                            .Where(name => !string.IsNullOrEmpty(name))
+                            .ToList();
+                        await _fileManager.DeleteManyAsync(ids!, "Properties");
                     }
                     await _propertyRepository.DeleteAsync(property);
                 }
