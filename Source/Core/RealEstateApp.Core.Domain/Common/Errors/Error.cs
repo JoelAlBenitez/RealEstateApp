@@ -1,5 +1,5 @@
 namespace RealEstateApp.Core.Domain.Common.Errors
 {
-    public sealed class Error(string Code, string Description);
+    public sealed record Error(string Code, string Description);
 
 }

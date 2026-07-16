@@ -1,4 +1,7 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Auth;
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Consult;
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Operational;
 using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.Contracts.FavoriteProperties;
 using RealEstateApp.Core.Application.Contracts.Offers;
@@ -7,9 +10,6 @@ using RealEstateApp.Core.Application.Services.Properties;
 using RealEstateApp.Core.Application.Services.FavoriteProperties;
 using RealEstateApp.Core.Application.Services.Offers;
 using RealEstateApp.Core.Application.Services.MessagesAtC;
-using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Auth;
-using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Consult;
-using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Operational;
 using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Properties;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Property;
 using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.FavoriteProperty;
@@ -37,6 +37,18 @@ namespace RealStateApp.IOC
                 configuration.AddMaps(typeof(CreateInternalUserDtoToViewModelAndReverse).Assembly);
                 configuration.AddMaps(typeof(EditExternalUserDtoToViewModelAndReverse).Assembly);
                 configuration.AddMaps(typeof(EditInternalUserDtoToViewModelAndReverse).Assembly);
+                configuration.AddMaps(typeof(ResendEmailConfirmDtoToViewModelAndReverse).Assembly);
+                #endregion
+
+                #region maper users
+                configuration.AddMaps(typeof(ForgoutPasswordDtoToViewModelAndReverse).Assembly);
+                configuration.AddMaps(typeof(LoginUserDtoToViewModelAndReverse).Assembly);
+                configuration.AddMaps(typeof(ResetPasswordDtoToViewModelAndReverse).Assembly);
+                configuration.AddMaps(typeof(ConsultAgentDtoToViewModel).Assembly);
+                configuration.AddMaps(typeof(CreateExternalUserDtoToViewModelAndReverse).Assembly);
+                configuration.AddMaps(typeof(CreateInternalUserDtoToViewModelAndReverse).Assembly);
+                configuration.AddMaps(typeof(EditExternalUserDtoToViewModelAndReverse).Assembly);
+                configuration.AddMaps(typeof(EditInternalUserDtoToViewModelAndReverse).Assembly);
                 #endregion 
 
                 #region maper customer
@@ -51,6 +63,7 @@ namespace RealStateApp.IOC
                 #endregion
             });
 
+            #region customer services
             services.AddScoped<IPropertyService, PropertyService>();
             services.AddScoped<IFavoritePropertyService, FavoritePropertyService>();
             services.AddScoped<IOfferService, OfferService>();
@@ -60,8 +73,9 @@ namespace RealStateApp.IOC
             services.AddScoped<IFavoritePropertyValidationService, FavoritePropertyValidationService>();
             services.AddScoped<IOfferValidationService, OfferValidationService>();
             services.AddScoped<IMessageAtCValidationService, MessageAtCValidationService>();
-
+            #endregion
             return services;
         }
     }
 }
+

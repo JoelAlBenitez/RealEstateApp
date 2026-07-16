@@ -10,6 +10,7 @@ using RealEstateApp.Infraestructure.Persistence.Repositories.FavoriteProperties;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Messages;
 using RealEstateApp.Infraestructure.Persistence.Repositories.PropertyImprovements;
 
+
 namespace RealStateApp.IOC
 {
     public static class InfraestructurePersistenceDependencies
@@ -19,11 +20,12 @@ namespace RealStateApp.IOC
         {
             services.AddDbContext<DbContextRealEstateApp>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-
+            #region customer repositories
             services.AddScoped<IPropertyRepository, PropertyRepository>();
             services.AddScoped<IOfferRepository, OfferRepository>();
             services.AddScoped<IFavoritePropertyRepository, FavoritePropertyRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
+            #endregion
             services.AddScoped<IPropertyImprovementRepository, PropertyImprovementRepository>();
 
             return services;
