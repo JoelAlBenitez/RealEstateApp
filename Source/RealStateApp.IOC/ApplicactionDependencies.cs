@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
+using RealEstateApp.Core.Application.Contracts.Admin;
+using RealEstateApp.Core.Application.Services.Admin;
+using RealEstateApp.Core.Application.Contracts.Dashboard;
+using RealEstateApp.Core.Application.Services.Dashboard;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Auth;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Consult;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Operational;
@@ -74,6 +78,13 @@ namespace RealStateApp.IOC
             services.AddScoped<IOfferValidationService, OfferValidationService>();
             services.AddScoped<IMessageAtCValidationService, MessageAtCValidationService>();
             #endregion
+
+            #region Admin and Dashboard services
+            services.AddScoped<IAdministratorService, AdministratorService>();
+            services.AddScoped<IAdministratorValidationService, AdministratorValidationService>();
+            services.AddScoped<IDashboardService, DashboardService>();
+            #endregion
+
             return services;
         }
     }
