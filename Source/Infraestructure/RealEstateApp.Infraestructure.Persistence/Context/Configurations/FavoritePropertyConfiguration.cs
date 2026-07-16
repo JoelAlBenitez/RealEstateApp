@@ -15,6 +15,9 @@ namespace RealEstateApp.Infraestructure.Persistence.Context.Configurations
             builder.Property(fp => fp.CustomerId)
                 .IsRequired();
 
+            builder.HasIndex(fp => new { fp.CustomerId, fp.PropertyId })
+                .IsUnique();
+
             builder.HasOne(fp => fp.Property)
                 .WithMany()
                 .HasForeignKey(fp => fp.PropertyId)

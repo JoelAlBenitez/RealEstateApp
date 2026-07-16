@@ -68,7 +68,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             var hasPendingOffer = offersResult.IsValid && offersResult.Value != null &&
                                   offersResult.Value.Any(o => o.PropertyId == id && o.Status == OfferState.Pending);
 
-            var propertyOffersResult = await _offerService.GetPendingByPropertyAsync(id);
+            var propertyOffersResult = await _offerService.GetOffersByCustomerAndPropertyAsync(id);
             var propertyOffers = propertyOffersResult.IsValid && propertyOffersResult.Value != null
                 ? _mapper.Map<List<OfferViewModel>>(propertyOffersResult.Value)
                 : new List<OfferViewModel>();

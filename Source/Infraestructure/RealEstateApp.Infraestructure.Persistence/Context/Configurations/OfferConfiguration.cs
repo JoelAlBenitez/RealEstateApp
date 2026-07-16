@@ -15,6 +15,10 @@ namespace RealEstateApp.Infraestructure.Persistence.Context.Configurations
             builder.HasIndex(o => o.CustomerId);
             builder.HasIndex(o => o.PropertyId);
 
+            builder.HasIndex(o => new { o.CustomerId, o.PropertyId })
+                .HasFilter("Status = 1")
+                .IsUnique();
+
             builder.Property(o => o.CustomerId)
                 .IsRequired();
 

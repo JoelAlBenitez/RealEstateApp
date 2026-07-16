@@ -64,7 +64,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var result = await _offerService.AcceptOfferAsync(offerId);
             if (!result.IsValid)
             {
-                TempData["ErrorMessage"] = "Ocurrió un error al procesar la aceptación de la oferta.";
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al procesar la aceptación de la oferta.";
             }
 
             return RedirectToAction(nameof(Index), new { propertyId });
@@ -84,7 +84,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var result = await _offerService.RejectOfferAsync(offerId);
             if (!result.IsValid)
             {
-                TempData["ErrorMessage"] = "Ocurrió un error al procesar el rechazo de la oferta.";
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al procesar el rechazo de la oferta.";
             }
 
             return RedirectToAction(nameof(Index), new { propertyId });

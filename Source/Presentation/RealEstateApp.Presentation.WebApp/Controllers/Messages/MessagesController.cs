@@ -74,7 +74,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             var result = await _messageService.AddAsync(dto);
             if (!result.IsValid)
             {
-                TempData["ErrorMessage"] = "Ocurrió un error al enviar el mensaje.";
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al enviar el mensaje.";
             }
 
             return RedirectToAction(nameof(Conversation), new { agentId = model.AgentId, propertyId = model.PropertyId });

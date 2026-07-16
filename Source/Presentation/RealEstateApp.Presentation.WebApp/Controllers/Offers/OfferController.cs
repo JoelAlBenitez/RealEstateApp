@@ -53,7 +53,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
             var result = await _offerService.AddAsync(dto);
             if (!result.IsValid)
             {
-                TempData["ErrorMessage"] = "Ocurrió un error al crear la oferta.";
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al crear la oferta.";
                 return RedirectToAction("Details", "Customer", new { id = model.PropertyId });
             }
 
@@ -67,7 +67,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
             var result = await _offerService.CancelOfferAsync(offerId);
             if (!result.IsValid)
             {
-                TempData["ErrorMessage"] = "Ocurrió un error al cancelar la oferta.";
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al cancelar la oferta.";
             }
 
             return RedirectToAction(nameof(Index));

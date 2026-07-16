@@ -8,6 +8,7 @@ using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Application.Contracts.FileManager;
+using Microsoft.Extensions.Logging;
 
 namespace RealEstateApp.Core.Application.Services.Properties
 {
@@ -17,19 +18,22 @@ namespace RealEstateApp.Core.Application.Services.Properties
         private readonly IPropertyValidationService _validationService;
         private readonly IFileManager _fileManager;
         private readonly IPropertyImprovementRepository _propertyImprovementRepository;
+        private readonly ILogger<PropertyService> _logger;
 
         public PropertyService(
             IPropertyRepository propertyRepository,
             IPropertyValidationService validationService,
             IMapper mapper,
             IFileManager fileManager,
-            IPropertyImprovementRepository propertyImprovementRepository)
+            IPropertyImprovementRepository propertyImprovementRepository,
+            ILogger<PropertyService> _logger)
             : base(propertyRepository, mapper)
         {
             _propertyRepository = propertyRepository;
             _validationService = validationService;
             _fileManager = fileManager;
             _propertyImprovementRepository = propertyImprovementRepository;
+            this._logger = _logger;
         }
 
         public override async Task<ValidationResult> AddAsync(SavePropertyDto dto)
@@ -97,8 +101,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
 
                 return ValidationResult.Failure(new Error("Oops", "Ocurrió un error al procesar la solicitud. Favor inténtelo de nuevo más tarde."));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
         }
@@ -114,8 +119,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 }
                 return await base.RemoveAsync(id);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
         }
@@ -139,8 +145,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var dtos = _mapper.Map<IReadOnlyCollection<PropertyDto>>(properties);
                 return ValidationResult<IReadOnlyCollection<PropertyDto>>.Success(dtos);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<IReadOnlyCollection<PropertyDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }
@@ -157,8 +164,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var dto = _mapper.Map<PropertyDto>(property);
                 return ValidationResult<PropertyDto>.Success(dto);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<PropertyDto>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }
@@ -167,7 +175,7 @@ namespace RealEstateApp.Core.Application.Services.Properties
         {
             try
             {
-                var property = await _propertyRepository.GetByIdAsync(id);
+                var property = await _propertyRepository.GetByIdWithImagesAsync(id);
                 if (property == null)
                 {
                     return ValidationResult<PropertyDto>.Failure(new List<Error> { new Error("Property.NotFound", "La propiedad no existe.") });
@@ -175,8 +183,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var dto = _mapper.Map<PropertyDto>(property);
                 return ValidationResult<PropertyDto>.Success(dto);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<PropertyDto>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }
@@ -189,8 +198,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var dtos = _mapper.Map<IReadOnlyCollection<PropertyDto>>(properties);
                 return ValidationResult<IReadOnlyCollection<PropertyDto>>.Success(dtos);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<IReadOnlyCollection<PropertyDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }
@@ -203,8 +213,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var dtos = _mapper.Map<IReadOnlyCollection<PropertyDto>>(properties);
                 return ValidationResult<IReadOnlyCollection<PropertyDto>>.Success(dtos);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<IReadOnlyCollection<PropertyDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }
@@ -217,8 +228,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var dtos = _mapper.Map<IReadOnlyCollection<PropertyDto>>(properties);
                 return ValidationResult<IReadOnlyCollection<PropertyDto>>.Success(dtos);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<IReadOnlyCollection<PropertyDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }
@@ -235,8 +247,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 };
                 return ValidationResult<PropertyTotalsDto>.Success(totals);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<PropertyTotalsDto>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }
@@ -249,8 +262,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var count = properties.Count(p => p.AgentId == agentId);
                 return ValidationResult<int>.Success(count);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }
@@ -269,11 +283,11 @@ namespace RealEstateApp.Core.Application.Services.Properties
                     }
                     await _propertyRepository.DeleteAsync(property);
                 }
-                await _propertyRepository.SaveAsync();
                 return ValidationResult.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
         }
@@ -361,16 +375,11 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 property.Images = updatedImagesList;
 
                 await _propertyRepository.UpdateAsync(property);
-                var result = await _propertyRepository.SaveAsync();
-                if (result > 0)
-                {
-                    return ValidationResult.Success();
-                }
-
-                return ValidationResult.Failure(new Error("Oops", "Ocurrió un error al procesar la solicitud."));
+                return ValidationResult.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento."));
             }
         }
@@ -383,8 +392,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var count = properties.Count(p => p.PropertyTypeId == propertyTypeId);
                 return ValidationResult<int>.Success(count);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
             }
         }
@@ -397,8 +407,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var count = properties.Count(p => p.SaleTypeId == saleTypeId);
                 return ValidationResult<int>.Success(count);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
             }
         }
@@ -409,8 +420,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
             {
                 return await Task.FromResult(ValidationResult<int>.Success(0));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
             }
         }
@@ -422,8 +434,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var ids = await _propertyRepository.GetPropertyIdsByTypeAsync(propertyTypeId);
                 return ValidationResult<IReadOnlyCollection<int>>.Success(ids);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<IReadOnlyCollection<int>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
             }
         }
@@ -435,8 +448,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var ids = await _propertyRepository.GetPropertyIdsBySaleTypeAsync(saleTypeId);
                 return ValidationResult<IReadOnlyCollection<int>>.Success(ids);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<IReadOnlyCollection<int>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
             }
         }
@@ -455,11 +469,11 @@ namespace RealEstateApp.Core.Application.Services.Properties
                     }
                     await _propertyRepository.DeleteAsync(property);
                 }
-                await _propertyRepository.SaveAsync();
                 return ValidationResult.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento."));
             }
         }
@@ -478,11 +492,11 @@ namespace RealEstateApp.Core.Application.Services.Properties
                     }
                     await _propertyRepository.DeleteAsync(property);
                 }
-                await _propertyRepository.SaveAsync();
                 return ValidationResult.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento."));
             }
         }
@@ -494,8 +508,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 var property = await _propertyRepository.GetByIdAsync(propertyId);
                 return property != null && property.Status == PropertyState.Available;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return false;
             }
         }

@@ -78,7 +78,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var result = await _propertyService.AddAsync(dto);
             if (!result.IsValid)
             {
-                TempData["ErrorMessage"] = "Ocurrió un error al crear la propiedad.";
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al crear la propiedad.";
                 // await PopulateDropdownsAsync(model);
                 return View(model);
             }
@@ -129,7 +129,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var result = await _propertyService.UpdateAsync(dto);
             if (result != null && !result.IsValid)
             {
-                TempData["ErrorMessage"] = "Ocurrió un error al actualizar la propiedad.";
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al actualizar la propiedad.";
                 // await PopulateDropdownsAsync(model);
                 return View(model);
             }
@@ -165,7 +165,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var deleteResult = await _propertyService.RemoveAsync(id);
             if (!deleteResult.IsValid)
             {
-                TempData["ErrorMessage"] = "Ocurrió un error al eliminar la propiedad.";
+                TempData["ErrorMessage"] = deleteResult.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al eliminar la propiedad.";
                 return RedirectToAction(nameof(Index));
             }
 
