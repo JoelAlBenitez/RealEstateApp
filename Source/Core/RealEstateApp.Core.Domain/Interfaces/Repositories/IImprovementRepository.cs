@@ -9,7 +9,7 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
         Task<int> CountByImprovementAsync(int improvementId);
         
         // Al eliminar, solo se remueve la relación PropertyImprovement, NO las
-        // propiedades (documento: "Las propiedades asociadas a la mejora no
+        // propiedades (el doocumento dice : "Las propiedades asociadas a la mejora no
         // deben eliminarse"). PENDIENTE: confirmar con Sebastián cómo se maneja
         // la tabla puente PropertyImprovement.
     }

@@ -1,14 +1,19 @@
-﻿using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
+﻿using RealEstateApp.Core.Application.Contracts.Users.Base;
+using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 using RealEstateApp.Core.Application.DTOs.Users.Response;
 using RealEstateApp.Core.Domain.Common.Enums;
 
 namespace RealEstateApp.Core.Application.Contracts.Users.InternalUsers
 {
-    public interface IOperationalAccountWebApi
+    public interface IOperationalAccountWebApi : IBaseAccountUser
     {
         Task<UserResponseDto> CreateInternalUserAsync(RegisterInternalUsersDto register);
-        Task<UserResponseDto> UpdateInternalUserAsync(EditInternalUserDto edit);
+        Task<EditResponseDto> UpdateInternalUserAsync(EditInternalUserDto edit);
+        Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAgentPendientConfirmAccount();
+        Task<int> GetUserAgentActiverOrInactive(bool isActive = true);
+        Task<int> GetUserDevelopersActiveOrInactive(bool isActive = true);
+        Task<int> GetUserClientAciveOrInactive(bool isActive = true);
         Task<IReadOnlyCollection<GetInternalUserDto>> GetAllInternalUsersByRol(Roles roles);
         Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAllAgentesByConsultAdmin();
     }

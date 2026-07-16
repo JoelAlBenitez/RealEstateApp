@@ -12,6 +12,8 @@ namespace RealEstateApp.Infraestructure.Identity.Context
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
+
             builder.HasDefaultSchema("Identity");
             builder.Entity<AppUsers>().ToTable("Users");
             builder.Entity<IdentityRole<string>>().ToTable("UserRoles");
