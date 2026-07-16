@@ -40,7 +40,11 @@ namespace RealStateApp.IOC
                 configuration.AddMaps(typeof(ResendEmailConfirmDtoToViewModelAndReverse).Assembly);
                 #endregion
 
-               
+                #region propertys public
+                configuration.AddMaps(typeof(PropertyFilterDtoToViewModel).Assembly);
+                configuration.AddMaps(typeof(PropertyPublicDtoToViewModel).Assembly);
+                configuration.AddMaps(typeof(PropertyDetailPublicConsultDtoToViewModel).Assembly);
+                #endregion
 
                 #region maper customer
                 configuration.AddProfile<PropertyMappingProfile>();
