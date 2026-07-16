@@ -44,6 +44,7 @@ namespace RealStateApp.IOC
                 configuration.AddMaps(typeof(PropertyFilterDtoToViewModel).Assembly);
                 configuration.AddMaps(typeof(PropertyPublicDtoToViewModel).Assembly);
                 configuration.AddMaps(typeof(PropertyDetailPublicConsultDtoToViewModel).Assembly);
+                configuration.AddMaps(typeof(ConsultAgentByNameOrLastNameDtoToViewModel).Assembly);
                 #endregion
 
                 #region maper customer

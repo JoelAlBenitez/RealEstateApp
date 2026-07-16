@@ -198,9 +198,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
         public async Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentAllViewHomeByCustomer()
         {
             var result = await _userManager.GetUsersInRoleAsync(Roles.Agente.ToString());
-          
             if (result == null) return [];
-            
             var agents = result.Where(a => a.IsActive)
             .Select( a  => new CustomerConsultAgentDto
             {
@@ -238,6 +236,22 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                 PhoneNumber  = result.PhoneNumber!,
                 ProfileImgAgent = result.ProfileImg
             };
+        }
+
+        public async Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentByConsultCustomer(ConsultAgentByNameOrLastNameDto dto)
+        {
+            var cosultAgent = await _userManager.Users
+                .Where(u => u.IsActive && (u.Name == dto.Name || u.LastName == dto.Name)).ToListAsync();
+            if (cosultAgent == null) return null!;
+            var select = cosultAgent.Select( u =>
+            new CustomerConsultAgentDto
+            {
+                Id = u.Id,
+                LastName = u.LastName,
+                Name = u.Name,
+                ProfileImgAgent = u.ProfileImg    
+            }).ToList();
+            return select;
         }
         #endregion
 
@@ -279,6 +293,8 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
             await contextTransaction.RollbackAsync();
             return false;
         }
+
+      
         #endregion
     }
 
