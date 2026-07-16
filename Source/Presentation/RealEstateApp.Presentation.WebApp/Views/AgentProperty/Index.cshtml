@@ -25,30 +25,30 @@
     }
     else
     {
-        <div class="card shadow-sm border-0" style="border-radius: var(--radius-card);">
+        <div class="card shadow-sm border-0" style="border-radius: var(--radius-card); background: var(--color-surface);">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="ps-4 py-3">Código</th>
-                                <th class="py-3">Imagen</th>
-                                <th class="py-3">Precio</th>
-                                <th class="py-3">Habs</th>
-                                <th class="py-3">Baños</th>
-                                <th class="py-3">Construcción</th>
-                                <th class="pe-4 py-3 text-end">Acciones</th>
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr style="background: var(--color-surface-variant); border-bottom: 1px solid var(--color-border);">
+                                <th class="ps-4 py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Código</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Imagen</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Precio</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Habs</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Baños</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Construcción</th>
+                                <th class="pe-4 py-3 text-end" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var property in Model)
                             {
-                                <tr>
-                                    <td class="ps-4 fw-bold text-dark">@property.Code</td>
+                                <tr style="border-bottom: 1px solid var(--color-border);">
+                                    <td class="ps-4 fw-bold" style="color: var(--color-text);">@property.Code</td>
                                     <td>
                                         @if (!string.IsNullOrEmpty(property.ImageUrl))
                                         {
-                                            <img src="~/@property.ImageUrl" class="rounded shadow-sm" style="width: 60px; height: 45px; object-fit: cover;" alt="Miniatura de @property.Code" />
+                                            <img src="/@property.ImageUrl" class="rounded shadow-sm" style="width: 60px; height: 45px; object-fit: cover;" alt="Miniatura de @property.Code" />
                                         }
                                         else
                                         {

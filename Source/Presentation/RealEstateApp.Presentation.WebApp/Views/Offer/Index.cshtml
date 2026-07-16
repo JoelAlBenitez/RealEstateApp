@@ -24,23 +24,23 @@
     }
     else
     {
-        <div class="card shadow-sm border-0" style="border-radius: var(--radius-card);">
+        <div class="card shadow-sm border-0" style="border-radius: var(--radius-card); background: var(--color-surface);">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="ps-4 py-3">Código de Propiedad</th>
-                                <th class="py-3">Monto Ofertado</th>
-                                <th class="py-3">Fecha Realizada</th>
-                                <th class="py-3">Estado</th>
-                                <th class="pe-4 py-3 text-end">Acción</th>
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr style="background: var(--color-surface-variant); border-bottom: 1px solid var(--color-border);">
+                                <th class="ps-4 py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Código de Propiedad</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Monto Ofertado</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Fecha Realizada</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Estado</th>
+                                <th class="pe-4 py-3 text-end" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Acción</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var offer in Model)
                             {
-                                <tr>
+                                <tr style="border-bottom: 1px solid var(--color-border);">
                                     <td class="ps-4">
                                         <a asp-controller="Customer" asp-action="Details" asp-route-id="@offer.PropertyId" class="fw-bold text-decoration-none" style="color: var(--color-primary);">
                                             @offer.PropertyCode

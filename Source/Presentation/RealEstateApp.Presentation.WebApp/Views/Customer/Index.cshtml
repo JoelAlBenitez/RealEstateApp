@@ -4,69 +4,71 @@
     ViewData["Title"] = "Propiedades Disponibles";
 }
 
-<div class="row">
-    <!-- Sidebar de Filtros -->
-    <div class="col-lg-3 mb-4">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h5 class="card-title fw-bold mb-3" style="color: var(--color-primary);">Filtrar Propiedades</h5>
-                <form asp-controller="Customer" asp-action="Index" method="get">
-                    <div class="mb-3">
-                        <label for="PropertyTypeId" class="form-label fw-semibold">Tipo de Propiedad</label>
-                        <select class="form-select" id="PropertyTypeId" name="PropertyTypeId">
-                            <option value="">Todos los tipos</option>
-                            <option value="1">Casa</option>
-                            <option value="2">Apartamento</option>
-                            <option value="3">Villa</option>
-                            <option value="4">Solar</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Rango de Precio</label>
-                        <div class="input-group mb-2">
-                            <span class="input-group-text">$</span>
-                            <input type="number" class="form-control" name="MinPrice" placeholder="Mínimo" min="0" />
+<div class="row g-4">
+    <div class="col-xl-3 col-lg-4">
+        <div class="sticky-top" style="top: 80px;">
+            <div class="card shadow-sm border-0" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4" style="color: var(--color-primary);">Filtrar Propiedades</h5>
+                    <form asp-controller="Customer" asp-action="Index" method="get">
+                        <div class="mb-3">
+                            <label for="PropertyTypeId" class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Tipo de Propiedad</label>
+                            <select class="form-select" id="PropertyTypeId" name="PropertyTypeId" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);">
+                                <option value="">Todos los tipos</option>
+                                <option value="1">Casa</option>
+                                <option value="2">Apartamento</option>
+                                <option value="3">Villa</option>
+                                <option value="4">Solar</option>
+                            </select>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="number" class="form-control" name="MaxPrice" placeholder="Máximo" min="0" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Rango de Precio</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text-secondary);">$</span>
+                                <input type="number" class="form-control" name="MinPrice" placeholder="Mínimo" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text-secondary);">$</span>
+                                <input type="number" class="form-control" name="MaxPrice" placeholder="Máximo" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="Bedrooms" class="form-label fw-semibold">Habitaciones</label>
-                        <input type="number" class="form-control" id="Bedrooms" name="Bedrooms" placeholder="Ej: 3" min="0" />
-                    </div>
+                        <div class="mb-3">
+                            <label for="Bedrooms" class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Habitaciones</label>
+                            <input type="number" class="form-control" id="Bedrooms" name="Bedrooms" placeholder="Ej: 3" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="Bathrooms" class="form-label fw-semibold">Baños</label>
-                        <input type="number" class="form-control" id="Bathrooms" name="Bathrooms" placeholder="Ej: 2" min="0" />
-                    </div>
+                        <div class="mb-4">
+                            <label for="Bathrooms" class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Baños</label>
+                            <input type="number" class="form-control" id="Bathrooms" name="Bathrooms" placeholder="Ej: 2" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
+                        </div>
 
-                    <button type="submit" class="rea-btn rea-btn--primary w-100 mt-2">Buscar</button>
-                    <a asp-controller="Customer" asp-action="Index" class="rea-btn rea-btn--secondary w-100 mt-2">Limpiar Filtros</a>
-                </form>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="rea-btn rea-btn--primary w-100">Buscar</button>
+                            <a asp-controller="Customer" asp-action="Index" class="rea-btn rea-btn--secondary w-100">Limpiar Filtros</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Listado de Propiedades -->
-    <div class="col-lg-9">
+    <div class="col-xl-9 col-lg-8">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold" style="color: var(--color-text);">Resultados Encontrados</h2>
+            <h2 class="fw-bold mb-0" style="color: var(--color-text);">Resultados Encontrados</h2>
             <span class="badge bg-secondary">@Model.Count propiedades</span>
         </div>
 
         @if (!Model.Any())
         {
-            <div class="alert alert-info border-0 shadow-sm">
+            <div class="alert alert-info border-0 shadow-sm text-center py-5">
                 No se encontraron propiedades que coincidan con los criterios de búsqueda.
             </div>
         }
         else
         {
-            <div class="row row-cols-1 row-cols-md-2 g-4">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
                 @foreach (var property in Model)
                 {
                     <div class="col">
@@ -74,7 +76,7 @@
                             <div style="position: relative; height: 220px; overflow: hidden; background-color: var(--color-surface-variant);">
                                 @if (!string.IsNullOrEmpty(property.ImageUrl))
                                 {
-                                    <img src="~/@property.ImageUrl" class="w-100 h-100" style="object-fit: cover;" alt="Imagen de la propiedad @property.Code" />
+                                    <img src="/@property.ImageUrl" class="w-100 h-100" style="object-fit: cover;" alt="Imagen de la propiedad @property.Code" />
                                 }
                                 else
                                 {
@@ -108,15 +110,9 @@
                                 </p>
                                 <hr class="my-2" style="color: var(--color-border);" />
                                 <div class="d-flex justify-content-between text-muted mb-3" style="font-size: 0.9rem;">
-                                    <span>
-                                        <strong>@property.Bedrooms</strong> habs
-                                    </span>
-                                    <span>
-                                        <strong>@property.Bathrooms</strong> baños
-                                    </span>
-                                    <span>
-                                        <strong>@property.Size</strong> m²
-                                    </span>
+                                    <span><strong>@property.Bedrooms</strong> habs</span>
+                                    <span><strong>@property.Bathrooms</strong> baños</span>
+                                    <span><strong>@property.Size</strong> m²</span>
                                 </div>
                                 <a asp-controller="Customer" asp-action="Details" asp-route-id="@property.Id" class="rea-btn rea-btn--primary w-100 text-center">Ver Detalles</a>
                             </div>
