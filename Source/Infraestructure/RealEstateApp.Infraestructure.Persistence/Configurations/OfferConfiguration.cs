@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RealEstateApp.Core.Domain.Entities;
 
-namespace RealEstateApp.Infraestructure.Persistence.Context.Configurations
+namespace RealEstateApp.Infraestructure.Persistence.Configurations
 {
     public class OfferConfiguration : IEntityTypeConfiguration<Offer>
     {
