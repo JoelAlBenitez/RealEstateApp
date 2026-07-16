@@ -41,13 +41,8 @@ namespace RealEstateApp.Core.Application.Services.Admin
             return ValidationResult.Success();
         }
 
-        public async Task<ValidationResult> EditAsync(EditInternalUserDto dto, string currentAdminId)
+        public async Task<ValidationResult> EditAsync(EditInternalUserDto dto)
         {
-            var validationResult = _administratorValidationService.ValidateSelfEdit(dto, currentAdminId);
-            if (!validationResult.IsValid)
-            {
-                return validationResult;
-            }
 
             var result = await _internalAccountApi.UpdateInternalUserAsync(dto);
             if (result.HasError)

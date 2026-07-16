@@ -8,18 +8,6 @@ namespace RealEstateApp.Core.Application.Services.Admin
 {
     public sealed class AdministratorValidationService : IAdministratorValidationService
     {
-        public ValidationResult ValidateSelfEdit(EditInternalUserDto dto, string currentAdminId)
-        {
-            var errors = new List<Error>();
-            
-            if (dto.Id == currentAdminId)
-            {
-                errors.Add(ErrorAdministrator.SelfEdit);
-            }
-            
-            return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();
-        }
-
         public ValidationResult ValidateSelfInactivation(AlterStateUserDto dto, string currentAdminId)
         {
             var errors = new List<Error>();
