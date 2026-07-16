@@ -75,7 +75,7 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 if (dto.ImageFiles != null && dto.ImageFiles.Any())
                 {
                     var savedPaths = await _fileManager.SaveManyAsync(dto.ImageFiles, "Properties");
-                    foreach (var path in savedPaths)
+                    foreach (var path in savedPaths.Files)
                     {
                         images.Add(new PropertyImage
                         {
@@ -348,7 +348,7 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 {
                     var savedPaths = await _fileManager.SaveManyAsync(dto.ImageFiles, "Properties");
                     
-                    var newPropertyImages = savedPaths.Select(path => new PropertyImage
+                    var newPropertyImages = savedPaths.Files.Select(path => new PropertyImage
                     {
                         PropertyId = property.Id,
                         ImageUrl = path,
