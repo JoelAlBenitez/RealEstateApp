@@ -1,0 +1,154 @@
+@using RealEstateApp.Core.Application.ViewsModel.Property
+@model SavePropertyViewModel
+@{
+    ViewData["Title"] = "Registrar Propiedad";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0" style="border-radius: var(--radius-card);">
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <a asp-action="Index" class="text-decoration-none d-inline-flex align-items-center" style="color: var(--color-primary); font-weight: 600;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                            </svg>
+                            Volver al listado
+                        </a>
+                    </div>
+
+                    <h2 class="fw-bold mb-4" style="color: var(--color-primary);">Registrar Nueva Propiedad</h2>
+                    <p class="text-muted mb-5">Completa todos los datos requeridos para publicar la propiedad.</p>
+
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Basic Information Row -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" asp-for="PropertyTypeId">Tipo de Propiedad</label>
+                                <select class="form-select form-select-lg" asp-for="PropertyTypeId">
+                                    <option value="">Seleccione un tipo...</option>
+                                    <option value="1">Casa</option>
+                                    <option value="2">Apartamento</option>
+                                    <option value="3">Villa</option>
+                                    <option value="4">Solar</option>
+                                </select>
+                                <span class="field-validation-error text-danger" asp-validation-for="PropertyTypeId"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" asp-for="SaleTypeId">Tipo de Venta</label>
+                                <select class="form-select form-select-lg" asp-for="SaleTypeId">
+                                    <option value="">Seleccione un tipo...</option>
+                                    <option value="1">Venta</option>
+                                    <option value="2">Alquiler</option>
+                                </select>
+                                <span class="field-validation-error text-danger" asp-validation-for="SaleTypeId"></span>
+                            </div>
+                        </div>
+
+                        <!-- Price & Size Row -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" asp-for="Price">Precio</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" asp-for="Price" step="0.01" min="0.01" placeholder="Monto" />
+                                </div>
+                                <span class="field-validation-error text-danger" asp-validation-for="Price"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" asp-for="Size">Tamaño (m²)</label>
+                                <input type="number" class="form-control form-control-lg" asp-for="Size" step="0.01" min="1" placeholder="Metraje" />
+                                <span class="field-validation-error text-danger" asp-validation-for="Size"></span>
+                            </div>
+                        </div>
+
+                        <!-- Beds & Baths Row -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" asp-for="Bedrooms">Habitaciones</label>
+                                <input type="number" class="form-control form-control-lg" asp-for="Bedrooms" min="0" placeholder="Ej: 3" />
+                                <span class="field-validation-error text-danger" asp-validation-for="Bedrooms"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" asp-for="Bathrooms">Baños</label>
+                                <input type="number" class="form-control form-control-lg" asp-for="Bathrooms" min="0" placeholder="Ej: 2" />
+                                <span class="field-validation-error text-danger" asp-validation-for="Bathrooms"></span>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold" asp-for="Description">Descripción</label>
+                            <textarea class="form-control" asp-for="Description" rows="5" placeholder="Describe los detalles de la propiedad, ubicación, comodidades, etc." maxlength="1000"></textarea>
+                            <span class="field-validation-error text-danger" asp-validation-for="Description"></span>
+                        </div>
+
+                        <!-- Improvements Selection -->
+                        <div class="mb-4 border-top pt-4">
+                            <label class="form-label fw-bold mb-3 d-block">Mejoras de la Propiedad</label>
+                            <div class="row row-cols-2 row-cols-md-3 g-3">
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp1" value="1" @(Model.ImprovementIds.Contains(1) ? "checked" : "") />
+                                        <label class="form-check-label" for="imp1">Piscina</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp2" value="2" @(Model.ImprovementIds.Contains(2) ? "checked" : "") />
+                                        <label class="form-check-label" for="imp2">Gimnasio</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp3" value="3" @(Model.ImprovementIds.Contains(3) ? "checked" : "") />
+                                        <label class="form-check-label" for="imp3">Parqueo</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp4" value="4" @(Model.ImprovementIds.Contains(4) ? "checked" : "") />
+                                        <label class="form-check-label" for="imp4">Jardín</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp5" value="5" @(Model.ImprovementIds.Contains(5) ? "checked" : "") />
+                                        <label class="form-check-label" for="imp5">Terraza</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp6" value="6" @(Model.ImprovementIds.Contains(6) ? "checked" : "") />
+                                        <label class="form-check-label" for="imp6">Seguridad 24/7</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="field-validation-error text-danger" asp-validation-for="ImprovementIds"></span>
+                        </div>
+
+                        <!-- Image Upload (1 to 4 images required) -->
+                        <div class="mb-5 border-top pt-4">
+                            <label class="form-label fw-bold mb-2" asp-for="ImageFiles">Imágenes de la Propiedad</label>
+                            <input class="form-control form-control-lg" type="file" asp-for="ImageFiles" accept="image/*" multiple />
+                            <span class="text-muted font-sm d-block mt-1">Sube entre 1 y 4 fotos claras de la propiedad.</span>
+                            <span class="field-validation-error text-danger" asp-validation-for="ImageFiles"></span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-flex justify-content-between align-items-center border-top pt-4">
+                            <a asp-action="Index" class="rea-btn rea-btn--secondary">Cancelar</a>
+                            <button type="submit" class="rea-btn rea-btn--primary">Registrar Propiedad</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

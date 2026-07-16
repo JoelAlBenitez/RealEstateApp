@@ -1,0 +1,80 @@
+@using RealEstateApp.Core.Application.ViewsModel.Offer
+@model List<OfferViewModel>
+@{
+    ViewData["Title"] = $"Ofertas de Propiedad {ViewBag.PropertyCode}";
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <a asp-controller="AgentProperty" asp-action="Index" class="text-decoration-none d-inline-flex align-items-center" style="color: var(--color-primary); font-weight: 600;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Volver a mis propiedades
+        </a>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: var(--color-text);">Ofertas Recibidas</h2>
+            <p class="text-muted mb-0">Propiedad Código: <strong>@ViewBag.PropertyCode</strong></p>
+        </div>
+        <span class="badge bg-primary">@Model.Count ofertas pendientes</span>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info border-0 shadow-sm text-center py-5">
+            <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 text-muted">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+            <h4 class="fw-bold">No hay ofertas pendientes</h4>
+            <p class="text-muted m-0">No se han registrado ofertas pendientes de respuesta para esta propiedad en este momento.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0" style="border-radius: var(--radius-card);">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4 py-3">Cliente</th>
+                                <th class="py-3">Correo</th>
+                                <th class="py-3">Monto Ofertado</th>
+                                <th class="py-3">Fecha</th>
+                                <th class="pe-4 py-3 text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var offer in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold">@offer.CustomerName</td>
+                                    <td>@offer.CustomerEmail</td>
+                                    <td class="fw-bold text-success" style="font-size: 1.1rem;">@string.Format("{0:C}", offer.Amount)</td>
+                                    <td>@offer.CreateAt.ToString("dd/MM/yyyy hh:mm tt")</td>
+                                    <td class="pe-4 text-end">
+                                        <form asp-controller="AgentOffers" asp-action="Accept" method="post" class="d-inline-block me-2" onsubmit="return confirm('¿Está seguro de que desea aceptar esta oferta? Se marcará la propiedad como VENDIDA y se rechazarán las demás ofertas automáticamente.');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="offerId" value="@offer.Id" />
+                                            <input type="hidden" name="propertyId" value="@ViewBag.PropertyId" />
+                                            <button type="submit" class="btn btn-success btn-sm px-3 fw-semibold">Aceptar</button>
+                                        </form>
+                                        <form asp-controller="AgentOffers" asp-action="Reject" method="post" class="d-inline-block" onsubmit="return confirm('¿Está seguro de que desea rechazar esta oferta?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="offerId" value="@offer.Id" />
+                                            <input type="hidden" name="propertyId" value="@ViewBag.PropertyId" />
+                                            <button type="submit" class="btn btn-outline-danger btn-sm px-3">Rechazar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>

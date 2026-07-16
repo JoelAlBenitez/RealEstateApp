@@ -1,0 +1,269 @@
+@using RealEstateApp.Core.Application.ViewsModel.Property
+@using RealEstateApp.Core.Domain.Common.Enums.OfferStatus
+@using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus
+@model PropertyDetailViewModel
+@{
+    ViewData["Title"] = $"Propiedad {Model.Code}";
+}
+
+<div class="container py-4">
+    <!-- Back link -->
+    <div class="mb-4">
+        <a asp-action="Index" class="text-decoration-none d-inline-flex align-items-center" style="color: var(--color-primary); font-weight: 600;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Volver al listado
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Main details -->
+        <div class="col-lg-8 mb-4">
+            <!-- Image gallery -->
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-card); overflow: hidden;">
+                @if (Model.ImageUrls != null && Model.ImageUrls.Any())
+                {
+                    <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            @for (int i = 0; i < Model.ImageUrls.Count; i++)
+                            {
+                                <button type="button" data-bs-target="#propertyCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : "false")" aria-label="Slide @(i + 1)"></button>
+                            }
+                        </div>
+                        <div class="carousel-inner" style="height: 480px; background-color: var(--color-surface-variant);">
+                            @for (int i = 0; i < Model.ImageUrls.Count; i++)
+                            {
+                                <div class="carousel-item @(i == 0 ? "active" : "") h-100">
+                                    <img src="~/@Model.ImageUrls[i]" class="d-block w-100 h-100" style="object-fit: cover;" alt="Foto de la propiedad @Model.Code">
+                                </div>
+                            }
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Siguiente</span>
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center" style="height: 350px; background-color: var(--color-surface-variant); color: var(--color-text-secondary);">
+                        <div class="text-center">
+                            <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            <p class="m-0 fw-semibold">Esta propiedad no posee imágenes registradas.</p>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Property Description & Info -->
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-card);">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <span class="badge bg-primary mb-2">CÓDIGO: @Model.Code</span>
+                            <h2 class="fw-bold mb-0">Detalles de la Propiedad</h2>
+                        </div>
+                        <div class="text-end">
+                            <h3 class="fw-bold text-primary mb-0">@string.Format("{0:C}", Model.Price)</h3>
+                            <span class="text-muted">Precio estimado</span>
+                        </div>
+                    </div>
+
+                    <p class="text-muted fs-5 mb-4" style="white-space: pre-line;">
+                        @Model.Description
+                    </p>
+
+                    <h4 class="fw-bold mb-3 border-bottom pb-2">Características</h4>
+                    <div class="row row-cols-3 text-center mb-4">
+                        <div class="col py-3 border-end">
+                            <h5 class="fw-bold text-primary mb-1">@Model.Bedrooms</h5>
+                            <span class="text-muted font-sm">Habitaciones</span>
+                        </div>
+                        <div class="col py-3 border-end">
+                            <h5 class="fw-bold text-primary mb-1">@Model.Bathrooms</h5>
+                            <span class="text-muted font-sm">Baños</span>
+                        </div>
+                        <div class="col py-3">
+                            <h5 class="fw-bold text-primary mb-1">@Model.Size m²</h5>
+                            <span class="text-muted font-sm">Área Construida</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Offers list -->
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-card);">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3 border-bottom pb-2">Mis Ofertas</h4>
+                    @if (Model.Offers == null || !Model.Offers.Any())
+                    {
+                        <p class="text-muted m-0">No has realizado ninguna oferta por esta propiedad.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Monto de Oferta</th>
+                                        <th>Fecha Realizada</th>
+                                        <th>Estado</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var offer in Model.Offers)
+                                    {
+                                        <tr>
+                                            <td class="fw-bold text-primary">@string.Format("{0:C}", offer.Amount)</td>
+                                            <td>@offer.CreateAt.ToString("dd/MM/yyyy hh:mm tt")</td>
+                                            <td>
+                                                @if (offer.Status == OfferState.Pending)
+                                                {
+                                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                                }
+                                                else if (offer.Status == OfferState.Accepted)
+                                                {
+                                                    <span class="badge bg-success">Aceptada</span>
+                                                }
+                                                else if (offer.Status == OfferState.Rejected)
+                                                {
+                                                    <span class="badge bg-danger">Rechazada</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (offer.Status == OfferState.Pending)
+                                                {
+                                                    <form asp-controller="Offer" asp-action="Cancel" method="post" onsubmit="return confirm('¿Está seguro de que desea cancelar esta oferta?');">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="offerId" value="@offer.Id" />
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm">Cancelar</button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">—</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Actions -->
+        <div class="col-lg-4">
+            <!-- Favorite button state -->
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-card);">
+                <div class="card-body p-4 text-center">
+                    <form asp-controller="Favorite" asp-action="@(Model.IsFavorite ? "Remove" : "Add")" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="propertyId" value="@Model.Id" />
+                        <button type="submit" class="rea-btn @(Model.IsFavorite ? "rea-btn--secondary" : "rea-btn--primary") w-100 justify-content-center">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="@(Model.IsFavorite ? "#E85D4F" : "none")" stroke="@(Model.IsFavorite ? "#E85D4F" : "currentColor")" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                            </svg>
+                            @(Model.IsFavorite ? "Remover de Favoritos" : "Agregar a Favoritos")
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Agent Contact Info -->
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-card);">
+                <div class="card-body p-4 text-center">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Agente Inmobiliario</h5>
+                    <div class="mb-3">
+                        @if (!string.IsNullOrEmpty(Model.AgentPhotoUrl))
+                        {
+                            <img src="~/@Model.AgentPhotoUrl" class="rounded-circle shadow-sm" style="width: 100px; height: 100px; object-fit: cover;" alt="Foto de @Model.AgentName" />
+                        }
+                        else
+                        {
+                            <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 100px; height: 100px; color: var(--color-primary);">
+                                <svg viewBox="0 0 24 24" width="50" height="50" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                            </div>
+                        }
+                    </div>
+                    <h4 class="fw-bold mb-1">@Model.AgentName</h4>
+                    <p class="text-muted font-sm mb-3">Agente Autorizado</p>
+
+                    <div class="text-start mb-4">
+                        <div class="d-flex align-items-center mb-2 text-muted">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                            <span>@Model.AgentPhone</span>
+                        </div>
+                        <div class="d-flex align-items-center text-muted" style="word-break: break-all;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="m22 7-10 6L2 7"/>
+                            </svg>
+                            <span>@Model.AgentEmail</span>
+                        </div>
+                    </div>
+
+                    <!-- Message Form / Chat start -->
+                    <form asp-controller="Messages" asp-action="Send" method="post" class="border-top pt-3">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="PropertyId" value="@Model.Id" />
+                        <input type="hidden" name="AgentId" value="@Model.AgentId" />
+                        <div class="mb-3 text-start">
+                            <label for="chatMessage" class="form-label fw-semibold">Enviar mensaje al Agente</label>
+                            <textarea class="form-control" id="chatMessage" name="Content" rows="3" placeholder="Hola, estoy interesado en esta propiedad..." required maxlength="500"></textarea>
+                        </div>
+                        <button type="submit" class="rea-btn rea-btn--primary w-100 justify-content-center">Iniciar Conversación</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Create Offer form -->
+            @if (Model.Status == PropertyState.Available)
+            {
+                <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-card);">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3 border-bottom pb-2 text-center">Realizar una Oferta</h5>
+                        @if (Model.HasPendingOffer)
+                        {
+                            <div class="alert alert-warning border-0 m-0">
+                                Ya tienes una oferta pendiente de respuesta para esta propiedad. Debes esperar a que sea procesada o cancelarla antes de ofertar nuevamente.
+                            </div>
+                        }
+                        else
+                        {
+                            <form asp-controller="Offer" asp-action="Create" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="PropertyId" value="@Model.Id" />
+                                <div class="mb-3">
+                                    <label for="offerAmount" class="form-label fw-semibold">Monto de la Oferta</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="offerAmount" name="Amount" step="0.01" min="0.01" placeholder="Monto" required />
+                                    </div>
+                                </div>
+                                <button type="submit" class="rea-btn rea-btn--primary w-100 justify-content-center">Enviar Oferta</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
