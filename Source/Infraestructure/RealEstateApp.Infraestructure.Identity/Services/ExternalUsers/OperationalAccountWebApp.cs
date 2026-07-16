@@ -198,8 +198,11 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
         public async Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentAllViewHomeByCustomer()
         {
             var result = await _userManager.GetUsersInRoleAsync(Roles.Agente.ToString());
+          
             if (result == null) return [];
-            var agents = result.Select(a => new CustomerConsultAgentDto
+            
+            var agents = result.Where(a => a.IsActive)
+            .Select( a  => new CustomerConsultAgentDto
             {
                 Id = a.Id,
                 Name = a.Name,
@@ -212,6 +215,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
         {
             var result = await _userManager.FindByNameAsync(userName);
             if (result == null) return null!;
+            if(!result.IsActive || !result.EmailConfirmed) return null!;
             return new CustomerConsultAgentDto
             {
                 Id = result!.Id,

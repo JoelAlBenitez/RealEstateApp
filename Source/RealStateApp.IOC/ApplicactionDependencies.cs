@@ -40,16 +40,7 @@ namespace RealStateApp.IOC
                 configuration.AddMaps(typeof(ResendEmailConfirmDtoToViewModelAndReverse).Assembly);
                 #endregion
 
-                #region maper users
-                configuration.AddMaps(typeof(ForgoutPasswordDtoToViewModelAndReverse).Assembly);
-                configuration.AddMaps(typeof(LoginUserDtoToViewModelAndReverse).Assembly);
-                configuration.AddMaps(typeof(ResetPasswordDtoToViewModelAndReverse).Assembly);
-                configuration.AddMaps(typeof(ConsultAgentDtoToViewModel).Assembly);
-                configuration.AddMaps(typeof(CreateExternalUserDtoToViewModelAndReverse).Assembly);
-                configuration.AddMaps(typeof(CreateInternalUserDtoToViewModelAndReverse).Assembly);
-                configuration.AddMaps(typeof(EditExternalUserDtoToViewModelAndReverse).Assembly);
-                configuration.AddMaps(typeof(EditInternalUserDtoToViewModelAndReverse).Assembly);
-                #endregion 
+               
 
                 #region maper customer
                 configuration.AddProfile<PropertyMappingProfile>();
