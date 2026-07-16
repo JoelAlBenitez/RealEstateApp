@@ -15,7 +15,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         {
             return await _context.Properties
                 .AsNoTracking()
-                .Include(p => p.Images)
+                .Include(p => p.Images.OrderByDescending(img => img.CreateAt))
                 .Where(p => p.Status == PropertyState.Available)
                 .OrderByDescending(p => p.CreateAt)
                 .Skip((pageNumber - 1) * pageSize)
@@ -27,7 +27,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         {
             return await _context.Properties
                 .AsNoTracking()
-                .Include(p => p.Images)
+                .Include(p => p.Images.OrderByDescending(img => img.CreateAt))
                 .Where(p => p.AgentId == agentId && p.Status == PropertyState.Available)
                 .OrderByDescending(p => p.CreateAt)
                 .Skip((pageNumber - 1) * pageSize)
@@ -39,7 +39,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         {
             return await _context.Properties
                 .AsNoTracking()
-                .Include(p => p.Images)
+                .Include(p => p.Images.OrderByDescending(img => img.CreateAt))
                 .FirstOrDefaultAsync(p => p.Code == code && p.Status == PropertyState.Available);
         }
 
@@ -52,8 +52,13 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         {
             var query = _context.Properties
                 .AsNoTracking()
-                .Include(p => p.Images)
+                .Include(p => p.Images.OrderByDescending(img => img.CreateAt))
                 .Where(p => p.Status == PropertyState.Available);
+
+            if (criteria.PropertyTypeId.HasValue)
+            {
+                query = query.Where(p => p.PropertyTypeId == criteria.PropertyTypeId.Value);
+            }
 
             if (criteria.MinPrice.HasValue)
             {
@@ -86,7 +91,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         {
             return await _context.Properties
                 .AsNoTracking()
-                .Include(p => p.Images)
+                .Include(p => p.Images.OrderByDescending(img => img.CreateAt))
                 .Where(p => p.AgentId == agentId)
                 .OrderByDescending(p => p.CreateAt)
                 .Skip((pageNumber - 1) * pageSize)
@@ -98,8 +103,13 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         {
             var query = _context.Properties
                 .AsNoTracking()
-                .Include(p => p.Images)
+                .Include(p => p.Images.OrderByDescending(img => img.CreateAt))
                 .Where(p => p.Status == PropertyState.Available);
+
+            if (criteria.PropertyTypeId.HasValue)
+            {
+                query = query.Where(p => p.PropertyTypeId == criteria.PropertyTypeId.Value);
+            }
 
             if (criteria.MinPrice.HasValue)
             {
@@ -129,7 +139,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         public async Task<Property?> GetByIdWithImagesAsync(int id)
         {
             return await _context.Properties
-                .Include(p => p.Images)
+                .Include(p => p.Images.OrderByDescending(img => img.CreateAt))
                 .Include(p => p.PropertyImprovements)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
@@ -176,7 +186,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         {
             return await _context.Properties
                 .AsNoTracking()
-                .Include(p => p.Images)
+                .Include(p => p.Images.OrderByDescending(img => img.CreateAt))
                 .Where(p => p.PropertyTypeId == propertyTypeId)
                 .ToListAsync();
         }
@@ -185,7 +195,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         {
             return await _context.Properties
                 .AsNoTracking()
-                .Include(p => p.Images)
+                .Include(p => p.Images.OrderByDescending(img => img.CreateAt))
                 .Where(p => p.SaleTypeId == saleTypeId)
                 .ToListAsync();
         }
@@ -194,7 +204,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         {
             return await _context.Properties
                 .AsNoTracking()
-                .Include(p => p.Images)
+                .Include(p => p.Images.OrderByDescending(img => img.CreateAt))
                 .Where(p => p.AgentId == agentId)
                 .ToListAsync();
         }
