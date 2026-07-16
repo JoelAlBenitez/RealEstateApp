@@ -67,6 +67,7 @@ namespace RealEstateApp.Core.Application.Services.MessagesAtC
                 }
 
                 var message = _mapper.Map<Domain.Entities.Message>(dto);
+                message.SentAt = DateTime.UtcNow;
                 message.CreateAt = DateTimeOffset.UtcNow;
                 message.UpdateAt = DateTimeOffset.UtcNow;
 

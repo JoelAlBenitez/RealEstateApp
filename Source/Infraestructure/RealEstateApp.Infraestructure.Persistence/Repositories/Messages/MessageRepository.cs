@@ -24,6 +24,8 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Messages
             return await _context.Messages
                 .AsNoTracking()
                 .Where(m => m.AgentId == agentId)
+                .GroupBy(m => new { m.CustomerId, m.AgentId, m.PropertyId })
+                .Select(g => g.OrderByDescending(m => m.SentAt).First())
                 .OrderByDescending(m => m.SentAt)
                 .ToListAsync();
         }
@@ -33,6 +35,8 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Messages
             return await _context.Messages
                 .AsNoTracking()
                 .Where(m => m.CustomerId == customerId)
+                .GroupBy(m => new { m.CustomerId, m.AgentId, m.PropertyId })
+                .Select(g => g.OrderByDescending(m => m.SentAt).First())
                 .OrderByDescending(m => m.SentAt)
                 .ToListAsync();
         }

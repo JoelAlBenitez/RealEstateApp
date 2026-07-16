@@ -181,6 +181,25 @@ namespace RealEstateApp.Core.Application.Services.Properties
             }
         }
 
+        public override async Task<ValidationResult<SavePropertyDto>> GetByIdAsync(int id)
+        {
+            try
+            {
+                var property = await _propertyRepository.GetByIdWithImagesAsync(id);
+                if (property == null)
+                {
+                    return ValidationResult<SavePropertyDto>.Failure(new List<Error> { new Error("Property.NotFound", "La propiedad no existe.") });
+                }
+                var dto = _mapper.Map<SavePropertyDto>(property);
+                return ValidationResult<SavePropertyDto>.Success(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService.GetByIdAsync");
+                return ValidationResult<SavePropertyDto>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
+        }
+
         public async Task<ValidationResult<PropertyDto>> GetByIdWithDetailsAsync(int id)
         {
             try

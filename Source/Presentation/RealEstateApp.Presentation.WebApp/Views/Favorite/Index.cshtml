@@ -47,15 +47,17 @@
                                 </div>
                             }
                             <div style="position: absolute; top: 12px; right: 12px;">
-                                <form asp-controller="Favorite" asp-action="Remove" method="post" onsubmit="return confirm('¿Desea eliminar esta propiedad de sus favoritos?');">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="propertyId" value="@property.Id" />
-                                    <button type="submit" class="btn btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" title="Eliminar de favoritos">
-                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="#E85D4F" stroke="#E85D4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                                        </svg>
-                                    </button>
-                                </form>
+                                <button type="button"
+                                        class="btn btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                                        style="width: 38px; height: 38px;"
+                                        title="Eliminar de favoritos"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalRemoveFavorite"
+                                        data-property-id="@property.Id">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="#E85D4F" stroke="#E85D4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                                    </svg>
+                                </button>
                             </div>
                             <div style="position: absolute; bottom: 12px; left: 12px; background: rgba(0,0,0,0.6); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">
                                 CÓDIGO: @property.Code
@@ -86,3 +88,40 @@
         </div>
     }
 </div>
+
+<!-- Modal: Eliminar Favorito -->
+<div class="modal fade" id="modalRemoveFavorite" tabindex="-1" aria-labelledby="modalRemoveFavoriteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="#E85D4F" stroke="#E85D4F" stroke-width="2">
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                    </svg>
+                    <h5 class="modal-title fw-bold mb-0" id="modalRemoveFavoriteLabel" style="color: var(--color-text);">Eliminar de Favoritos</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" style="filter: invert(1);"></button>
+            </div>
+            <div class="modal-body pt-3" style="color: var(--color-text-secondary);">
+                <p class="mb-0">¿Desea eliminar esta propiedad de su lista de favoritos?</p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formRemoveFavorite" asp-controller="Favorite" asp-action="Remove" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="removeFavPropertyId" name="propertyId" value="" />
+                    <button type="submit" class="btn btn-danger fw-semibold px-4">Sí, Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('modalRemoveFavorite').addEventListener('show.bs.modal', function (event) {
+        var btn = event.relatedTarget;
+        document.getElementById('removeFavPropertyId').value = btn.getAttribute('data-property-id');
+    });
+</script>
+}

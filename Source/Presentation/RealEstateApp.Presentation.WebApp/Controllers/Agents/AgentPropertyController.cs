@@ -89,7 +89,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         public async Task<IActionResult> Edit(int id)
         {
             var agentId = _userSession.GetIdCurrentUser();
-            var result = await _propertyService.GetByIdWithDetailsAsync(id);
+            var result = await _propertyService.GetByIdAsync(id);
             if (!result.IsValid || result.Value == null)
             {
                 return RedirectToAction(nameof(Index));

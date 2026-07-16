@@ -19,7 +19,7 @@ namespace RealStateApp.IOC
             this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<DbContextRealEstateApp>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                options.UseInMemoryDatabase("RealEstateAppDb"));
             #region customer repositories
             services.AddScoped<IPropertyRepository, PropertyRepository>();
             services.AddScoped<IOfferRepository, OfferRepository>();

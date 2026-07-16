@@ -4,11 +4,11 @@
     ViewData["Title"] = "Registrar Propiedad";
 }
 
-<div class="container py-4">
+<div class="container-fluid py-4 px-md-5">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
+        <div class="col-12 col-xl-11">
             <div class="card shadow-sm border-0" style="border-radius: var(--radius-card);">
-                <div class="card-body p-5">
+                <div class="card-body p-4 p-md-5">
                     <div class="mb-4">
                         <a asp-action="Index" class="text-decoration-none d-inline-flex align-items-center" style="color: var(--color-primary); font-weight: 600;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
@@ -18,17 +18,17 @@
                         </a>
                     </div>
 
-                    <h2 class="fw-bold mb-4" style="color: var(--color-primary);">Registrar Nueva Propiedad</h2>
-                    <p class="text-muted mb-5">Completa todos los datos requeridos para publicar la propiedad.</p>
+                    <h2 class="fw-bold mb-1" style="color: var(--color-primary);">Registrar Nueva Propiedad</h2>
+                    <p class="text-muted mb-4">Completa todos los datos requeridos para publicar la propiedad.</p>
 
                     <form asp-action="Create" method="post" enctype="multipart/form-data">
                         @Html.AntiForgeryToken()
 
-                        <!-- Basic Information Row -->
+                        <!-- Row 1: Tipo Propiedad, Tipo Venta, Precio -->
                         <div class="row g-4 mb-4">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold" asp-for="PropertyTypeId">Tipo de Propiedad</label>
-                                <select class="form-select form-select-lg" asp-for="PropertyTypeId">
+                                <select class="form-select" asp-for="PropertyTypeId">
                                     <option value="">Seleccione un tipo...</option>
                                     <option value="1">Casa</option>
                                     <option value="2">Apartamento</option>
@@ -38,61 +38,67 @@
                                 <span class="field-validation-error text-danger" asp-validation-for="PropertyTypeId"></span>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold" asp-for="SaleTypeId">Tipo de Venta</label>
-                                <select class="form-select form-select-lg" asp-for="SaleTypeId">
+                                <select class="form-select" asp-for="SaleTypeId">
                                     <option value="">Seleccione un tipo...</option>
                                     <option value="1">Venta</option>
                                     <option value="2">Alquiler</option>
                                 </select>
                                 <span class="field-validation-error text-danger" asp-validation-for="SaleTypeId"></span>
                             </div>
-                        </div>
 
-                        <!-- Price & Size Row -->
-                        <div class="row g-4 mb-4">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold" asp-for="Price">Precio</label>
-                                <div class="input-group input-group-lg">
+                                <div class="input-group">
                                     <span class="input-group-text">$</span>
                                     <input type="number" class="form-control" asp-for="Price" step="0.01" min="0.01" placeholder="Monto" />
                                 </div>
                                 <span class="field-validation-error text-danger" asp-validation-for="Price"></span>
                             </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold" asp-for="Size">Tamaño (m²)</label>
-                                <input type="number" class="form-control form-control-lg" asp-for="Size" step="0.01" min="1" placeholder="Metraje" />
-                                <span class="field-validation-error text-danger" asp-validation-for="Size"></span>
-                            </div>
                         </div>
 
-                        <!-- Beds & Baths Row -->
+                        <!-- Row 2: Tamaño, Habitaciones, Baños -->
                         <div class="row g-4 mb-4">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold" asp-for="Size">Tamaño (m²)</label>
+                                <input type="number" class="form-control" asp-for="Size" step="0.01" min="1" placeholder="Metraje" />
+                                <span class="field-validation-error text-danger" asp-validation-for="Size"></span>
+                            </div>
+
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold" asp-for="Bedrooms">Habitaciones</label>
-                                <input type="number" class="form-control form-control-lg" asp-for="Bedrooms" min="0" placeholder="Ej: 3" />
+                                <input type="number" class="form-control" asp-for="Bedrooms" min="0" placeholder="Ej: 3" />
                                 <span class="field-validation-error text-danger" asp-validation-for="Bedrooms"></span>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold" asp-for="Bathrooms">Baños</label>
-                                <input type="number" class="form-control form-control-lg" asp-for="Bathrooms" min="0" placeholder="Ej: 2" />
+                                <input type="number" class="form-control" asp-for="Bathrooms" min="0" placeholder="Ej: 2" />
                                 <span class="field-validation-error text-danger" asp-validation-for="Bathrooms"></span>
                             </div>
                         </div>
 
-                        <!-- Description -->
-                        <div class="mb-4">
-                            <label class="form-label fw-bold" asp-for="Description">Descripción</label>
-                            <textarea class="form-control" asp-for="Description" rows="5" placeholder="Describe los detalles de la propiedad, ubicación, comodidades, etc." maxlength="1000"></textarea>
-                            <span class="field-validation-error text-danger" asp-validation-for="Description"></span>
+                        <!-- Row 3: Description & Image Upload Side-by-Side -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold" asp-for="Description">Descripción</label>
+                                <textarea class="form-control" asp-for="Description" rows="4" placeholder="Describe los detalles de la propiedad, ubicación, comodidades, etc." maxlength="1000"></textarea>
+                                <span class="field-validation-error text-danger" asp-validation-for="Description"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold" asp-for="ImageFiles">Imágenes de la Propiedad</label>
+                                <input class="form-control" type="file" asp-for="ImageFiles" accept="image/*" multiple />
+                                <span class="text-muted font-sm d-block mt-1">Sube de 1 a 4 fotos claras.</span>
+                                <span class="field-validation-error text-danger" asp-validation-for="ImageFiles"></span>
+                            </div>
                         </div>
 
                         <!-- Improvements Selection -->
-                        <div class="mb-4 border-top pt-4">
-                            <label class="form-label fw-bold mb-3 d-block">Mejoras de la Propiedad</label>
-                            <div class="row row-cols-2 row-cols-md-3 g-3">
+                        <div class="mb-4 border-top pt-3">
+                            <label class="form-label fw-bold mb-2 d-block">Mejoras de la Propiedad</label>
+                            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-2">
                                 <div class="col">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp1" value="1" @(Model.ImprovementIds.Contains(1) ? "checked" : "") />
@@ -131,14 +137,6 @@
                                 </div>
                             </div>
                             <span class="field-validation-error text-danger" asp-validation-for="ImprovementIds"></span>
-                        </div>
-
-                        <!-- Image Upload (1 to 4 images required) -->
-                        <div class="mb-5 border-top pt-4">
-                            <label class="form-label fw-bold mb-2" asp-for="ImageFiles">Imágenes de la Propiedad</label>
-                            <input class="form-control form-control-lg" type="file" asp-for="ImageFiles" accept="image/*" multiple />
-                            <span class="text-muted font-sm d-block mt-1">Sube entre 1 y 4 fotos claras de la propiedad.</span>
-                            <span class="field-validation-error text-danger" asp-validation-for="ImageFiles"></span>
                         </div>
 
                         <!-- Actions -->

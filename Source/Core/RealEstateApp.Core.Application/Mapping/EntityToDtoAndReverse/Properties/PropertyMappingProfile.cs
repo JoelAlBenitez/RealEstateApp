@@ -16,6 +16,7 @@ namespace RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Propertie
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Url));
             CreateMap<Property, SavePropertyDto>()
                 .ForMember(dest => dest.ImprovementIds, opt => opt.MapFrom(src => src.PropertyImprovements != null ? src.PropertyImprovements.Select(pi => pi.ImprovementId).ToList() : new List<int>()))
+                .ForMember(dest => dest.ExistingImageUrls, opt => opt.MapFrom(src => src.Images != null ? src.Images.Select(img => img.ImageUrl).ToList() : new List<string>()))
                 .ReverseMap()
                 .ForMember(dest => dest.PropertyImprovements, opt => opt.Ignore());
             CreateMap<PropertyFilterDto, PropertyFilterCriteria>().ReverseMap();

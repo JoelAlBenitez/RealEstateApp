@@ -152,25 +152,13 @@ namespace RealEstateApp.Core.Application.Services.Offers
                     return ValidationResult.Failure(new Error("Property.NotFound", "La propiedad asociada a la oferta no existe."));
                 }
 
-                await _offerRepository.BeginTransactionAsync();
-                try
-                {
-                    offer.Status = OfferState.Accepted;
-                    await _offerRepository.UpdateAsync(offer);
+                offer.Status = OfferState.Accepted;
+                await _offerRepository.UpdateAsync(offer);
 
-                    await _offerRepository.RejectOtherOffersByPropertyAsync(offer.PropertyId, offerId);
+                await _offerRepository.RejectOtherOffersByPropertyAsync(offer.PropertyId, offerId);
 
-                    property.Status = PropertyState.Sold;
-                    await _propertyRepository.UpdateAsync(property);
-
-                    await _offerRepository.CommitTransactionAsync();
-                }
-                catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ocurrió un error en OfferService");
-                await _offerRepository.RollbackTransactionAsync();
-                    throw;
-                }
+                property.Status = PropertyState.Sold;
+                await _propertyRepository.UpdateAsync(property);
 
                 return ValidationResult.Success();
             }

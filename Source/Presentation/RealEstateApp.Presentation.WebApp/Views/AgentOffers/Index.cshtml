@@ -34,40 +34,46 @@
     }
     else
     {
-        <div class="card shadow-sm border-0" style="border-radius: var(--radius-card);">
+        <div class="card shadow-sm border-0" style="border-radius: var(--radius-card); background: var(--color-surface);">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="ps-4 py-3">Cliente</th>
-                                <th class="py-3">Correo</th>
-                                <th class="py-3">Monto Ofertado</th>
-                                <th class="py-3">Fecha</th>
-                                <th class="pe-4 py-3 text-end">Acciones</th>
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr style="background: var(--color-surface-variant); border-bottom: 1px solid var(--color-border);">
+                                <th class="ps-4 py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Cliente</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Correo</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Monto Ofertado</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Fecha</th>
+                                <th class="pe-4 py-3 text-end" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var offer in Model)
                             {
-                                <tr>
-                                    <td class="ps-4 fw-bold">@offer.CustomerName</td>
-                                    <td>@offer.CustomerEmail</td>
+                                <tr style="border-bottom: 1px solid var(--color-border);">
+                                    <td class="ps-4 fw-bold" style="color: var(--color-text);">@offer.CustomerName</td>
+                                    <td style="color: var(--color-text-secondary);">@offer.CustomerEmail</td>
                                     <td class="fw-bold text-success" style="font-size: 1.1rem;">@string.Format("{0:C}", offer.Amount)</td>
-                                    <td>@offer.CreateAt.ToString("dd/MM/yyyy hh:mm tt")</td>
+                                    <td style="color: var(--color-text-secondary);">@offer.CreateAt.ToString("dd/MM/yyyy hh:mm tt")</td>
                                     <td class="pe-4 text-end">
-                                        <form asp-controller="AgentOffers" asp-action="Accept" method="post" class="d-inline-block me-2" onsubmit="return confirm('¿Está seguro de que desea aceptar esta oferta? Se marcará la propiedad como VENDIDA y se rechazarán las demás ofertas automáticamente.');">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="offerId" value="@offer.Id" />
-                                            <input type="hidden" name="propertyId" value="@ViewBag.PropertyId" />
-                                            <button type="submit" class="btn btn-success btn-sm px-3 fw-semibold">Aceptar</button>
-                                        </form>
-                                        <form asp-controller="AgentOffers" asp-action="Reject" method="post" class="d-inline-block" onsubmit="return confirm('¿Está seguro de que desea rechazar esta oferta?');">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="offerId" value="@offer.Id" />
-                                            <input type="hidden" name="propertyId" value="@ViewBag.PropertyId" />
-                                            <button type="submit" class="btn btn-outline-danger btn-sm px-3">Rechazar</button>
-                                        </form>
+                                        <!-- Aceptar -->
+                                        <button type="button"
+                                                class="btn btn-success btn-sm px-3 fw-semibold me-2"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalAccept"
+                                                data-offer-id="@offer.Id"
+                                                data-property-id="@ViewBag.PropertyId">
+                                            Aceptar
+                                        </button>
+                                        <!-- Rechazar -->
+                                        <button type="button"
+                                                class="btn btn-outline-danger btn-sm px-3"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalReject"
+                                                data-offer-id="@offer.Id"
+                                                data-property-id="@ViewBag.PropertyId">
+                                            Rechazar
+                                        </button>
                                     </td>
                                 </tr>
                             }
@@ -78,3 +84,85 @@
         </div>
     }
 </div>
+
+<!-- Modal: Aceptar Oferta -->
+<div class="modal fade" id="modalAccept" tabindex="-1" aria-labelledby="modalAcceptLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22c55e" stroke-width="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+                    </svg>
+                    <h5 class="modal-title fw-bold mb-0" id="modalAcceptLabel" style="color: var(--color-text);">Confirmar Aceptación</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" style="filter: invert(1);"></button>
+            </div>
+            <div class="modal-body pt-3" style="color: var(--color-text-secondary);">
+                <p class="mb-0">¿Está seguro de que desea <strong style="color: var(--color-text);">aceptar</strong> esta oferta?</p>
+                <p class="mt-2 mb-0 text-warning fw-semibold">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                        <path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    </svg>
+                    La propiedad se marcará como <strong>VENDIDA</strong> y las demás ofertas serán rechazadas automáticamente.
+                </p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formAccept" asp-controller="AgentOffers" asp-action="Accept" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="acceptOfferId" name="offerId" value="" />
+                    <input type="hidden" id="acceptPropertyId" name="propertyId" value="" />
+                    <button type="submit" class="btn btn-success fw-semibold px-4">Sí, Aceptar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Rechazar Oferta -->
+<div class="modal fade" id="modalReject" tabindex="-1" aria-labelledby="modalRejectLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ef4444" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6m0-6 6 6"/>
+                    </svg>
+                    <h5 class="modal-title fw-bold mb-0" id="modalRejectLabel" style="color: var(--color-text);">Confirmar Rechazo</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" style="filter: invert(1);"></button>
+            </div>
+            <div class="modal-body pt-3" style="color: var(--color-text-secondary);">
+                <p class="mb-0">¿Está seguro de que desea <strong style="color: var(--color-text);">rechazar</strong> esta oferta? Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formReject" asp-controller="AgentOffers" asp-action="Reject" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="rejectOfferId" name="offerId" value="" />
+                    <input type="hidden" id="rejectPropertyId" name="propertyId" value="" />
+                    <button type="submit" class="btn btn-danger fw-semibold px-4">Sí, Rechazar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Pasar los datos de la oferta al modal de Aceptar
+    document.getElementById('modalAccept').addEventListener('show.bs.modal', function (event) {
+        var btn = event.relatedTarget;
+        document.getElementById('acceptOfferId').value = btn.getAttribute('data-offer-id');
+        document.getElementById('acceptPropertyId').value = btn.getAttribute('data-property-id');
+    });
+
+    // Pasar los datos de la oferta al modal de Rechazar
+    document.getElementById('modalReject').addEventListener('show.bs.modal', function (event) {
+        var btn = event.relatedTarget;
+        document.getElementById('rejectOfferId').value = btn.getAttribute('data-offer-id');
+        document.getElementById('rejectPropertyId').value = btn.getAttribute('data-property-id');
+    });
+</script>
+}
