@@ -8,7 +8,7 @@
             if (Model.IsAgentContext)
             {
                 <a class="pagination__page@(i == Model.Page ? " pagination__page--active" : "")"
-                   asp-controller="Home" asp-action="PropertyByAgent"
+                   asp-controller="AgentFunctionsPublic" asp-action="PropertyByAgent"
                    asp-route-AgentId="@Model.AgentId" asp-route-page="@i">@i</a>
             }
             else

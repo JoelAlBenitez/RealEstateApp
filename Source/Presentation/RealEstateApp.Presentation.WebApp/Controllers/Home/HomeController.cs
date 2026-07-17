@@ -1,11 +1,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.Properties;
-using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 using RealEstateApp.Core.Application.DTOs.Property;
-using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.ViewsModel.Property;
-using RealEstateApp.Core.Application.ViewsModel.Users.Consult;
 using RealEstateApp.Core.Domain.Common.Errors;
 
 namespace RealEstateApp.Presentation.WebApp.Controllers.Home
@@ -15,18 +12,15 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
         private const int PageSize = 12;
 
         private readonly IPropertyService _propertyService;
-        private readonly IOperationalAccountWebApp _operationalAccountWebApp;
         private readonly IMapper _mapper;
 
         public HomeController(
             IPropertyService propertyService,
-            IMapper mapper,
-            IOperationalAccountWebApp operationalAccountWebApp
+            IMapper mapper
             )
         {
             _propertyService = propertyService;
             _mapper = mapper;
-            _operationalAccountWebApp = operationalAccountWebApp;
         }
 
         #region methods load
@@ -47,46 +41,6 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             }
             var map = _mapper.Map<PropertyDetailViewModel>(result.Value);
             return View("DetailsProperty", map);
-        }
-        #endregion
-
-        #region methods agents public
-        public async Task<IActionResult> Agents()
-        {
-            return View(await BuildAgentsAsync(null));
-        }
-
-        public async Task<IActionResult> PropertyByAgent(string AgentId, int page = 1)
-        {
-            if (string.IsNullOrWhiteSpace(AgentId))
-            {
-                TempData["Warning"] = "El agente solicitado no existe o no se encuentra disponible.";
-                return View("Agents", await BuildAgentsAsync(null));
-            }
-            var result = await _propertyService.GetAvailableByAgentAsync(AgentId);
-            if (!result.IsValid)
-            {
-                AddErrors(result.Errors);
-                return View("Agents", await BuildAgentsAsync(null));
-            }
-            var properties = _mapper.Map<IReadOnlyCollection<PropertyPublicViewModel>>(result.Value)
-                ?? Array.Empty<PropertyPublicViewModel>();
-            var vm = BuildHomeViewModel(properties, new PropertyFilterViewModel(), page, true);
-            vm.IsAgentContext = true;
-            vm.AgentId = AgentId;
-            try
-            {
-                var agent = await _operationalAccountWebApp.GetConsultAgentById(AgentId);
-                if (agent != null)
-                {
-                    vm.AgentName = $"{agent.Name} {agent.LastName}";
-                }
-            }
-            catch
-            {
-                vm.AgentName = null;
-            }
-            return View("Index", vm);
         }
         #endregion
 
@@ -126,29 +80,6 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             return View("Index", result);
         }
 
-        [ValidateAntiForgeryToken]
-        [HttpPost]
-        public async Task<IActionResult> AgentsConsult(AgentConsultByNameOrLastNameViewModel vm)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View("Agents", await BuildAgentsAsync(null));
-            }
-            var map = _mapper.Map<ConsultAgentByNameOrLastNameDto>(vm);
-            var result = await _operationalAccountWebApp.GetAgentByConsultCustomer(map);
-            var agents = result == null
-                ? Array.Empty<AgentViewModel>()
-                : _mapper.Map<IReadOnlyCollection<AgentViewModel>>(result);
-            if (agents == null || agents.Count == 0)
-            {
-                TempData["Info"] = "No se encontraron agentes activos con el nombre ingresado.";
-            }
-            return View("Agents", new AgentsHomeViewModel
-            {
-                Agents = agents ?? Array.Empty<AgentViewModel>(),
-                Consult = vm
-            });
-        }
         #endregion
 
         #region private helpers
@@ -200,19 +131,6 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
                 Page = page,
                 PageSize = PageSize,
                 TotalPages = totalPages
-            };
-        }
-
-        private async Task<AgentsHomeViewModel> BuildAgentsAsync(AgentConsultByNameOrLastNameViewModel? consult)
-        {
-            var result = await _operationalAccountWebApp.GetAgentAllViewHomeByCustomer();
-            var agents = result == null
-                ? Array.Empty<AgentViewModel>()
-                : _mapper.Map<IReadOnlyCollection<AgentViewModel>>(result);
-            return new AgentsHomeViewModel
-            {
-                Agents = agents ?? Array.Empty<AgentViewModel>(),
-                Consult = consult ?? new AgentConsultByNameOrLastNameViewModel { Name = "" }
             };
         }
 

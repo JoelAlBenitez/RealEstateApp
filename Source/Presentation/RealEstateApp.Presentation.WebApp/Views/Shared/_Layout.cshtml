@@ -83,7 +83,7 @@
                 </a>
             </li>
             <li class="site-menu__item">
-                <a class="site-menu__link" asp-controller="Home" asp-action="Agents">
+                <a class="site-menu__link" asp-controller="AgentFunctionsPublic" asp-action="Agents">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                         <circle cx="9" cy="7" r="4" />
@@ -124,7 +124,132 @@
     </main>
 
     <footer class="site-footer">
-        <p>&copy; 2026 Real Estate App — Encuentra tu próximo hogar.</p>
+        <div class="site-footer__grid">
+            <div class="site-footer__brand">
+                <span class="site-footer__logo" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 10.5 12 3l9 7.5" />
+                        <path d="M5 9.5V21h14V9.5" />
+                        <path d="M9.5 21v-6h5v6" />
+                    </svg>
+                </span>
+                <strong class="site-footer__name">Real Estate App</strong>
+                <p class="site-footer__tagline">
+                    Propiedades verificadas y agentes de confianza para que encuentres
+                    el lugar que se siente como hogar.
+                </p>
+            </div>
+
+            <nav class="site-footer__col" aria-label="Explora el sitio">
+                <h3 class="site-footer__heading">Explora</h3>
+                <ul class="site-footer__links">
+                    <li>
+                        <a asp-controller="Home" asp-action="Index">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3 10.5 12 3l9 7.5" />
+                                <path d="M5 9.5V21h14V9.5" />
+                                <path d="M9.5 21v-6h5v6" />
+                            </svg>
+                            <span>Propiedades disponibles</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="AgentFunctionsPublic" asp-action="Agents">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                            <span>Nuestros agentes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Account" asp-action="RegisterExternalUser">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <line x1="19" y1="8" x2="19" y2="14" />
+                                <line x1="16" y1="11" x2="22" y2="11" />
+                            </svg>
+                            <span>Únete a nosotros</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Account" asp-action="Login">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                                <polyline points="10 17 15 12 10 7" />
+                                <line x1="15" y1="12" x2="3" y2="12" />
+                            </svg>
+                            <span>Iniciar sesión</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="site-footer__col">
+                <h3 class="site-footer__heading">Contacto</h3>
+                <ul class="site-footer__links">
+                    <li>
+                        <span class="site-footer__contact">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                            <span>contacto@realestateapp.com</span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="site-footer__contact">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+                            </svg>
+                            <span>+1 (809) 555-0123</span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="site-footer__contact">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                <circle cx="12" cy="10" r="3" />
+                            </svg>
+                            <span>Santo Domingo, República Dominicana</span>
+                        </span>
+                    </li>
+                </ul>
+                <div class="site-footer__social">
+                    <span role="img" aria-label="Instagram" title="Instagram">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" />
+                            <circle cx="12" cy="12" r="4" />
+                            <line x1="17.5" y1="6.5" x2="17.5" y2="6.5" />
+                        </svg>
+                    </span>
+                    <span role="img" aria-label="Facebook" title="Facebook">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                        </svg>
+                    </span>
+                    <span role="img" aria-label="X" title="X">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m4 4 16 16" />
+                            <path d="M20 4 4 20" />
+                        </svg>
+                    </span>
+                    <span role="img" aria-label="YouTube" title="YouTube">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="4" />
+                            <path d="m10 9 5 3-5 3z" />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="site-footer__bottom">
+            <p>&copy; 2026 Real Estate App — Encuentra tu próximo hogar.</p>
+            <p>Compra, alquila y descubre propiedades con agentes verificados.</p>
+        </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
