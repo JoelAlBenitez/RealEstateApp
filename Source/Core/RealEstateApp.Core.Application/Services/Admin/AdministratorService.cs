@@ -54,10 +54,16 @@ namespace RealEstateApp.Core.Application.Services.Admin
 
         public async Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto, string currentAdminId)
         {
-            var validationResult = _administratorValidationService.ValidateSelfInactivation(dto, currentAdminId);
-            if (!validationResult.IsValid)
+            var selfCheck = _administratorValidationService.ValidateSelfInactivation(dto, currentAdminId);
+            if (!selfCheck.IsValid)
             {
-                return validationResult;
+                return selfCheck;
+            }
+
+            var minCheck = await _administratorValidationService.ValidateMinimumActiveAdmin(dto);
+            if (!minCheck.IsValid)
+            {
+                return minCheck;
             }
 
             var result = await _internalAccountApi.ChangeStateAsync(dto);
