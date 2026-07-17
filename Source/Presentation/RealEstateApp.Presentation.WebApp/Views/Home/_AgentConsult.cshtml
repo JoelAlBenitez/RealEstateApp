@@ -1,0 +1,30 @@
+@model RealEstateApp.Core.Application.ViewsModel.Users.Consult.AgentConsultByNameOrLastNameViewModel
+
+<aside class="agent-consult">
+    <h2 class="agent-consult__title">Deja que el guía encuentre a tu agente ideal</h2>
+    <div class="agent-consult__content">
+        <div class="agent-consult__figure">
+            <img src="~/resources/GuideTouritis.png" alt="Guía con mapa de agentes" />
+        </div>
+        <form class="agent-consult__form" asp-controller="Home" asp-action="AgentsConsult" method="post">
+            <label asp-for="Name">Nombre o apellido</label>
+            <div class="agent-consult__control">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <circle cx="18.5" cy="15.5" r="2.5" />
+                    <line x1="20.5" y1="17.5" x2="22" y2="19" />
+                </svg>
+                <input asp-for="Name" type="text" placeholder="Ej. María Pérez" autocomplete="off" />
+            </div>
+            <span class="agent-consult__validation" asp-validation-for="Name"></span>
+            <button class="rea-btn rea-btn--primary" type="submit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <span>Consultar agentes</span>
+            </button>
+        </form>
+    </div>
+</aside>

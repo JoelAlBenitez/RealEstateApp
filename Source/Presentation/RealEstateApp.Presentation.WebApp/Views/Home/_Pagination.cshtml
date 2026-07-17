@@ -1,0 +1,21 @@
+@model RealEstateApp.Core.Application.ViewsModel.Property.HomePropertiesViewModel
+
+@if (!Model.IsFiltered && Model.TotalPages > 1)
+{
+    <nav class="pagination" aria-label="Paginación de propiedades">
+        @for (var i = 1; i <= Model.TotalPages; i++)
+        {
+            if (Model.IsAgentContext)
+            {
+                <a class="pagination__page@(i == Model.Page ? " pagination__page--active" : "")"
+                   asp-controller="Home" asp-action="PropertyByAgent"
+                   asp-route-AgentId="@Model.AgentId" asp-route-page="@i">@i</a>
+            }
+            else
+            {
+                <a class="pagination__page@(i == Model.Page ? " pagination__page--active" : "")"
+                   asp-controller="Home" asp-action="Index" asp-route-page="@i">@i</a>
+            }
+        }
+    </nav>
+}

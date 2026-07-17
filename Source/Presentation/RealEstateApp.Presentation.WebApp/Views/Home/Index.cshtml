@@ -1,20 +1,106 @@
+@model RealEstateApp.Core.Application.ViewsModel.Property.HomePropertiesViewModel
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = Model.IsAgentContext ? "Propiedades del agente" : "Home";
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/home/home.css" asp-append-version="true" />
 }
 
-<section class="home-hero">
-    <span class="home-hero__badge">Propiedades verificadas</span>
-    <h1 class="home-hero__title">Encuentra el lugar que se siente como hogar</h1>
-    <p class="home-hero__subtitle">
-        Explora casas, apartamentos y alquileres publicados por agentes verificados.
-        Tu próximo hogar está a un par de clics.
-    </p>
-    <div class="home-hero__actions">
-        <a class="rea-btn rea-btn--primary" asp-controller="Account" asp-action="RegisterExternalUser">Únete a nosotros</a>
-        <a class="rea-btn rea-btn--secondary" asp-controller="Agent" asp-action="Index">Conoce a los agentes</a>
+@if (Model.IsAgentContext)
+{
+    <section class="agent-context">
+        <div class="agent-context__actions">
+            <a class="rea-btn rea-btn--secondary" asp-controller="Home" asp-action="Agents">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                </svg>
+                <span>Volver a agentes</span>
+            </a>
+            <a class="rea-btn rea-btn--secondary" asp-controller="Home" asp-action="Index">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 10.5 12 3l9 7.5" />
+                    <path d="M5 9.5V21h14V9.5" />
+                    <path d="M9.5 21v-6h5v6" />
+                </svg>
+                <span>Ir al home</span>
+            </a>
+        </div>
+        <h1 class="agent-context__title">Propiedades de @(string.IsNullOrWhiteSpace(Model.AgentName) ? "nuestro agente" : Model.AgentName)</h1>
+        <p class="agent-context__subtitle">Estas son las propiedades disponibles publicadas por este agente.</p>
+    </section>
+}
+else
+{
+    <section class="home-hero">
+        <span class="home-hero__badge">Propiedades verificadas</span>
+        <h1 class="home-hero__title">Encuentra el lugar que se siente como hogar</h1>
+        <p class="home-hero__subtitle">
+            Explora casas, apartamentos y alquileres publicados por agentes verificados.
+            Tu próximo hogar está a un par de clics.
+        </p>
+        <div class="home-hero__actions">
+            <a class="rea-btn rea-btn--primary" asp-controller="Account" asp-action="RegisterExternalUser">Únete a nosotros</a>
+            <a class="rea-btn rea-btn--secondary" asp-controller="Home" asp-action="Agents">Conoce a los agentes</a>
+        </div>
+    </section>
+}
+
+<section class="home-catalog">
+    <div class="home-catalog__head">
+        <div class="home-catalog__headline">
+            <h2 class="home-catalog__title">@(Model.IsFiltered ? "Resultados de tu búsqueda" : "Propiedades disponibles")</h2>
+            <p class="home-catalog__subtitle">Explora el listado y usa los filtros para afinar tu búsqueda.</p>
+        </div>
+        <button class="rea-btn rea-btn--secondary home-catalog__filter-toggle" id="filterToggle" type="button" aria-expanded="false" aria-controls="homeFilter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="4" y1="21" x2="4" y2="14" />
+                <line x1="4" y1="10" x2="4" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12" y2="3" />
+                <line x1="20" y1="21" x2="20" y2="16" />
+                <line x1="20" y1="12" x2="20" y2="3" />
+                <line x1="1" y1="14" x2="7" y2="14" />
+                <line x1="9" y1="8" x2="15" y2="8" />
+                <line x1="17" y1="16" x2="23" y2="16" />
+            </svg>
+            <span>Filtrar</span>
+        </button>
+    </div>
+
+    <div class="home-catalog__filter" id="homeFilter" data-open="@(Model.IsFiltered ? "true" : "false")" hidden>
+        <partial name="_PropertyFilter" model="Model.Filter" />
+    </div>
+
+    <div class="home-catalog__body@(Model.IsAgentContext ? " home-catalog__body--full" : "")">
+        <div class="home-catalog__list">
+            @if (Model.Properties.Count == 0)
+            {
+                <partial name="_NoResults" model="@("Por el momento no pudimos cargar propiedades para esta búsqueda. Ajusta los filtros o vuelve a intentarlo más tarde.")" />
+            }
+            else
+            {
+                <div class="property-grid" id="propertyGrid" data-page-size="@Model.PageSize" data-client-paginate="@(Model.IsFiltered ? "true" : "false")">
+                    @foreach (var property in Model.Properties)
+                    {
+                        <partial name="_PropertyCard" model="property" />
+                    }
+                </div>
+                <div class="home-catalog__pager">
+                    <partial name="_Pagination" model="Model" />
+                    <nav class="pagination" id="clientPagination" aria-label="Paginación de resultados filtrados" hidden></nav>
+                </div>
+            }
+        </div>
+        @if (!Model.IsAgentContext)
+        {
+            <partial name="_GuidePanel" model="Model.SearchByCode" />
+        }
     </div>
 </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/home/home.js" asp-append-version="true"></script>
+}
