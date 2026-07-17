@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
+using RealEstateApp.Core.Application.Contracts.PropertyType;
+using RealEstateApp.Core.Application.Services.PropertyType;
 using RealEstateApp.Core.Application.Contracts.GenericServices;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Auth;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Consult;
@@ -29,6 +31,11 @@ namespace RealStateApp.IOC
 
                 #endregion 
             });
+
+            #region Property Type Services
+            services.AddScoped<IPropertyTypeService, PropertyTypeService>();
+            services.AddScoped<IPropertyTypeValidationService, PropertyTypeValidationService>();
+            #endregion
 
             return services;
         }

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+using RealEstateApp.Core.Domain.Entities;
 
 namespace RealEstateApp.Infraestructure.Persistence.Context
 {
@@ -6,6 +8,8 @@ namespace RealEstateApp.Infraestructure.Persistence.Context
     {
         public DbContextRealEstateApp(DbContextOptions<DbContextRealEstateApp> options)
             : base(options) { }
+
+        public DbSet<PropertyType> PropertyTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

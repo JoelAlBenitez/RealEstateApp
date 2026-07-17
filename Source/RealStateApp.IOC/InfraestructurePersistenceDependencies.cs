@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RealEstateApp.Core.Domain.Interfaces.Repositories;
+using RealEstateApp.Infraestructure.Persistence.Repositories.PropertyTypeRepo;
 
 namespace RealStateApp.IOC
 {
@@ -10,6 +12,10 @@ namespace RealStateApp.IOC
         {
 
             ///
+
+            #region Property Type Repositories
+            services.AddScoped<IPropertyTypeRepository, PropertyTypeRepository>();
+            #endregion
 
             return services;
         }
