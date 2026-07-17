@@ -17,15 +17,18 @@ namespace RealEstateApp.Core.Application.Services.Improvement
     {
         private readonly IImprovementRepository _improvementRepository;
         private readonly IImprovementValidationService _improvementValidationService;
+        private readonly IPropertyImprovementRepository _propertyImprovementRepository;
 
         public ImprovementService(
             IImprovementRepository improvementRepository, 
             IMapper mapper, 
-            IImprovementValidationService improvementValidationService)
+            IImprovementValidationService improvementValidationService,
+            IPropertyImprovementRepository propertyImprovementRepository)
             : base(improvementRepository, mapper)
         {
             _improvementRepository = improvementRepository;
             _improvementValidationService = improvementValidationService;
+            _propertyImprovementRepository = propertyImprovementRepository;
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<ImprovementDto>>> GetAllWithCountAsync()
@@ -93,6 +96,17 @@ namespace RealEstateApp.Core.Application.Services.Improvement
             };
             
             return await base.UpdateAsync(dto);
+        }
+
+        public override async Task<ValidationResult> RemoveAsync(int id)
+        {
+            var allAssociations = await _propertyImprovementRepository.GetAllAsync();
+            var associationsToRemove = allAssociations.Where(pi => pi.ImprovementId == id).ToList();
+            foreach (var association in associationsToRemove)
+            {
+                await _propertyImprovementRepository.DeleteAsync(association);
+            }
+            return await base.RemoveAsync(id);
         }
     }
 }
