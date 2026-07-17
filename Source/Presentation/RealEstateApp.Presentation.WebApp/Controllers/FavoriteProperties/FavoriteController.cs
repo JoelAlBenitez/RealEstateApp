@@ -53,7 +53,11 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.FavoriteProperties
             var result = await _favoritePropertyService.AddAsync(dto);
             if (!result.IsValid)
             {
-                TempData["ErrorMessage"] = "Ocurrió un error al agregar la propiedad a favoritos.";
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al agregar la propiedad a favoritos.";
+            }
+            else
+            {
+                TempData["SuccessMessage"] = "Propiedad agregada a tus favoritos exitosamente.";
             }
 
             return RedirectToAction("Details", "Customer", new { id = propertyId });
@@ -66,7 +70,11 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.FavoriteProperties
             var result = await _favoritePropertyService.RemoveFavoriteAsync(propertyId);
             if (!result.IsValid)
             {
-                TempData["ErrorMessage"] = "Ocurrió un error al remover la propiedad de favoritos.";
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al remover la propiedad de favoritos.";
+            }
+            else
+            {
+                TempData["SuccessMessage"] = "Propiedad eliminada de tus favoritos exitosamente.";
             }
 
             return RedirectToAction(nameof(Index));

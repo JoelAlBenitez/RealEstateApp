@@ -9,6 +9,7 @@ using RealEstateApp.Infraestructure.Persistence.Repositories.Properties;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Offers;
 using RealEstateApp.Infraestructure.Persistence.Repositories.FavoriteProperties;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Messages;
+using RealEstateApp.Infraestructure.Persistence.Repositories.PropertyImprovements;
 
 
 namespace RealStateApp.IOC
@@ -16,17 +17,26 @@ namespace RealStateApp.IOC
     public static class InfraestructurePersistenceDependencies
     {
         public static IServiceCollection AddInfraestructurePersistence(
-            this IServiceCollection services, IConfiguration configuration)
+     this IServiceCollection services, IConfiguration configuration)
         {
+            //services.AddDbContext<DbContextRealEstateApp>(options =>
+            //    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDbContext<DbContextRealEstateApp>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-            #region Repositories
-            services.AddScoped<IImprovementRepository, ImprovementRepository>();
+                options.UseInMemoryDatabase("RealEstateAppDb"));   // -> pruebas uso de memory
+
+            #region customer repositories
             services.AddScoped<IPropertyRepository, PropertyRepository>();
             services.AddScoped<IOfferRepository, OfferRepository>();
             services.AddScoped<IFavoritePropertyRepository, FavoritePropertyRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
             #endregion
+            services.AddScoped<IPropertyImprovementRepository, PropertyImprovementRepository>();
+
+            #region Improvement Repositories
+            services.AddScoped<IImprovementRepository, ImprovementRepository>();
+            #endregion
+
             return services;
         }
     }

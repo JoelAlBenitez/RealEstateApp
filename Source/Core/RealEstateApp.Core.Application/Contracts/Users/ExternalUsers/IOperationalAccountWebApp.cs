@@ -13,5 +13,7 @@ namespace RealEstateApp.Core.Application.Contracts.Users.ExternalUsers
         Task<ConsultAgentDto> GetConsultAgentById(string id);
         Task<UserResponseDto> CreateExternalAsync(RegisterExternalUsersDto registerUserDto);
         Task<EditResponseDto> UpdateAgentAsync(EditAgentUserDto editAgent);
+        Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentByConsultCustomer(ConsultAgentByNameOrLastNameDto dto);
+        
     }
 }

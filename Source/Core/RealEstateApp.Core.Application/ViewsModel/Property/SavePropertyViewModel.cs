@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 using System.ComponentModel.DataAnnotations;
 
@@ -32,12 +32,14 @@ namespace RealEstateApp.Core.Application.ViewsModel.Property
         public string? AgentId { get; set; }
         public PropertyState Status { get; set; } = PropertyState.Available;
 
-        // Comentados por límites de módulo (Joel)
-        // [Required(ErrorMessage = "Debe seleccionar un tipo de propiedad.")]
-        // public int PropertyTypeId { get; set; }
-        // [Required(ErrorMessage = "Debe seleccionar un tipo de venta.")]
-        // public int SaleTypeId { get; set; }
-        // public List<int> ImprovementIds { get; set; } = null!;
+        [Required(ErrorMessage = "Debe seleccionar un tipo de propiedad.")]
+        public int PropertyTypeId { get; set; }
+
+        [Required(ErrorMessage = "Debe seleccionar un tipo de venta.")]
+        public int SaleTypeId { get; set; }
+
+        [Required(ErrorMessage = "Debe seleccionar al menos una mejora para la propiedad.")]
+        public List<int> ImprovementIds { get; set; } = new();
 
         public List<IFormFile>? ImageFiles { get; set; }
         public List<string>? ExistingImageUrls { get; set; }

@@ -28,17 +28,30 @@ builder.Services.AddDependenciesWebApp();
 builder.Services.AddDependenciesWebApi();
 builder.Services.AddScoped<IUserSession,UserSession>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-builder.Services.AddSession();
 #endregion
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var persistenceContext = services.GetRequiredService<RealEstateApp.Infraestructure.Persistence.Context.DbContextRealEstateApp>();
+    await persistenceContext.Database.EnsureCreatedAsync();
+
+    var identityContext = services.GetRequiredService<RealEstateApp.Infraestructure.Identity.Context.DbContextIdentityRealStateApp>();
+    await identityContext.Database.EnsureCreatedAsync();
+}
+
 await app.Services.GenerateDataSeedUsers();
+await app.Services.GenerateDataSeedProperties();
 
 if (!app.Environment.IsDevelopment())
 {
+    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+app.UseStatusCodePagesWithReExecute("/Home/StatusCodeError", "?code={0}");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
