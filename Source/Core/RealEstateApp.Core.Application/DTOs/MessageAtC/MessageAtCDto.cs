@@ -8,6 +8,7 @@ namespace RealEstateApp.Core.Application.DTOs.MessageAtC
         public int PropertyId { get; set; }
         public required string Content { get; set; }
         public DateTime SentAt { get; set; }
+        public bool IsFromAgent { get; set; }
         public DateTimeOffset CreateAt { get; set; }
         public string CustomerName { get; set; } = null!;
         public string AgentName { get; set; } = null!;

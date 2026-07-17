@@ -7,6 +7,7 @@ using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser.Base;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 using RealEstateApp.Core.Application.DTOs.Users.Response;
+using RealEstateApp.Core.Domain.Common.Enums;
 using RealEstateApp.Infraestructure.Identity.Entities;
 
 namespace RealEstateApp.Infraestructure.Identity.Services.Base
@@ -47,15 +48,14 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Base
             if(userChange == null)
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, al aparecer el usuario " +
-                    "especificado no pudo ser encontrado. Intente de nuevo mas tarde");
+                response.Errors.Add("El usuario especificado no pudo ser encontrado. Intente de nuevo más tarde.");
             }
             userChange!.IsActive = alterStateUserDto.State;
             var changeResult = await _userManager.UpdateAsync(userChange);
             if (!changeResult.Succeeded)
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, Ha ocurrido un error inesperado al procesar la solicitud, favor intente de nuevo mas tarde.");
+                response.Errors.Add("Ha ocurrido un error inesperado al procesar la solicitud. Intente nuevamente más tarde.");
                 return response;
             }
 
@@ -79,9 +79,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Base
             if (!delete.Succeeded && !invalidSessionUser.Succeeded)
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, " +
-                    "Ha ocurrido un error inesperado al procesar la solicitud, " +
-                    "favor intente de nuevo mas tarde.");
+                response.Errors.Add("Ha ocurrido un error inesperado al procesar la solicitud. Intente nuevamente más tarde.");
                 return response;
             }
 
@@ -114,17 +112,17 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Base
 
             var id = _userSession.GetIdCurrentUser();
             var existUser = await _userManager.FindByIdAsync(id);
-            if (existUser == null || existUser.IsActive)
+            if (existUser == null || !existUser.IsActive)
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, Al parecer su usuario no se enecuentra habilitado, favor intente de nuevo.");
+                response.Errors.Add("Su usuario no cuenta con los privilegios para realizar esta operación. Intente de nuevo.");
                 return response;
             }
             var roles = _userSession.GetRolesCurrentUser();
-            if (!roles.Contains("Administrador"))
+            if (!roles.Contains(Roles.Administrador.ToString()))
             {
                 response.HasError = true;
-                response.Errors.Add("Su perfil no posee privilegios suficientes para realizar esta accion");
+                response.Errors.Add("Su perfil no posee privilegios suficientes para realizar esta acción.");
                 return response;
             }
 
@@ -132,8 +130,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Base
             if (userChange == null)
             {
                 response.HasError = true;
-                response.Errors.Add("Oops, al aparecer el usuario " +
-                    "especificado no pudo ser encontrado. Intente de nuevo mas tarde");
+                response.Errors.Add("El usuario especificado no pudo ser encontrado. Intente de nuevo más tarde.");
             }
             return response;
 

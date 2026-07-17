@@ -2,4 +2,6 @@ obj/
 bin/
 .vs/
 docs/
-/.agents
+.agents/
+.claudes/
+Source/Presentation/RealEstateApp.Presentation.WebApp/Seeds/

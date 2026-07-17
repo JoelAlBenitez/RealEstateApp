@@ -1,0 +1,1054 @@
+.account-body {
+    display: block;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.account-shell {
+    position: relative;
+    min-height: 100vh;
+    isolation: isolate;
+}
+
+.account-shell::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background-image: url("../../resources/banner.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.account-shell::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(115deg,
+        color-mix(in srgb, var(--color-bg) 92%, transparent) 0%,
+        color-mix(in srgb, var(--color-bg) 68%, transparent) 42%,
+        color-mix(in srgb, var(--color-bg) 34%, transparent) 100%);
+    backdrop-filter: blur(3px) saturate(1.05);
+    -webkit-backdrop-filter: blur(3px) saturate(1.05);
+}
+
+[data-theme="dark"] .account-shell::after {
+    background: linear-gradient(115deg,
+        color-mix(in srgb, var(--color-bg) 94%, transparent) 0%,
+        color-mix(in srgb, var(--color-bg) 78%, transparent) 45%,
+        color-mix(in srgb, var(--color-bg) 52%, transparent) 100%);
+}
+
+.account-shell.is-leaving .account-card,
+.account-shell.is-leaving .account-scene {
+    opacity: 0;
+    transform: translateY(12px) scale(.985);
+    transition: opacity var(--duration-page) ease, transform var(--duration-page) var(--ease-spring);
+}
+
+.account-theme-toggle {
+    position: fixed;
+    top: var(--space-4);
+    right: var(--space-4);
+    z-index: 80;
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-surface) 72%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: var(--color-text);
+    cursor: pointer;
+    box-shadow: var(--shadow-1);
+    transition: transform var(--duration-button) var(--ease-spring),
+                box-shadow var(--duration-button) ease,
+                background-color var(--duration-hover) ease;
+}
+
+.account-theme-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
+
+.account-theme-toggle:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+    outline-offset: 2px;
+}
+
+.account-theme-toggle svg {
+    width: 22px;
+    height: 22px;
+}
+
+.account-theme-toggle__icon--moon {
+    display: none;
+}
+
+[data-theme="dark"] .account-theme-toggle__icon--moon {
+    display: block;
+}
+
+[data-theme="dark"] .account-theme-toggle__icon--sun {
+    display: none;
+}
+
+.account-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-8);
+    min-height: 100vh;
+    max-width: 1680px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-4);
+}
+
+.account-panel {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    justify-content: center;
+}
+
+.account-panel--wide {
+    max-width: 850px;
+}
+
+.account-card {
+    width: 100%;
+    padding: var(--space-8) var(--space-6);
+    border-radius: var(--radius-card);
+    border: 1px solid color-mix(in srgb, var(--color-border) 55%, transparent);
+    background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+    backdrop-filter: blur(20px) saturate(1.1);
+    -webkit-backdrop-filter: blur(20px) saturate(1.1);
+    box-shadow: var(--shadow-3);
+    animation: account-card-in .6s var(--ease-spring) both;
+}
+
+@keyframes account-card-in {
+    from {
+        opacity: 0;
+        transform: translateY(28px) scale(.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.account-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+}
+
+.account-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+    background: color-mix(in srgb, var(--color-surface) 60%, transparent);
+    color: var(--color-text);
+    transition: transform var(--duration-button) var(--ease-spring),
+                background-color var(--duration-hover) ease,
+                color var(--duration-hover) ease;
+}
+
+.account-back:hover {
+    transform: translateX(-3px);
+    background: var(--color-surface-variant);
+    color: var(--color-primary);
+}
+
+.account-back:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+    outline-offset: 2px;
+}
+
+.account-back svg {
+    width: 20px;
+    height: 20px;
+}
+
+.account-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 700;
+    font-size: .95rem;
+    color: var(--color-text);
+}
+
+.account-brand svg {
+    width: 22px;
+    height: 22px;
+    color: var(--color-primary);
+}
+
+.account-card__head {
+    margin-bottom: var(--space-6);
+}
+
+.account-card__title {
+    margin: 0 0 var(--space-2);
+    font-size: clamp(1.5rem, 4vw, 1.85rem);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    color: var(--color-text);
+}
+
+.account-card__subtitle {
+    margin: 0;
+    font-size: .95rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.account-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.account-field__label {
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.account-field__control {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.account-field__icon {
+    position: absolute;
+    left: var(--space-4);
+    display: inline-flex;
+    color: var(--color-text-secondary);
+    pointer-events: none;
+    transition: color var(--duration-hover) ease;
+}
+
+.account-field__icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.account-input {
+    width: 100%;
+    min-height: 52px;
+    padding: var(--space-3) var(--space-4) var(--space-3) calc(var(--space-4) * 2 + 18px);
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--color-text);
+    background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-input);
+    transition: border-color var(--duration-hover) ease,
+                box-shadow var(--duration-hover) ease,
+                background-color var(--duration-hover) ease;
+}
+
+.account-input::placeholder {
+    color: var(--color-text-disabled);
+}
+
+.account-input:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
+}
+
+.account-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 18%, transparent);
+    background: var(--color-surface);
+}
+
+.account-field__control:focus-within .account-field__icon {
+    color: var(--color-primary);
+}
+
+.account-input--password {
+    padding-right: calc(var(--space-4) * 2 + 24px);
+}
+
+.account-pass-toggle {
+    position: absolute;
+    right: var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: color var(--duration-hover) ease, background-color var(--duration-hover) ease;
+}
+
+.account-pass-toggle:hover {
+    color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.account-pass-toggle:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+    outline-offset: 1px;
+}
+
+.account-pass-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+.account-pass-toggle__icon--hide {
+    display: none;
+}
+
+.account-pass-toggle.is-visible .account-pass-toggle__icon--hide {
+    display: block;
+}
+
+.account-pass-toggle.is-visible .account-pass-toggle__icon--show {
+    display: none;
+}
+
+.input-validation-error {
+    border-color: var(--color-error);
+}
+
+.input-validation-error:focus {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-error) 18%, transparent);
+}
+
+.field-validation-error {
+    font-size: .8rem;
+    font-weight: 500;
+    color: var(--color-error);
+}
+
+.account-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 52px;
+    padding: var(--space-3) var(--space-6);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: var(--radius-button);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform var(--duration-button) var(--ease-spring),
+                box-shadow var(--duration-button) ease,
+                background-color var(--duration-hover) ease,
+                color var(--duration-hover) ease,
+                border-color var(--duration-hover) ease;
+}
+
+.account-btn:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+    outline-offset: 2px;
+}
+
+.account-btn--primary {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--color-primary) 32%, transparent);
+}
+
+.account-btn--primary:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px color-mix(in srgb, var(--color-primary) 40%, transparent);
+}
+
+.account-btn--primary:active {
+    background: var(--color-primary-pressed);
+    transform: translateY(0);
+}
+
+.account-btn--ghost {
+    background: transparent;
+    color: var(--color-text);
+    border-color: var(--btn-secondary-border);
+}
+
+.account-btn--ghost:hover {
+    background: var(--btn-secondary-hover);
+    transform: translateY(-2px);
+}
+
+.account-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.account-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
+}
+
+.account-links__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2) var(--space-4);
+    font-size: .9rem;
+    color: var(--color-text-secondary);
+}
+
+.account-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--color-link);
+    border-radius: var(--space-2);
+    transition: color var(--duration-hover) ease;
+}
+
+.account-link:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+}
+
+.account-link:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+    outline-offset: 2px;
+}
+
+.account-progress {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.account-progress__label {
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+}
+
+.account-progress__track {
+    height: 6px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-border) 80%, transparent);
+    overflow: hidden;
+}
+
+.account-progress__fill {
+    height: 100%;
+    width: 50%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    transition: width var(--duration-page) var(--ease-spring);
+}
+
+.account-form[data-current-step="2"] .account-progress__fill {
+    width: 100%;
+}
+
+.account-step {
+    display: none;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.account-step.is-active {
+    display: flex;
+    animation: account-step-in var(--duration-page) var(--ease-spring) both;
+}
+
+@keyframes account-step-in {
+    from {
+        opacity: 0;
+        transform: translateX(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.account-step__actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+}
+
+.account-step__actions .account-btn {
+    flex: 1;
+}
+
+.account-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+}
+
+.account-roles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+}
+
+.account-role {
+    position: relative;
+    cursor: pointer;
+}
+
+.account-role__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.account-role__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    min-height: 96px;
+    padding: var(--space-4);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-input);
+    background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+    transition: border-color var(--duration-hover) ease,
+                background-color var(--duration-hover) ease,
+                transform var(--duration-button) var(--ease-spring),
+                box-shadow var(--duration-hover) ease;
+}
+
+.account-role:hover .account-role__body {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-primary) 50%, var(--color-border));
+}
+
+.account-role__input:checked + .account-role__body {
+    border-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.account-role__input:focus-visible + .account-role__body {
+    outline: 3px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+    outline-offset: 2px;
+}
+
+.account-role__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+    color: var(--color-primary);
+}
+
+.account-role__icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.account-role__name {
+    font-weight: 700;
+    font-size: .95rem;
+    color: var(--color-text);
+}
+
+.account-role__hint {
+    font-size: .78rem;
+    line-height: 1.35;
+    color: var(--color-text-secondary);
+}
+
+.account-file {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.account-file__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.account-file__label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 64px;
+    padding: var(--space-3) var(--space-4);
+    border: 1.5px dashed var(--color-border);
+    border-radius: var(--radius-input);
+    background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: border-color var(--duration-hover) ease,
+                background-color var(--duration-hover) ease,
+                color var(--duration-hover) ease;
+}
+
+.account-file__label:hover {
+    border-color: var(--color-primary);
+    color: var(--color-text);
+}
+
+.account-file__input:focus-visible ~ .account-file__label {
+    outline: 3px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+    outline-offset: 2px;
+}
+
+.account-file.has-file .account-file__label {
+    border-style: solid;
+    border-color: var(--color-success);
+}
+
+.account-file__label svg {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+}
+
+.account-file__text {
+    font-size: .88rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.account-file__preview {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-success);
+    box-shadow: var(--shadow-1);
+}
+
+.account-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    text-align: center;
+    padding: var(--space-4) 0;
+}
+
+.account-message__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-success) 14%, transparent);
+    color: var(--color-success);
+    animation: account-pop-in .5s var(--ease-spring) both;
+}
+
+@keyframes account-pop-in {
+    from {
+        opacity: 0;
+        transform: scale(.6);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.account-message__icon svg {
+    width: 40px;
+    height: 40px;
+}
+
+.account-message__text {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--color-text);
+}
+
+.account-message__actions {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+}
+
+.account-scene {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    animation: account-scene-in .9s ease both;
+}
+
+@keyframes account-scene-in {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.scene-headlines {
+    position: relative;
+    min-height: 3.2em;
+    display: grid;
+}
+
+.scene-headline {
+    grid-area: 1 / 1;
+    margin: 0;
+    font-size: clamp(1.15rem, 2.4vw, 2.1rem);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.25;
+    color: var(--color-text);
+    text-shadow: 0 2px 18px color-mix(in srgb, var(--color-bg) 65%, transparent);
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .7s ease, transform .7s var(--ease-spring);
+}
+
+.scene-headline.is-active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.scene-sub {
+    margin: var(--space-3) auto 0;
+    max-width: 46ch;
+    font-size: .95rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+}
+
+.scene-widget {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-input);
+    border: 1px solid color-mix(in srgb, var(--color-border) 55%, transparent);
+    background: color-mix(in srgb, var(--color-surface) 78%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-2);
+    text-align: left;
+}
+
+.scene-widget__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+    color: var(--color-primary);
+}
+
+.scene-widget__icon--success {
+    background: color-mix(in srgb, var(--color-success) 14%, transparent);
+    color: var(--color-success);
+}
+
+.scene-widget__icon--accent {
+    background: color-mix(in srgb, var(--color-accent) 20%, transparent);
+    color: var(--color-warning);
+}
+
+.scene-widget__icon--secondary {
+    background: color-mix(in srgb, var(--color-secondary) 16%, transparent);
+    color: var(--color-secondary);
+}
+
+.scene-widget__icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.scene-widget__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.scene-widget__title {
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.scene-widget__hint {
+    font-size: .78rem;
+    color: var(--color-text-secondary);
+}
+
+.scene-stars {
+    color: var(--color-accent);
+    letter-spacing: 2px;
+    font-size: .85rem;
+}
+
+.scene-float {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--color-border) 45%, transparent);
+    background: color-mix(in srgb, var(--color-surface) 62%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--color-primary);
+    box-shadow: var(--shadow-1);
+    animation: scene-float 12s ease-in-out infinite;
+}
+
+.scene-float svg {
+    width: 20px;
+    height: 20px;
+}
+
+.scene-float--2 {
+    animation-duration: 14s;
+    animation-delay: -3s;
+    color: var(--color-secondary);
+}
+
+.scene-float--3 {
+    animation-duration: 16s;
+    animation-delay: -6s;
+    color: var(--color-warning);
+}
+
+.scene-float--4 {
+    animation-duration: 13s;
+    animation-delay: -9s;
+    color: var(--color-success);
+}
+
+.scene-float--5 {
+    animation-duration: 17s;
+    animation-delay: -5s;
+}
+
+@keyframes scene-float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-22px) rotate(4deg);
+    }
+}
+
+.account-scene .scene-widget,
+.account-scene .scene-float {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .account-stage {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--space-12);
+        padding: var(--space-8) var(--space-10);
+    }
+
+    .account-panel {
+        flex: 0 0 auto;
+        max-width: 480px;
+    }
+
+    .account-card {
+        padding: var(--space-10) var(--space-8);
+    }
+
+    .account-scene {
+        flex: 1;
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 82vh;
+        text-align: center;
+    }
+
+    .account-scene .scene-widget {
+        display: inline-flex;
+        position: absolute;
+        animation: scene-breathe 7s ease-in-out infinite;
+    }
+
+    .account-scene .scene-float {
+        display: inline-flex;
+    }
+
+    .scene-widget--pos1 {
+        top: 10%;
+        left: 8%;
+        animation-delay: -1s;
+    }
+
+    .scene-widget--pos2 {
+        top: 16%;
+        right: 6%;
+        animation-delay: -3s;
+    }
+
+    .scene-widget--pos3 {
+        bottom: 20%;
+        left: 12%;
+        animation-delay: -5s;
+    }
+
+    .scene-widget--pos4 {
+        bottom: 10%;
+        right: 10%;
+        animation-delay: -2s;
+    }
+
+    .scene-float--1 {
+        top: 34%;
+        left: 4%;
+    }
+
+    .scene-float--2 {
+        top: 6%;
+        left: 46%;
+    }
+
+    .scene-float--3 {
+        top: 52%;
+        right: 4%;
+    }
+
+    .scene-float--4 {
+        bottom: 34%;
+        right: 26%;
+    }
+
+    .scene-float--5 {
+        bottom: 6%;
+        left: 38%;
+    }
+
+    .scene-headlines {
+        max-width: 60%;
+    }
+
+    .account-grid-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@keyframes scene-breathe {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.02);
+    }
+}
+
+@media (min-width: 1440px) {
+    .account-panel {
+        max-width: 520px;
+    }
+}
+
+@media (min-width: 1920px) {
+    .account-stage {
+        gap: var(--space-24);
+    }
+}
+
+@media (max-width: 1023.98px) {
+    .account-scene {
+        max-width: 500px;
+        padding-bottom: var(--space-8);
+    }
+
+    .scene-sub {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .account-card,
+    .account-scene,
+    .account-step.is-active,
+    .account-message__icon,
+    .scene-float,
+    .account-scene .scene-widget {
+        animation: none;
+    }
+
+    .scene-headline,
+    .account-shell.is-leaving .account-card,
+    .account-shell.is-leaving .account-scene,
+    .account-btn,
+    .account-back,
+    .account-theme-toggle {
+        transition: none;
+    }
+}

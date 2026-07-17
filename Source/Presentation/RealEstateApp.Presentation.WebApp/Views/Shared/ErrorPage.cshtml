@@ -1,0 +1,43 @@
+@model RealEstateApp.Core.Application.ViewsModel.Common.ErrorPageViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/error/error.css" asp-append-version="true" />
+}
+
+<section class="error-page">
+    <div class="error-page__card">
+        <span class="error-page__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 10.5 12 3l9 7.5" />
+                <path d="M5 9.5V21h14V9.5" />
+                <path d="M9.5 21v-6h5v6" />
+                <line x1="4" y1="4" x2="20" y2="20" />
+            </svg>
+        </span>
+        <span class="error-page__code">@Model.Code</span>
+        <h1 class="error-page__title">@Model.Title</h1>
+        <p class="error-page__message">@Model.Message</p>
+        <div class="error-page__actions">
+            <a class="rea-btn rea-btn--primary" asp-controller="Home" asp-action="Index">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 10.5 12 3l9 7.5" />
+                    <path d="M5 9.5V21h14V9.5" />
+                    <path d="M9.5 21v-6h5v6" />
+                </svg>
+                <span>Volver al inicio</span>
+            </a>
+            <a class="rea-btn rea-btn--secondary" asp-controller="AgentFunctionsPublic" asp-action="Agents">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span>Ver agentes</span>
+            </a>
+        </div>
+    </div>
+</section>

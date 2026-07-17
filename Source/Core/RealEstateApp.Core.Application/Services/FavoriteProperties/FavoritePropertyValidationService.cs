@@ -6,6 +6,7 @@ using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
+using RealEstateApp.Core.Domain.Common.Enums;
 
 namespace RealEstateApp.Core.Application.Services.FavoriteProperties
 {
@@ -29,10 +30,17 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperties
         {
             var errors = new List<Error>();
 
+            var roles = _userSession.GetRolesCurrentUser();
+            if (!roles.Contains(Roles.Cliente.ToString()))
+            {
+                errors.Add(new Error("Favorito.UsuarioNoAutorizado", "Solo los clientes pueden agregar favoritos."));
+                return ValidationResult.Failure(errors);
+            }
+
             var isAvailable = await _propertyService.IsAvailableAsync(dto.PropertyId);
             if (!isAvailable)
             {
-                errors.Add(new Error("Favorite.PropertyNotFound", "La propiedad especificada no existe o no está disponible."));
+                errors.Add(new Error("Favorito.PropiedadNoEncontrada", "La propiedad especificada no existe o no está disponible."));
                 return ValidationResult.Failure(errors);
             }
 
@@ -51,12 +59,20 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperties
         public async Task<ValidationResult> ValidateForDeleteAsync(int propertyId)
         {
             var errors = new List<Error>();
+
+            var roles = _userSession.GetRolesCurrentUser();
+            if (!roles.Contains(Roles.Cliente.ToString()))
+            {
+                errors.Add(new Error("Favorito.UsuarioNoAutorizado", "Solo los clientes pueden eliminar favoritos."));
+                return ValidationResult.Failure(errors);
+            }
+
             var customerId = _userSession.GetIdCurrentUser();
 
             var favorites = await _favoritePropertyRepository.GetFavoritesByCustomerAsync(customerId);
             if (!favorites.Any(f => f.PropertyId == propertyId))
             {
-                errors.Add(new Error("Favorite.NotFound", "La propiedad no se encuentra en su listado de favoritos."));
+                errors.Add(new Error("Favorito.NoEncontrado", "La propiedad no se encuentra en su listado de favoritos."));
             }
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();

@@ -1,0 +1,126 @@
+@using RealEstateApp.Core.Application.ViewsModel.Property
+@model List<PropertyCardViewModel>
+@{
+    ViewData["Title"] = "Propiedades Disponibles";
+}
+
+<div class="row g-4">
+    <div class="col-xl-3 col-lg-4">
+        <div class="sticky-top" style="top: 80px;">
+            <div class="card shadow-sm border-0" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4" style="color: var(--color-primary);">Filtrar Propiedades</h5>
+                    <form asp-controller="Customer" asp-action="Index" method="get">
+                        <div class="mb-3">
+                            <label for="PropertyTypeId" class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Tipo de Propiedad</label>
+                            <select class="form-select" id="PropertyTypeId" name="PropertyTypeId" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);">
+                                <option value="">Todos los tipos</option>
+                                <option value="1">Casa</option>
+                                <option value="2">Apartamento</option>
+                                <option value="3">Villa</option>
+                                <option value="4">Solar</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Rango de Precio</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text-secondary);">$</span>
+                                <input type="number" class="form-control" name="MinPrice" placeholder="Mínimo" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text-secondary);">$</span>
+                                <input type="number" class="form-control" name="MaxPrice" placeholder="Máximo" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Bedrooms" class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Habitaciones</label>
+                            <input type="number" class="form-control" id="Bedrooms" name="Bedrooms" placeholder="Ej: 3" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="Bathrooms" class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Baños</label>
+                            <input type="number" class="form-control" id="Bathrooms" name="Bathrooms" placeholder="Ej: 2" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="rea-btn rea-btn--primary w-100">Buscar</button>
+                            <a asp-controller="Customer" asp-action="Index" class="rea-btn rea-btn--secondary w-100">Limpiar Filtros</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-9 col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0" style="color: var(--color-text);">Resultados Encontrados</h2>
+            <span class="badge bg-secondary">@ViewBag.TotalItems propiedades</span>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info border-0 shadow-sm text-center py-5">
+                No se encontraron propiedades que coincidan con los criterios de búsqueda.
+            </div>
+        }
+        else
+        {
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                @foreach (var property in Model)
+                {
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-0" style="border-radius: var(--radius-card); overflow: hidden;">
+                            <div style="position: relative; height: 220px; overflow: hidden; background-color: var(--color-surface-variant);">
+                                @if (!string.IsNullOrEmpty(property.ImageUrl))
+                                {
+                                    <img src="/@property.ImageUrl" class="w-100 h-100" style="object-fit: cover;" alt="Imagen de la propiedad @property.Code" />
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                            <circle cx="8.5" cy="8.5" r="1.5" />
+                                            <polyline points="21 15 16 10 5 21" />
+                                        </svg>
+                                    </div>
+                                }
+                                <div style="position: absolute; top: 12px; right: 12px;">
+                                    <form asp-controller="Favorite" asp-action="@(property.IsFavorite ? "Remove" : "Add")" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="propertyId" value="@property.Id" />
+                                        <button type="submit" class="btn btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" title="@(property.IsFavorite ? "Eliminar de favoritos" : "Agregar a favoritos")">
+                                            <svg viewBox="0 0 24 24" width="20" height="20" fill="@(property.IsFavorite ? "#E85D4F" : "none")" stroke="@(property.IsFavorite ? "#E85D4F" : "currentColor")" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                                <div style="position: absolute; bottom: 12px; left: 12px; background: rgba(0,0,0,0.6); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">
+                                    CÓDIGO: @property.Code
+                                </div>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h4 class="card-title fw-bold text-primary mb-2">@string.Format("{0:C}", property.Price)</h4>
+                                <p class="card-text text-muted mb-3 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    @property.Description
+                                </p>
+                                <hr class="my-2" style="color: var(--color-border);" />
+                                <div class="d-flex justify-content-between text-muted mb-3" style="font-size: 0.9rem;">
+                                    <span><strong>@property.Bedrooms</strong> habs</span>
+                                    <span><strong>@property.Bathrooms</strong> baños</span>
+                                    <span><strong>@property.Size</strong> m²</span>
+                                </div>
+                                <a asp-controller="Customer" asp-action="Details" asp-route-id="@property.Id" class="rea-btn rea-btn--primary w-100 text-center">Ver Detalles</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <partial name="_Pagination" />
+        }
+    </div>
+</div>

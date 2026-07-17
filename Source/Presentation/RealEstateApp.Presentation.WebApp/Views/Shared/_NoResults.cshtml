@@ -1,0 +1,15 @@
+@model string
+
+<div class="no-results">
+    <img class="no-results__img" src="~/resources/no results.jpg" alt="Sin resultados disponibles" />
+    <h3 class="no-results__title">No hay resultados para mostrar</h3>
+    <p class="no-results__text">@Model</p>
+    <a class="rea-btn rea-btn--secondary" asp-controller="Home" asp-action="Index">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 10.5 12 3l9 7.5" />
+            <path d="M5 9.5V21h14V9.5" />
+            <path d="M9.5 21v-6h5v6" />
+        </svg>
+        <span>Volver al inicio</span>
+    </a>
+</div>
