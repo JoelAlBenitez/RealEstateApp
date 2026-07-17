@@ -4,8 +4,6 @@ using RealEstateApp.Core.Application.Contracts.SaleType;
 using RealEstateApp.Core.Application.Services.SaleType;
 using RealEstateApp.Core.Application.Contracts.GenericServices;
 
-﻿using Microsoft.Extensions.DependencyInjection;
-
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Auth;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Consult;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Operational;

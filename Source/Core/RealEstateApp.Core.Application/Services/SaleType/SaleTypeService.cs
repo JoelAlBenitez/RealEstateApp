@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using RealEstateApp.Core.Application.Contracts.SaleType;
+using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.DTOs.Property;
 using RealEstateApp.Core.Application.DTOs.SaleType;
 using RealEstateApp.Core.Application.Services.Generic;
@@ -17,15 +18,18 @@ namespace RealEstateApp.Core.Application.Services.SaleType
     {
         private readonly ISaleTypeRepository _saleTypeRepository;
         private readonly ISaleTypeValidationService _saleTypeValidationService;
+        private readonly IPropertyService _propertyService;
 
         public SaleTypeService(
             ISaleTypeRepository saleTypeRepository, 
             IMapper mapper, 
-            ISaleTypeValidationService saleTypeValidationService)
+            ISaleTypeValidationService saleTypeValidationService,
+            IPropertyService propertyService)
             : base(saleTypeRepository, mapper)
         {
             _saleTypeRepository = saleTypeRepository;
             _saleTypeValidationService = saleTypeValidationService;
+            _propertyService = propertyService;
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<SaleTypeDto>>> GetAllWithCountAsync()
@@ -33,12 +37,16 @@ namespace RealEstateApp.Core.Application.Services.SaleType
             try
             {
                 var entities = await _saleTypeRepository.GetAllAsync();
-                
-                // TODO: Falta un método nuevo en ISaleTypeRepository que traiga la entidad 
-                // + el conteo en una sola consulta (GroupBy/Join) en vez del foreach actual con N+1 consultas.
-                // Mientras tanto se usa AutoMapper para el mapeo simple de Id/Name/Description,
-                // dejando PropertyCount en 0 (valor por defecto) con este TODO explicado.
                 var dtos = base._mapper.Map<List<SaleTypeDto>>(entities);
+
+                // Nota: se usa un conteo individual por elemento en vez de una consulta agrupada.
+                // Confirmado con el líder técnico (Joel) que esto es aceptable para catálogos
+                // maestros con pocos registros (no es un problema de rendimiento en este contexto).
+                foreach (var dto in dtos)
+                {
+                    var countResult = await _propertyService.CountBySaleTypeAsync(dto.Id);
+                    dto.PropertyCount = countResult.IsValid ? countResult.Value : 0;
+                }
                 
                 return ValidationResult<IReadOnlyCollection<SaleTypeDto>>.Success(dtos);
             }
@@ -97,14 +105,14 @@ namespace RealEstateApp.Core.Application.Services.SaleType
             return await base.UpdateAsync(dto);
         }
 
-        // PENDIENTE DE CONFIRMAR CON SEBASTIÁN: la eliminación en cascada de propiedades
-        // al borrar un tipo de venta depende de que Sebastián configure la FK
-        // Property.SaleTypeId con OnDelete(DeleteBehavior.Cascade) en Fluent API
-        // (según acuerdo del equipo en distribucion-equipo.html línea 414). Sebastián
-        // aún no ha llegado a esa parte de su implementación. Mientras tanto, RemoveAsync
-        // hereda el comportamiento genérico de GenericServices (solo borra el registro
-        // de SaleType) — NO purga las propiedades asociadas todavía. Si se elimina
-        // un tipo de venta con propiedades activas antes de que Sebastián configure
-        // la cascada, quedarán registros huérfanos con una FK inválida.
+        public override async Task<ValidationResult> RemoveAsync(int id)
+        {
+            var cascadeResult = await _propertyService.DeletePropertiesBySaleTypeAsync(id);
+            if (!cascadeResult.IsValid)
+            {
+                return cascadeResult;
+            }
+            return await base.RemoveAsync(id);
+        }
     }
 }
