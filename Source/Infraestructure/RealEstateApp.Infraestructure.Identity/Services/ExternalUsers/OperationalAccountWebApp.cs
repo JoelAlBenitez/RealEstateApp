@@ -240,10 +240,12 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
 
         public async Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentByConsultCustomer(ConsultAgentByNameOrLastNameDto dto)
         {
-            var cosultAgent = await _userManager.Users
-                .Where(u => u.IsActive && (u.Name == dto.Name || u.LastName == dto.Name)).ToListAsync();
+            var cosultAgent = await _userManager.GetUsersInRoleAsync(Roles.Agente.ToString());
             if (cosultAgent == null) return null!;
-            var select = cosultAgent.Select( u =>
+            var select = cosultAgent
+                .Where(u => u.IsActive && (u.Name.ToLower() == dto.Name.ToLower()
+                || u.LastName.ToLower() == dto.Name.ToLower()))
+                .Select( u =>
             new CustomerConsultAgentDto
             {
                 Id = u.Id,

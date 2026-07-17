@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: var(--space-6);
     width: 100%;
-    max-width: 1280px;
+    max-width: 1480px;
     margin: 0 auto;
     padding: var(--space-8) var(--space-4) var(--space-16);
     box-sizing: border-box;
@@ -433,14 +433,14 @@
     position: relative;
     z-index: 1;
     margin: 0;
-    max-width: min(92vw, 1000px);
+    max-width: min(94vw, 1160px);
     perspective: 1200px;
 }
 
 .gallery-modal__figure img {
     display: block;
     max-width: 100%;
-    max-height: 76vh;
+    max-height: 82vh;
     border-radius: 14px;
     box-shadow: var(--shadow-3);
     transition: transform var(--duration-modal) var(--ease-spring);
@@ -585,7 +585,7 @@
 
 @media (min-width: 1100px) {
     .detail__layout {
-        grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+        grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
         align-items: start;
     }
 

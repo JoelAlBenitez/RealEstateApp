@@ -17,7 +17,8 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Proper
                 .ForMember(opt => opt.MaxPrice, src => src.MapFrom(s => s.MaxPrice))
                 .ForMember(opt => opt.MinPrice, src => src.MapFrom(s => s.MinPrice))
                 .ForMember(opt => opt.Bathrooms, src => src.MapFrom(s => s.Bathrooms))
-                .ForMember(opt => opt.Bedrooms, src => src.MapFrom(s => s.Bedrooms));
+                .ForMember(opt => opt.Bedrooms, src => src.MapFrom(s => s.Bedrooms))
+                .ReverseMap();
         }
     }
 }

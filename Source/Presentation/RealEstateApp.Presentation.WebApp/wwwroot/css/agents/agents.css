@@ -37,8 +37,6 @@
 
 .agents {
     width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
     padding: var(--space-4) var(--space-4) var(--space-16);
     box-sizing: border-box;
 }
@@ -56,7 +54,7 @@
 
 .agent-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
     gap: var(--space-4);
 }
 
@@ -78,8 +76,8 @@
 
 .agent-card__media {
     width: 40%;
-    min-width: 110px;
-    min-height: 160px;
+    min-width: 150px;
+    min-height: 185px;
 }
 
 .agent-card__media img {
@@ -317,10 +315,6 @@
         font-size: 2.5rem;
     }
 
-    .agent-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
     .agents {
         padding-left: var(--space-8);
         padding-right: var(--space-8);
@@ -333,14 +327,16 @@
         align-items: flex-start;
     }
 
-    .agent-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
     .agent-consult {
         width: 330px;
         flex-shrink: 0;
         position: sticky;
         top: calc(var(--header-height) + var(--space-4));
+    }
+}
+
+@media (min-width: 1500px) {
+    .agent-consult {
+        width: 360px;
     }
 }

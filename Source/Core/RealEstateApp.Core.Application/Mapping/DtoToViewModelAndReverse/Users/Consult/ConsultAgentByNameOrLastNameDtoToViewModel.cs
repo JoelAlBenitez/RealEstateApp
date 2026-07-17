@@ -8,7 +8,8 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.
     {
         public ConsultAgentByNameOrLastNameDtoToViewModel()
         {
-            CreateMap<ConsultAgentByNameOrLastNameDto, AgentConsultByNameOrLastNameViewModel>();
+            CreateMap<ConsultAgentByNameOrLastNameDto, AgentConsultByNameOrLastNameViewModel>()
+                .ReverseMap();
         }
     }
 }

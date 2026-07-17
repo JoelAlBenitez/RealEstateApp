@@ -22,6 +22,22 @@
         });
     }
 
+    var heroFigs = document.querySelectorAll("[data-hero-fig]");
+    Array.prototype.forEach.call(heroFigs, function (fig) {
+        var img = fig.querySelector("img");
+        if (!img) {
+            return;
+        }
+        function markBroken() {
+            fig.classList.add("home-hero__fig--broken");
+        }
+        if (img.complete && img.naturalWidth === 0) {
+            markBroken();
+        } else {
+            img.addEventListener("error", markBroken);
+        }
+    });
+
     var grid = document.getElementById("propertyGrid");
     var pager = document.getElementById("clientPagination");
 

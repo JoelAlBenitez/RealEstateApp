@@ -21,7 +21,7 @@ namespace RealStateApp.IOC
             //    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDbContext<DbContextRealEstateApp>(options =>
-                options.UseInMemoryDatabase("RealEstateAppDb"));
+                options.UseInMemoryDatabase("RealEstateAppDb"));   // -> pruebas uso de memory
 
             #region customer repositories
             services.AddScoped<IPropertyRepository, PropertyRepository>();

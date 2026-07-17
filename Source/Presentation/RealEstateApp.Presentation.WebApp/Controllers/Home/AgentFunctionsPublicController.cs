@@ -42,7 +42,8 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
 
         public async Task<IActionResult> PropertyByAgent(string AgentId, int page = 1)
         {
-            if (string.IsNullOrWhiteSpace(AgentId))
+            var agent = await FindAgentAsync(AgentId);
+            if (agent == null)
             {
                 TempData["Warning"] = "El agente solicitado no existe o no se encuentra disponible.";
                 return View("Agents", await BuildAgentsAsync(null));
@@ -57,18 +58,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
                 ?? Array.Empty<PropertyPublicViewModel>();
             var vm = BuildAgentPropertiesViewModel(properties, page);
             vm.AgentId = AgentId;
-            try
-            {
-                var agent = await _operationalAccountWebApp.GetConsultAgentById(AgentId);
-                if (agent != null)
-                {
-                    vm.AgentName = $"{agent.Name} {agent.LastName}";
-                }
-            }
-            catch
-            {
-                vm.AgentName = null;
-            }
+            vm.AgentName = $"{agent.Name} {agent.LastName}";
             return View(HomeIndexView, vm);
         }
         #endregion
@@ -111,6 +101,22 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
                 Agents = agents ?? Array.Empty<AgentViewModel>(),
                 Consult = consult ?? new AgentConsultByNameOrLastNameViewModel { Name = "" }
             };
+        }
+
+        private async Task<ConsultAgentDto?> FindAgentAsync(string agentId)
+        {
+            if (string.IsNullOrWhiteSpace(agentId))
+            {
+                return null;
+            }
+            try
+            {
+                return await _operationalAccountWebApp.GetConsultAgentById(agentId);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private HomePropertiesViewModel BuildAgentPropertiesViewModel(

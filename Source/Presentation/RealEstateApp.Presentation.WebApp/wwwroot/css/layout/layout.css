@@ -363,8 +363,6 @@ body.is-scrolled .site-menu__brand {
 .site-main {
     flex: 1;
     width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
     padding: calc(var(--header-height) + var(--menu-height) + var(--space-6)) var(--space-4) var(--space-12);
 }
 

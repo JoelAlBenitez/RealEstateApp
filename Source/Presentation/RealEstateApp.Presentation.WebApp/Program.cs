@@ -34,6 +34,7 @@ builder.Services.AddSession();
 
 var app = builder.Build();
 await app.Services.GenerateDataSeedUsers();
+await DevSeedBootstrap.RunAsync(app.Services);
 
 if (!app.Environment.IsDevelopment())
 {
