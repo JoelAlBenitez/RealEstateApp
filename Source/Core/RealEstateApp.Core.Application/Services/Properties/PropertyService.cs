@@ -184,19 +184,6 @@ namespace RealEstateApp.Core.Application.Services.Properties
             }
         }
 
-        public async Task<ValidationResult<int>> CountAvailableByAgentAsync(string agentId)
-        {
-            try
-            {
-                var total = await _propertyRepository.CountAvailablePropertiesByAgentAsync(agentId);
-                return ValidationResult<int>.Success(total);
-            }
-            catch (Exception)
-            {
-                return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
-            }
-        }
-
         public async Task<ValidationResult<int>> GetAvailableCountAsync(PropertyFilterDto? filters)
         {
             try
