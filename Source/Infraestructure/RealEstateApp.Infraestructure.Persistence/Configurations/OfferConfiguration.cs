@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RealEstateApp.Core.Domain.Entities;
 
-namespace RealEstateApp.Infraestructure.Persistence.Context.Configurations
+namespace RealEstateApp.Infraestructure.Persistence.Configurations
 {
     public class OfferConfiguration : IEntityTypeConfiguration<Offer>
     {
@@ -14,6 +14,10 @@ namespace RealEstateApp.Infraestructure.Persistence.Context.Configurations
 
             builder.HasIndex(o => o.CustomerId);
             builder.HasIndex(o => o.PropertyId);
+
+            builder.HasIndex(o => new { o.CustomerId, o.PropertyId })
+                .HasFilter("Status = 1")
+                .IsUnique();
 
             builder.Property(o => o.CustomerId)
                 .IsRequired();

@@ -1,6 +1,6 @@
 @{
-    var successMessage = TempData["Message"] as string;
-    var warningMessage = TempData["Warning"] as string;
+    var successMessage = (TempData["Message"] as string) ?? (TempData["SuccessMessage"] as string);
+    var warningMessage = (TempData["Warning"] as string) ?? (TempData["ErrorMessage"] as string);
     var infoMessage = TempData["Info"] as string;
 
     var modelErrors = ViewContext.ViewData.ModelState.Values

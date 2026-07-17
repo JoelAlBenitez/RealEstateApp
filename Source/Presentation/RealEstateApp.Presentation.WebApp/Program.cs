@@ -31,7 +31,19 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 #endregion
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var persistenceContext = services.GetRequiredService<RealEstateApp.Infraestructure.Persistence.Context.DbContextRealEstateApp>();
+    await persistenceContext.Database.EnsureCreatedAsync();
+
+    var identityContext = services.GetRequiredService<RealEstateApp.Infraestructure.Identity.Context.DbContextIdentityRealStateApp>();
+    await identityContext.Database.EnsureCreatedAsync();
+}
+
 await app.Services.GenerateDataSeedUsers();
+await app.Services.GenerateDataSeedProperties();
 
 if (!app.Environment.IsDevelopment())
 {

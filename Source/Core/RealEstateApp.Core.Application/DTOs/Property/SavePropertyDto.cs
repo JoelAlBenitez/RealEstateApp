@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 
 namespace RealEstateApp.Core.Application.DTOs.Property
@@ -15,10 +15,9 @@ namespace RealEstateApp.Core.Application.DTOs.Property
         public string? AgentId { get; set; } 
         public PropertyState Status { get; set; } = PropertyState.Available;
 
-        // Por recibir:
-        // public int PropertyTypeId { get; set; }
-        // public int SaleTypeId { get; set; }
-        // public List<int> ImprovementIds { get; set; } = new();
+        public int PropertyTypeId { get; set; }
+        public int SaleTypeId { get; set; }
+        public List<int> ImprovementIds { get; set; } = new();
         public List<IFormFile>? ImageFiles { get; set; }
         public List<string>? ExistingImageUrls { get; set; }
     }

@@ -52,8 +52,8 @@ namespace RealEstateApp.Core.Application.Services.Offers
                 return ValidationResult.Failure(errors);
             }
 
-            var otherOffers = await _offerRepository.GetPendingOffersByPropertyAsync(dto.PropertyId);
-            if (otherOffers.Any(o => o.Status == OfferState.Accepted))
+            var hasAcceptedOffer = await _offerRepository.HasAcceptedOfferAsync(dto.PropertyId);
+            if (hasAcceptedOffer)
             {
                 errors.Add(OfferErrors.PropertyHasAcceptedOffer);
                 return ValidationResult.Failure(errors);

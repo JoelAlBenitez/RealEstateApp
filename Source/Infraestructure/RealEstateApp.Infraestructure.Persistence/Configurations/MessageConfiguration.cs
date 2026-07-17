@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RealEstateApp.Core.Domain.Entities;
 
-namespace RealEstateApp.Infraestructure.Persistence.Context.Configurations
+namespace RealEstateApp.Infraestructure.Persistence.Configurations
 {
     public class MessageConfiguration : IEntityTypeConfiguration<Message>
     {
@@ -23,6 +23,9 @@ namespace RealEstateApp.Infraestructure.Persistence.Context.Configurations
                 .HasMaxLength(1000);
 
             builder.Property(m => m.SentAt)
+                .IsRequired();
+
+            builder.Property(m => m.IsFromAgent)
                 .IsRequired();
 
             builder.HasOne(m => m.Property)
