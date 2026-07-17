@@ -28,13 +28,10 @@ builder.Services.AddDependenciesWebApp();
 builder.Services.AddDependenciesWebApi();
 builder.Services.AddScoped<IUserSession,UserSession>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-builder.Services.AddSession();
 #endregion
 
 var app = builder.Build();
 await app.Services.GenerateDataSeedUsers();
-await DevSeedBootstrap.RunAsync(app.Services);
 
 if (!app.Environment.IsDevelopment())
 {

@@ -5,6 +5,7 @@ using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 using RealEstateApp.Core.Application.DTOs.Property;
 using RealEstateApp.Core.Application.ViewsModel.Common;
 using RealEstateApp.Core.Application.ViewsModel.Property;
+using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 using RealEstateApp.Core.Domain.Common.Errors;
 
 namespace RealEstateApp.Presentation.WebApp.Controllers.Home
@@ -49,6 +50,11 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             if (!result.IsValid)
             {
                 AddErrors(result.Errors);
+                return View("Index", await BuildHomeAsync(null, new PropertyFilterViewModel(), 1, false));
+            }
+            if (result.Value == null || result.Value.Status != PropertyState.Available)
+            {
+                ModelState.AddModelError("Propiedad.NoDisponible", "La propiedad solicitada no existe o no se encuentra disponible.");
                 return View("Index", await BuildHomeAsync(null, new PropertyFilterViewModel(), 1, false));
             }
             var map = _mapper.Map<PropertyDetailViewModel>(result.Value);
@@ -99,7 +105,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             var consult = await _propertyService.GetByCodeAsync(vm.Code.Trim());
             if (!consult.IsValid || consult.Value == null)
             {
-                AddErrors(consult.Errors);
+                TempData["Warning"] = "La propiedad indicada no pudo ser encontrada.";
                 return View("Index", await BuildHomeAsync(null, new PropertyFilterViewModel(), 1, false));
             }
             return RedirectToAction(nameof(DetailtsProperty), new { IdProperty = consult.Value.Id });
@@ -111,7 +117,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
         {
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "La busqueda no pudo ser realizada. Favor revise los valores ingresados.");
+               TempData["Warning"] = "La busqueda no pudo ser realizada. Favor revise los valores ingresados.";
                 return View("Index", await BuildHomeAsync(null, new PropertyFilterViewModel(), 1, false));
             }
             return RedirectToAction(nameof(Index), new

@@ -34,7 +34,7 @@
                     <div class="gallery__stage">
                         @for (var i = 0; i < images.Count; i++)
                         {
-                            <img class="gallery__slide@(i == 0 ? " gallery__slide--active" : "")"
+                            <img class="~/gallery__slide@(i == 0 ? " gallery__slide--active" : "")"
                                  src="@images[i]"
                                  alt="Imagen @(i + 1) de la propiedad @Model.Code"
                                  data-index="@i"
@@ -129,7 +129,7 @@
                 <button class="detail__agent-photo" id="agentPhotoBtn" type="button" aria-label="Ver foto del agente en tamaño completo">
                     @if (!string.IsNullOrWhiteSpace(Model.AgentPhotoUrl))
                     {
-                        <img id="agentPhotoImg" src="@Model.AgentPhotoUrl" alt="Foto del agente @agentDisplayName" />
+                        <img id="agentPhotoImg" src="~/@Model.AgentPhotoUrl" alt="Foto del agente @agentDisplayName" />
                     }
                     else
                     {
