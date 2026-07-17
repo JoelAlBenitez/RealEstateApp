@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using RealEstateApp.Core.Application.Contracts.PropertyType;
 using RealEstateApp.Core.Application.DTOs.PropertyType;
+using RealEstateApp.Core.Application.DTOs.Property;
 using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
@@ -46,6 +48,13 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
                     new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente de nuevo más tarde.")
                 );
             }
+        }
+
+        public async Task<ValidationResult<IReadOnlyCollection<TypeProperty>>> GetAllForSelectAsync()
+        {
+            var entities = await _propertyTypeRepository.GetAllAsync();
+            var result = entities.Select(e => new TypeProperty { Id = e.Id, Name = e.Name }).ToList();
+            return ValidationResult<IReadOnlyCollection<TypeProperty>>.Success(result);
         }
 
         public override async Task<ValidationResult> AddAsync(SavePropertyTypeDto dto)
