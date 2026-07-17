@@ -12,5 +12,6 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
         // propiedades (el doocumento dice : "Las propiedades asociadas a la mejora no
         // deben eliminarse"). PENDIENTE: confirmar con Sebastián cómo se maneja
         // la tabla puente PropertyImprovement.
+        Task<bool> ExistNameAsync(string name, int id = 0);
     }
 }

@@ -8,9 +8,11 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Improv
     {
         public ImprovementDtoToViewModelAndReverse()
         {
-            CreateMap<CreateImprovementViewModel, SaveImprovementDto>();
-            CreateMap<EditImprovementViewModel, SaveImprovementDto>();
-            CreateMap<ImprovementDto, ImprovementListViewModel>();
+            CreateMap<SaveImprovementViewModel, SaveImprovementDto>()
+                .ReverseMap();
+                
+            CreateMap<ImprovementDto, ImprovementViewModel>()
+                .ReverseMap();
         }
     }
 }

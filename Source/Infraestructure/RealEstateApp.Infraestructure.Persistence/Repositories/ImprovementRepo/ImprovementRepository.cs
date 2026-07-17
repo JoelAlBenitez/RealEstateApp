@@ -20,5 +20,16 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.ImprovementRepo
             // PENDIENTE: Ajustar este método cuando Sebastián agregue la tabla puente.
             return await Task.FromResult(0);
         }
+
+        public async Task<bool> ExistNameAsync(string name, int id = 0)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return false;
+
+            var lowerName = name.Trim().ToLower();
+
+            return await _context.Set<Improvement>()
+                .AnyAsync(e => e.Name.ToLower() == lowerName && e.Id != id);
+        }
     }
 }

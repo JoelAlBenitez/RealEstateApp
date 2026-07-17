@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using RealEstateApp.Core.Application.DTOs.Property;
 using AutoMapper;
 using RealEstateApp.Core.Application.Contracts.Improvement;
 using RealEstateApp.Core.Application.DTOs.Improvement;
@@ -45,6 +47,21 @@ namespace RealEstateApp.Core.Application.Services.Improvement
                 return ValidationResult<IReadOnlyCollection<ImprovementDto>>.Failure(
                     new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente de nuevo más tarde.")
                 );
+            }
+        }
+
+        public async Task<ValidationResult<IReadOnlyCollection<TypeImprovement>>> GetAllForSelectAsync()
+        {
+            try
+            {
+                var entities = await _improvementRepository.GetAllAsync();
+                var result = entities.Select(e => new TypeImprovement { Id = e.Id, Name = e.Name }).ToList();
+                return ValidationResult<IReadOnlyCollection<TypeImprovement>>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                return ValidationResult<IReadOnlyCollection<TypeImprovement>>.Failure(
+                    new Error("ImprovementService.GetAllForSelectAsync", ex.Message));
             }
         }
 
