@@ -12,6 +12,11 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
     public class AgentFunctionsPublicController : Controller
     {
         private const int PageSize = 12;
+
+        // HANDOFF: el repositorio pagina a 10 por defecto; se pide un lote amplio y se
+        // pagina localmente a 12. Si el volumen de datos crece, cambiar a paginación
+        // real con total de registros expuesto por el servicio.
+        private const int ServiceFetchSize = 200;
         private const string HomeIndexView = "~/Views/Home/Index.cshtml";
 
         private readonly IPropertyService _propertyService;
@@ -42,7 +47,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
                 TempData["Warning"] = "El agente solicitado no existe o no se encuentra disponible.";
                 return View("Agents", await BuildAgentsAsync(null));
             }
-            var result = await _propertyService.GetAvailableByAgentAsync(AgentId);
+            var result = await _propertyService.GetAvailableByAgentAsync(AgentId, 1, ServiceFetchSize);
             if (!result.IsValid)
             {
                 AddErrors(result.Errors);

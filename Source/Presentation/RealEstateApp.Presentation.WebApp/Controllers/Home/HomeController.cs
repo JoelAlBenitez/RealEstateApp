@@ -11,6 +11,11 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
     {
         private const int PageSize = 12;
 
+        // HANDOFF: el repositorio pagina a 10 por defecto; se pide un lote amplio y se
+        // pagina localmente a 12. Si el volumen de datos crece, cambiar a paginación
+        // real con total de registros expuesto por el servicio.
+        private const int ServiceFetchSize = 200;
+
         private readonly IPropertyService _propertyService;
         private readonly IMapper _mapper;
 
@@ -85,7 +90,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
         #region private helpers
         private async Task<HomePropertiesViewModel> BuildHomeAsync(PropertyFilterDto? filters, int page, bool paginateServerSide = true)
         {
-            var result = await _propertyService.GetAvailableAsync(filters);
+            var result = await _propertyService.GetAvailableAsync(filters, 1, ServiceFetchSize);
             IReadOnlyCollection<PropertyPublicViewModel> properties = Array.Empty<PropertyPublicViewModel>();
             if (!result.IsValid)
             {
