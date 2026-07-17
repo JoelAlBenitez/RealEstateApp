@@ -10,5 +10,6 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
         // TODO PENDIENTE DE CONFIRMAR: misma estrategia de cascada pendiente que
         // PropertyType — depende de que Sebastián configure OnDelete(DeleteBehavior.Cascade)
         // en la FK Property.SaleTypeId.
+        Task<bool> ExistNameAsync(string name, int id = 0);
     }
 }

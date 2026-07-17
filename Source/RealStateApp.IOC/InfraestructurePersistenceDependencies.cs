@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RealEstateApp.Core.Domain.Interfaces.Repositories;
+using RealEstateApp.Infraestructure.Persistence.Repositories.SaleTypeRepo;
 
 namespace RealStateApp.IOC
 {
@@ -9,7 +11,9 @@ namespace RealStateApp.IOC
             this IServiceCollection services, IConfiguration configuration)
         {
 
-            ///
+            #region Sale Type Repositories
+            services.AddScoped<ISaleTypeRepository, SaleTypeRepository>();
+            #endregion
 
             return services;
         }

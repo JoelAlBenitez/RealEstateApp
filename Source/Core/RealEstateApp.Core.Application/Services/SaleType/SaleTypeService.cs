@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using RealEstateApp.Core.Application.Contracts.SaleType;
+using RealEstateApp.Core.Application.DTOs.Property;
 using RealEstateApp.Core.Application.DTOs.SaleType;
 using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Domain.Common.Errors;
@@ -45,6 +47,21 @@ namespace RealEstateApp.Core.Application.Services.SaleType
                 return ValidationResult<IReadOnlyCollection<SaleTypeDto>>.Failure(
                     new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente de nuevo más tarde.")
                 );
+            }
+        }
+
+        public async Task<ValidationResult<IReadOnlyCollection<TypeSale>>> GetAllForSelectAsync()
+        {
+            try
+            {
+                var entities = await _saleTypeRepository.GetAllAsync();
+                var result = entities.Select(e => new TypeSale { Id = e.Id, Name = e.Name }).ToList();
+                return ValidationResult<IReadOnlyCollection<TypeSale>>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                return ValidationResult<IReadOnlyCollection<TypeSale>>.Failure(
+                    new Error("SaleTypeService.GetAllForSelectAsync", ex.Message));
             }
         }
 

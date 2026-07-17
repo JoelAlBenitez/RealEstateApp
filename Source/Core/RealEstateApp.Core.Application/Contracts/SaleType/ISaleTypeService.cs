@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using RealEstateApp.Core.Application.Contracts.GenericServices;
 using RealEstateApp.Core.Application.DTOs.SaleType;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
+using RealEstateApp.Core.Application.DTOs.Property;
 
 namespace RealEstateApp.Core.Application.Contracts.SaleType
 {
@@ -11,5 +12,6 @@ namespace RealEstateApp.Core.Application.Contracts.SaleType
     public interface ISaleTypeService : IGenericServices<SaveSaleTypeDto, int>
     {
         Task<ValidationResult<IReadOnlyCollection<SaleTypeDto>>> GetAllWithCountAsync();
+        Task<ValidationResult<IReadOnlyCollection<TypeSale>>> GetAllForSelectAsync();
     }
 }

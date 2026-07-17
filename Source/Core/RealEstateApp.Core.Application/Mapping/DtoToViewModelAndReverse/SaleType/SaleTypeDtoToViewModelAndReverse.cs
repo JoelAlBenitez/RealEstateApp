@@ -8,9 +8,11 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.SaleTy
     {
         public SaleTypeDtoToViewModelAndReverse()
         {
-            CreateMap<CreateSaleTypeViewModel, SaveSaleTypeDto>();
-            CreateMap<EditSaleTypeViewModel, SaveSaleTypeDto>();
-            CreateMap<SaleTypeDto, SaleTypeListViewModel>();
+            CreateMap<SaveSaleTypeViewModel, SaveSaleTypeDto>()
+                .ReverseMap();
+
+            CreateMap<SaleTypeDto, SaleTypeViewModel>()
+                .ReverseMap();
         }
     }
 }

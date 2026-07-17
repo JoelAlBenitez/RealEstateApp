@@ -45,8 +45,7 @@ namespace RealEstateApp.Core.Application.Services.SaleType
             }
             else
             {
-                var existing = await _saleTypeRepository.GetAllAsync();
-                bool nameExists = existing.Any(e => e.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
+                bool nameExists = await _saleTypeRepository.ExistNameAsync(trimmedName, 0);
                 
                 if (nameExists)
                 {
@@ -70,10 +69,7 @@ namespace RealEstateApp.Core.Application.Services.SaleType
             }
             else
             {
-                var existing = await _saleTypeRepository.GetAllAsync();
-                bool nameExists = existing.Any(e =>
-                    e.Id != dto.Id &&
-                    e.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
+                bool nameExists = await _saleTypeRepository.ExistNameAsync(trimmedName, dto.Id ?? 0);
                 
                 if (nameExists)
                 {
