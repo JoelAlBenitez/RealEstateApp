@@ -208,5 +208,52 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
                 .Where(p => p.AgentId == agentId)
                 .ToListAsync();
         }
+
+        public async Task<int> GetAvailablePropertiesCountAsync(PropertyFilterCriteria? criteria = null)
+        {
+            var query = _context.Properties
+                .AsNoTracking()
+                .Where(p => p.Status == PropertyState.Available);
+
+            if (criteria != null)
+            {
+                if (criteria.PropertyTypeId.HasValue)
+                {
+                    query = query.Where(p => p.PropertyTypeId == criteria.PropertyTypeId.Value);
+                }
+                if (criteria.MinPrice.HasValue)
+                {
+                    query = query.Where(p => p.Price >= criteria.MinPrice.Value);
+                }
+                if (criteria.MaxPrice.HasValue)
+                {
+                    query = query.Where(p => p.Price <= criteria.MaxPrice.Value);
+                }
+                if (criteria.Bedrooms.HasValue)
+                {
+                    query = query.Where(p => p.Bedrooms == criteria.Bedrooms.Value);
+                }
+                if (criteria.Bathrooms.HasValue)
+                {
+                    query = query.Where(p => p.Bathrooms == criteria.Bathrooms.Value);
+                }
+            }
+
+            return await query.CountAsync();
+        }
+
+        public async Task<int> GetPropertiesCountByAgentAsync(string agentId, PropertyState? status = null)
+        {
+            var query = _context.Properties
+                .AsNoTracking()
+                .Where(p => p.AgentId == agentId);
+
+            if (status.HasValue)
+            {
+                query = query.Where(p => p.Status == status.Value);
+            }
+
+            return await query.CountAsync();
+        }
     }
 }

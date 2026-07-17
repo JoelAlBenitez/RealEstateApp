@@ -19,17 +19,31 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
         {
+            if (pageNumber < 1) pageNumber = 1;
             var result = await _offerService.GetByCustomerAsync();
             if (!result.IsValid)
             {
+                ViewBag.CurrentPage = 1;
+                ViewBag.TotalPages = 1;
+                ViewBag.TotalItems = 0;
                 return View(new List<OfferViewModel>());
             }
 
             var viewModels = _mapper.Map<List<OfferViewModel>>(result.Value);
+            var totalItems = viewModels.Count;
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
-            return View(viewModels);
+            if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
+
+            var paginatedViewModels = viewModels.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalItems = totalItems;
+
+            return View(paginatedViewModels);
         }
 
         [HttpPost]

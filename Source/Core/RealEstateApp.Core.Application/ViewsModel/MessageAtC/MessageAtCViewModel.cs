@@ -12,5 +12,6 @@ namespace RealEstateApp.Core.Application.ViewsModel.MessageAtC
         public DateTimeOffset CreateAt { get; set; }
         public string CustomerName { get; set; } = null!;
         public string AgentName { get; set; } = null!;
+        public string PropertyCode { get; set; } = null!;
     }
 }

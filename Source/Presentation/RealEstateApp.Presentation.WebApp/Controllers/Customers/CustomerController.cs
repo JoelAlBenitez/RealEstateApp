@@ -31,11 +31,22 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index(PropertyFilterDto filters)
+        public async Task<IActionResult> Index(PropertyFilterDto filters, int pageNumber = 1, int pageSize = 6)
         {
-            var result = await _propertyService.GetAvailableAsync(filters);
+            if (pageNumber < 1) pageNumber = 1;
+
+            var countResult = await _propertyService.GetAvailableCountAsync(filters);
+            var totalItems = countResult.IsValid ? countResult.Value : 0;
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
+
+            var result = await _propertyService.GetAvailableAsync(filters, pageNumber, pageSize);
             if (!result.IsValid)
             {
+                ViewBag.CurrentPage = 1;
+                ViewBag.TotalPages = 1;
+                ViewBag.TotalItems = 0;
                 return View(new List<PropertyCardViewModel>());
             }
 
@@ -46,6 +57,16 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
 
             var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
             viewModels.ForEach(vm => vm.IsFavorite = favoriteIds.Contains(vm.Id));
+
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalItems = totalItems;
+
+            ViewBag.PropertyTypeId = filters.PropertyTypeId;
+            ViewBag.MinPrice = filters.MinPrice;
+            ViewBag.MaxPrice = filters.MaxPrice;
+            ViewBag.Bedrooms = filters.Bedrooms;
+            ViewBag.Bathrooms = filters.Bathrooms;
 
             return View(viewModels);
         }

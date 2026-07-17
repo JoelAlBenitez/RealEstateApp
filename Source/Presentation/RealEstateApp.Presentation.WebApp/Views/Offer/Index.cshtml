@@ -8,7 +8,7 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
         <h2 class="fw-bold mb-0" style="color: var(--color-text);">Mis Ofertas Realizadas</h2>
-        <span class="badge bg-primary">@Model.Count ofertas</span>
+        <span class="badge bg-primary">@ViewBag.TotalItems ofertas</span>
     </div>
 
     @if (!Model.Any())
@@ -24,71 +24,65 @@
     }
     else
     {
-        <div class="card shadow-sm border-0" style="border-radius: var(--radius-card); background: var(--color-surface);">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <thead>
-                            <tr style="background: var(--color-surface-variant); border-bottom: 1px solid var(--color-border);">
-                                <th class="ps-4 py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Código de Propiedad</th>
-                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Monto Ofertado</th>
-                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Fecha Realizada</th>
-                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Estado</th>
-                                <th class="pe-4 py-3 text-end" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var offer in Model)
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+            @foreach (var offer in Model)
+            {
+                var statusColor = offer.Status == OfferState.Accepted ? "#22c55e" : offer.Status == OfferState.Rejected ? "#ef4444" : "#f59e0b";
+                var statusText = offer.Status == OfferState.Accepted ? "Aceptada" : offer.Status == OfferState.Rejected ? "Rechazada" : "Pendiente";
+                var statusIcon = offer.Status == OfferState.Accepted ? "M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" : offer.Status == OfferState.Rejected ? "M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" : "M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z";
+
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: var(--radius-card); background: var(--color-surface); overflow: hidden; border-left: 4px solid @statusColor !important;">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span class="d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill fw-semibold" style="font-size: 0.75rem; background: @(statusColor)1a; color: @statusColor;">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="@statusIcon"/>
+                                        </svg>
+                                        @statusText
+                                    </span>
+                                </div>
+                                <a asp-controller="Customer" asp-action="Details" asp-route-id="@offer.PropertyId" class="text-decoration-none d-flex align-items-center gap-1" style="color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/>
+                                    </svg>
+                                    @offer.PropertyCode
+                                </a>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="d-block mb-1" style="color: var(--color-text-secondary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Monto Ofertado</small>
+                                <h3 class="fw-bold mb-0" style="color: #22c55e;">@string.Format("{0:C}", offer.Amount)</h3>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2 mb-3 py-2" style="border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--color-text-secondary); flex-shrink: 0;">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                                <small style="color: var(--color-text-secondary);">@offer.CreateAt.ToString("dd/MM/yyyy hh:mm tt")</small>
+                            </div>
+
+                            @if (offer.Status == OfferState.Pending)
                             {
-                                <tr style="border-bottom: 1px solid var(--color-border);">
-                                    <td class="ps-4">
-                                        <a asp-controller="Customer" asp-action="Details" asp-route-id="@offer.PropertyId" class="fw-bold text-decoration-none" style="color: var(--color-primary);">
-                                            @offer.PropertyCode
-                                        </a>
-                                    </td>
-                                    <td class="fw-bold text-success">@string.Format("{0:C}", offer.Amount)</td>
-                                    <td>@offer.CreateAt.ToString("dd/MM/yyyy hh:mm tt")</td>
-                                    <td>
-                                        @if (offer.Status == OfferState.Pending)
-                                        {
-                                            <span class="badge bg-warning text-dark px-3 py-2">Pendiente</span>
-                                        }
-                                        else if (offer.Status == OfferState.Accepted)
-                                        {
-                                            <span class="badge bg-success px-3 py-2">Aceptada</span>
-                                        }
-                                        else if (offer.Status == OfferState.Rejected)
-                                        {
-                                            <span class="badge bg-danger px-3 py-2">Rechazada</span>
-                                        }
-                                    </td>
-                                    <td class="pe-4 text-end">
-                                        @if (offer.Status == OfferState.Pending)
-                                        {
-                                            <button type="button"
-                                                    class="btn btn-outline-danger btn-sm px-3"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#modalCancelOffer"
-                                                    data-offer-id="@offer.Id">
-                                                Cancelar Oferta
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">—</span>
-                                        }
-                                    </td>
-                                </tr>
+                                <button type="button"
+                                        class="btn w-100 fw-semibold"
+                                        style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px;"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalCancelOffer"
+                                        data-offer-id="@offer.Id">
+                                    Cancelar Oferta
+                                </button>
                             }
-                        </tbody>
-                    </table>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
+        <partial name="_Pagination" />
     }
 </div>
 
-<!-- Modal: Cancelar Oferta -->
 <div class="modal fade" id="modalCancelOffer" tabindex="-1" aria-labelledby="modalCancelOfferLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">

@@ -40,19 +40,33 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
+            if (pageNumber < 1) pageNumber = 1;
+
             var agentId = _userSession.GetIdCurrentUser();
-            var result = await _propertyService.GetPropertiesByAgentAsync(agentId, 1, int.MaxValue);
+            var countResult = await _propertyService.CountAvailableByAgentAsync(agentId);
+            var totalItems = countResult.IsValid ? countResult.Value : 0;
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
+
+            var result = await _propertyService.GetAvailableByAgentAsync(agentId, pageNumber, pageSize);
             if (!result.IsValid)
             {
+                ViewBag.CurrentPage = 1;
+                ViewBag.TotalPages = 1;
+                ViewBag.TotalItems = 0;
                 return View(new List<PropertyCardViewModel>());
             }
 
             var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
-            // Mostrar solo las disponibles para el CRUD principal de mantenimiento
-            var availableProperties = viewModels.Where(p => p.Status == Core.Domain.Common.Enums.PropertyStatus.PropertyState.Available).ToList();
-            return View(availableProperties);
+
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalItems = totalItems;
+
+            return View(viewModels);
         }
 
         public IActionResult Create()

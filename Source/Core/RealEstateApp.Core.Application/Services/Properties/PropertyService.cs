@@ -136,20 +136,20 @@ namespace RealEstateApp.Core.Application.Services.Properties
             }
         }
 
-        public async Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAvailableAsync(PropertyFilterDto? filters)
+        public async Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAvailableAsync(PropertyFilterDto? filters, int pageNumber = 1, int pageSize = 10)
         {
             try
             {
                 IReadOnlyCollection<Property> properties;
 
-                if (filters != null && (filters.MinPrice.HasValue || filters.MaxPrice.HasValue || filters.Bedrooms.HasValue || filters.Bathrooms.HasValue))
+                if (filters != null && (filters.MinPrice.HasValue || filters.MaxPrice.HasValue || filters.Bedrooms.HasValue || filters.Bathrooms.HasValue || filters.PropertyTypeId.HasValue))
                 {
                     var criteria = _mapper.Map<PropertyFilterCriteria>(filters);
-                    properties = await _propertyRepository.GetFilteredPropertiesAsync(criteria);
+                    properties = await _propertyRepository.GetFilteredPropertiesAsync(criteria, pageNumber, pageSize);
                 }
                 else
                 {
-                    properties = await _propertyRepository.GetAvailablePropertiesAsync();
+                    properties = await _propertyRepository.GetAvailablePropertiesAsync(pageNumber, pageSize);
                 }
 
                 var dtos = _mapper.Map<IReadOnlyCollection<PropertyDto>>(properties);
@@ -159,6 +159,25 @@ namespace RealEstateApp.Core.Application.Services.Properties
             {
                 _logger.LogError(ex, "Ocurrió un error en PropertyService");
                 return ValidationResult<IReadOnlyCollection<PropertyDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
+        }
+
+        public async Task<ValidationResult<int>> GetAvailableCountAsync(PropertyFilterDto? filters)
+        {
+            try
+            {
+                PropertyFilterCriteria? criteria = null;
+                if (filters != null)
+                {
+                    criteria = _mapper.Map<PropertyFilterCriteria>(filters);
+                }
+                var count = await _propertyRepository.GetAvailablePropertiesCountAsync(criteria);
+                return ValidationResult<int>.Success(count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService.GetAvailableCountAsync");
+                return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
             }
         }
 
@@ -219,11 +238,11 @@ namespace RealEstateApp.Core.Application.Services.Properties
             }
         }
 
-        public async Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAvailableByAgentAsync(string agentId)
+        public async Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAvailableByAgentAsync(string agentId, int pageNumber = 1, int pageSize = 10)
         {
             try
             {
-                var properties = await _propertyRepository.GetAvailablePropertiesByAgentAsync(agentId);
+                var properties = await _propertyRepository.GetAvailablePropertiesByAgentAsync(agentId, pageNumber, pageSize);
                 var dtos = _mapper.Map<IReadOnlyCollection<PropertyDto>>(properties);
                 return ValidationResult<IReadOnlyCollection<PropertyDto>>.Success(dtos);
             }
@@ -287,13 +306,40 @@ namespace RealEstateApp.Core.Application.Services.Properties
         {
             try
             {
-                var properties = await _propertyRepository.GetAllAsync();
-                var count = properties.Count(p => p.AgentId == agentId);
+                var count = await _propertyRepository.GetPropertiesCountByAgentAsync(agentId);
                 return ValidationResult<int>.Success(count);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocurrió un error en PropertyService");
+                _logger.LogError(ex, "Ocurrió un error en PropertyService.CountByAgentAsync");
+                return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
+        }
+
+        public async Task<ValidationResult<int>> CountAvailableByAgentAsync(string agentId)
+        {
+            try
+            {
+                var count = await _propertyRepository.GetPropertiesCountByAgentAsync(agentId, PropertyState.Available);
+                return ValidationResult<int>.Success(count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService.CountAvailableByAgentAsync");
+                return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
+        }
+
+        public async Task<ValidationResult<int>> CountByAgentAndStatusAsync(string agentId, RealEstateApp.Core.Domain.Common.Enums.PropertyStatus.PropertyState status)
+        {
+            try
+            {
+                var count = await _propertyRepository.GetPropertiesCountByAgentAsync(agentId, status);
+                return ValidationResult<int>.Success(count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService.CountByAgentAndStatusAsync");
                 return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }

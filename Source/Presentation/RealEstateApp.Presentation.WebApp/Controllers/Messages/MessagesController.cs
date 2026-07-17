@@ -22,34 +22,31 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? agentId, int? propertyId)
         {
             var result = await _messageService.GetChatsByCustomerAsync();
-            if (!result.IsValid)
-            {
-                return View(new List<MessageAtCViewModel>());
-            }
+            var viewModels = result.IsValid
+                ? _mapper.Map<List<MessageAtCViewModel>>(result.Value)
+                : new List<MessageAtCViewModel>();
 
-            var viewModels = _mapper.Map<List<MessageAtCViewModel>>(result.Value);
+            if (!string.IsNullOrEmpty(agentId) && propertyId.HasValue)
+            {
+                var customerId = _userSession.GetIdCurrentUser();
+                var convResult = await _messageService.GetChatHistoryAsync(customerId, agentId, propertyId.Value);
+                if (convResult.IsValid)
+                {
+                    ViewBag.ConversationMessages = _mapper.Map<List<MessageAtCViewModel>>(convResult.Value);
+                    ViewBag.SelectedAgentId = agentId;
+                    ViewBag.SelectedPropertyId = propertyId.Value;
+                }
+            }
 
             return View(viewModels);
         }
 
-        public async Task<IActionResult> Conversation(string agentId, int propertyId)
+        public IActionResult Conversation(string agentId, int propertyId)
         {
-            var customerId = _userSession.GetIdCurrentUser();
-            var result = await _messageService.GetChatHistoryAsync(customerId, agentId, propertyId);
-            if (!result.IsValid)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-
-            var viewModels = _mapper.Map<List<MessageAtCViewModel>>(result.Value);
-
-            ViewBag.AgentId = agentId;
-            ViewBag.PropertyId = propertyId;
-
-            return View(viewModels);
+            return RedirectToAction(nameof(Index), new { agentId, propertyId });
         }
 
         [HttpPost]
@@ -60,7 +57,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             {
                 var firstError = ModelState.Values.SelectMany(v => v.Errors).FirstOrDefault()?.ErrorMessage;
                 TempData["ErrorMessage"] = firstError ?? "El mensaje no es válido.";
-                return RedirectToAction(nameof(Conversation), new { agentId = model.AgentId, propertyId = model.PropertyId });
+                return RedirectToAction(nameof(Index), new { agentId = model.AgentId, propertyId = model.PropertyId });
             }
 
             var dto = new SaveMessageAtCDto
@@ -77,7 +74,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al enviar el mensaje.";
             }
 
-            return RedirectToAction(nameof(Conversation), new { agentId = model.AgentId, propertyId = model.PropertyId });
+            return RedirectToAction(nameof(Index), new { agentId = model.AgentId, propertyId = model.PropertyId });
         }
     }
 }

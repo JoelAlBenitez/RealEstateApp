@@ -1,5 +1,6 @@
 using RealEstateApp.Core.Domain.Entities;
 using RealEstateApp.Core.Domain.Interfaces.GenericRepository;
+using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 
 namespace RealEstateApp.Core.Domain.Interfaces.Repositories
 {
@@ -21,5 +22,7 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
         Task<IReadOnlyCollection<Property>> GetPropertiesByPropertyTypeWithImagesAsync(int propertyTypeId);
         Task<IReadOnlyCollection<Property>> GetPropertiesBySaleTypeWithImagesAsync(int saleTypeId);
         Task<IReadOnlyCollection<Property>> GetPropertiesByAgentWithImagesAsync(string agentId);
+        Task<int> GetAvailablePropertiesCountAsync(PropertyFilterCriteria? criteria = null);
+        Task<int> GetPropertiesCountByAgentAsync(string agentId, PropertyState? status = null);
     }
 }

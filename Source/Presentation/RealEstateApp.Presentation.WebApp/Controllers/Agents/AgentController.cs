@@ -34,17 +34,33 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 6)
         {
+            if (pageNumber < 1) pageNumber = 1;
+
             var agentId = _userSession.GetIdCurrentUser();
+            var countResult = await _propertyService.CountByAgentAsync(agentId);
+            var totalItems = countResult.IsValid ? countResult.Value : 0;
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
+
             var result = await _propertyService.GetPropertiesByAgentAsync(agentId, pageNumber, pageSize);
             
             if (!result.IsValid)
             {
+                ViewBag.CurrentPage = 1;
+                ViewBag.TotalPages = 1;
+                ViewBag.TotalItems = 0;
                 return View(new List<PropertyCardViewModel>());
             }
 
             var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
+
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalItems = totalItems;
+
             return View(viewModels);
         }
 

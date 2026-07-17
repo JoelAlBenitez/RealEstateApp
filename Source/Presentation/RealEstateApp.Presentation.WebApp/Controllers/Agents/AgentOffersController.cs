@@ -28,8 +28,9 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index(int propertyId)
+        public async Task<IActionResult> Index(int propertyId, int pageNumber = 1, int pageSize = 5)
         {
+            if (pageNumber < 1) pageNumber = 1;
             var agentId = _userSession.GetIdCurrentUser();
             var propertyResult = await _propertyService.GetByIdWithDetailsAsync(propertyId);
             if (!propertyResult.IsValid || propertyResult.Value == null || propertyResult.Value.AgentId != agentId)
@@ -40,14 +41,29 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var offersResult = await _offerService.GetPendingByPropertyAsync(propertyId);
             if (!offersResult.IsValid)
             {
+                ViewBag.CurrentPage = 1;
+                ViewBag.TotalPages = 1;
+                ViewBag.TotalItems = 0;
+                ViewBag.PropertyId = propertyId;
+                ViewBag.PropertyCode = propertyResult.Value.Code;
                 return View(new List<OfferViewModel>());
             }
 
             var viewModels = _mapper.Map<List<OfferViewModel>>(offersResult.Value);
+            var totalItems = viewModels.Count;
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
+
+            var paginatedViewModels = viewModels.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalItems = totalItems;
             ViewBag.PropertyId = propertyId;
             ViewBag.PropertyCode = propertyResult.Value.Code;
 
-            return View(viewModels);
+            return View(paginatedViewModels);
         }
 
         [HttpPost]
