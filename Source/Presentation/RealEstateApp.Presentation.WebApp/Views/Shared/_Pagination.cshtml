@@ -1,0 +1,32 @@
+@model RealEstateApp.Core.Application.ViewsModel.Property.HomePropertiesViewModel
+
+@if (Model.TotalPages > 1)
+{
+    <nav class="pagination" aria-label="Paginación de propiedades">
+        @for (var i = 1; i <= Model.TotalPages; i++)
+        {
+            if (Model.IsAgentContext)
+            {
+                <a class="pagination__page@(i == Model.Page ? " pagination__page--active" : "")"
+                   asp-controller="AgentFunctionsPublic" asp-action="PropertyByAgent"
+                   asp-route-AgentId="@Model.AgentId" asp-route-page="@i">@i</a>
+            }
+            else if (Model.IsFiltered)
+            {
+                <a class="pagination__page@(i == Model.Page ? " pagination__page--active" : "")"
+                   asp-controller="Home" asp-action="Index"
+                   asp-route-MinPrice="@Model.Filter.MinPrice"
+                   asp-route-MaxPrice="@Model.Filter.MaxPrice"
+                   asp-route-Bedrooms="@Model.Filter.Bedrooms"
+                   asp-route-Bathrooms="@Model.Filter.Bathrooms"
+                   asp-route-IdTypeProperty="@Model.Filter.IdTypeProperty"
+                   asp-route-page="@i">@i</a>
+            }
+            else
+            {
+                <a class="pagination__page@(i == Model.Page ? " pagination__page--active" : "")"
+                   asp-controller="Home" asp-action="Index" asp-route-page="@i">@i</a>
+            }
+        }
+    </nav>
+}

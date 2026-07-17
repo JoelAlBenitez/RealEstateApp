@@ -199,7 +199,10 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
         {
             var result = await _userManager.GetUsersInRoleAsync(Roles.Agente.ToString());
             if (result == null) return [];
-            var agents = result.Select(a => new CustomerConsultAgentDto
+            var agents = result.Where(a => a.IsActive)
+            .OrderBy(a => a.Name)
+            .ThenBy(a => a.LastName)
+            .Select( a  => new CustomerConsultAgentDto
             {
                 Id = a.Id,
                 Name = a.Name,
@@ -212,6 +215,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
         {
             var result = await _userManager.FindByNameAsync(userName);
             if (result == null) return null!;
+            if(!result.IsActive || !result.EmailConfirmed) return null!;
             return new CustomerConsultAgentDto
             {
                 Id = result!.Id,
@@ -225,6 +229,8 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
         {
             var result  = await _userManager.FindByIdAsync(id);
             if (result == null) return null!;
+            if (!result.IsActive) return null!;
+            if (!await _userManager.IsInRoleAsync(result, Roles.Agente.ToString())) return null!;
             return new ConsultAgentDto
             {
                 Email = result.Email!,
@@ -234,6 +240,27 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                 PhoneNumber  = result.PhoneNumber!,
                 ProfileImgAgent = result.ProfileImg
             };
+        }
+
+        public async Task<IReadOnlyCollection<CustomerConsultAgentDto>> GetAgentByConsultCustomer(ConsultAgentByNameOrLastNameDto dto)
+        {
+            var cosultAgent = await _userManager.GetUsersInRoleAsync(Roles.Agente.ToString());
+            if (cosultAgent == null) return null!;
+            var consult = dto.Name?.Trim() ?? string.Empty;
+            var select = cosultAgent
+                .Where(u => u.IsActive && (u.Name.Contains(consult, StringComparison.OrdinalIgnoreCase)
+                || u.LastName.Contains(consult, StringComparison.OrdinalIgnoreCase)))
+                .OrderBy(u => u.Name)
+                .ThenBy(u => u.LastName)
+                .Select( u =>
+            new CustomerConsultAgentDto
+            {
+                Id = u.Id,
+                LastName = u.LastName,
+                Name = u.Name,
+                ProfileImgAgent = u.ProfileImg
+            }).ToList();
+            return select;
         }
         #endregion
 
@@ -275,6 +302,8 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
             await contextTransaction.RollbackAsync();
             return false;
         }
+
+      
         #endregion
     }
 
