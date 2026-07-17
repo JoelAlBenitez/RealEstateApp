@@ -19,11 +19,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.PropertyTypeRep
             return await Task.FromResult(0);
         }
 
-        public async Task<bool> DeleteWithAssociatedPropertiesAsync(PropertyType propertyType, IReadOnlyCollection<int> propertyIds)
-        {
-            // TODO: Implementar la lógica real de borrado en cascada (acuerdo de Sebastián).
-            return await Task.FromResult(true);
-        }
+
 
         public async Task<bool> ExistNameAsync(string name, int id = 0)
         {
