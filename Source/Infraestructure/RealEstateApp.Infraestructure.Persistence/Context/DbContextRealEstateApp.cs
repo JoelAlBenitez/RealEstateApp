@@ -1,5 +1,5 @@
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-
 using RealEstateApp.Core.Domain.Entities;
 
 namespace RealEstateApp.Infraestructure.Persistence.Context
@@ -9,23 +9,18 @@ namespace RealEstateApp.Infraestructure.Persistence.Context
         public DbContextRealEstateApp(DbContextOptions<DbContextRealEstateApp> options)
             : base(options) { }
 
-        public DbSet<PropertyType> PropertyTypes { get; set; }
+        public DbSet<Property> Properties { get; set; }
+        public DbSet<PropertyImage> PropertyImages { get; set; }
+        public DbSet<Offer> Offers { get; set; }
+        public DbSet<FavoriteProperty> FavoriteProperties { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<PropertyImprovement> PropertyImprovements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<PropertyType>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name)
-                      .IsRequired()
-                      .HasMaxLength(100);
-                      
-                entity.Property(e => e.Description)
-                      .IsRequired()
-                      .HasMaxLength(250); // Límite solicitado por el líder (Joel)
-            });
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
+
     }
 }

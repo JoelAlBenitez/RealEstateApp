@@ -12,19 +12,19 @@ namespace RealEstateApp.Infraestructure.Identity.Seeds
             {
                 Id = Guid.NewGuid().ToString(),
                 Email = "sebas@gmail.com",
-                PhoneNumber = "829-000-0000",
+                PhoneNumber = "8290000000",
                 Name = "Sebastian",
                 LastName = "Peguero",
                 ProfileImg = "Img/Users/3c9a74c8-8e4f-4d19-9d8e-5f6b2a17e3af/3c9a74c8-8e4f-4d19-9d8e-5f6b2a17e3af.jpg",
                 UserName = "SPeguero",
                 EmailConfirmed = true,
                 IsActive = true,
-                IDCard = "NA",
+                IDCard = null,
                 CreateAt = DateTimeOffset.UtcNow
 
             };
 
-            if(userManager.Users.Any(u => u.Id == user.Id))
+            if(!userManager.Users.Any(u => u.Id == user.Id))
             {
                 var en = await userManager.FindByEmailAsync(user.Email);
                 if(en == null)

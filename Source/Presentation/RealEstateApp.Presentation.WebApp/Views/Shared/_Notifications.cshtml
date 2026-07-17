@@ -1,0 +1,102 @@
+@{
+    var successMessage = (TempData["Message"] as string) ?? (TempData["SuccessMessage"] as string);
+    var warningMessage = (TempData["Warning"] as string) ?? (TempData["ErrorMessage"] as string);
+    var infoMessage = TempData["Info"] as string;
+
+    var modelErrors = ViewContext.ViewData.ModelState.Values
+        .SelectMany(entry => entry.Errors)
+        .Select(error => error.ErrorMessage)
+        .Where(message => !string.IsNullOrWhiteSpace(message))
+        .Distinct()
+        .ToList();
+}
+
+<div class="rea-toasts" aria-live="polite" aria-atomic="true">
+    @if (!string.IsNullOrWhiteSpace(successMessage))
+    {
+        <div class="rea-toast rea-toast--success" role="status">
+            <span class="rea-toast__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="m8.5 12.5 2.5 2.5 5-6" />
+                </svg>
+            </span>
+            <div class="rea-toast__content">
+                <strong class="rea-toast__title">Éxito</strong>
+                <p class="rea-toast__text">@successMessage</p>
+            </div>
+            <button class="rea-toast__close" type="button" aria-label="Cerrar notificación">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(warningMessage))
+    {
+        <div class="rea-toast rea-toast--warning" role="status">
+            <span class="rea-toast__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12" y2="17" />
+                </svg>
+            </span>
+            <div class="rea-toast__content">
+                <strong class="rea-toast__title">Alerta</strong>
+                <p class="rea-toast__text">@warningMessage</p>
+            </div>
+            <button class="rea-toast__close" type="button" aria-label="Cerrar notificación">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(infoMessage))
+    {
+        <div class="rea-toast rea-toast--info" role="status">
+            <span class="rea-toast__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="16" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12" y2="8" />
+                </svg>
+            </span>
+            <div class="rea-toast__content">
+                <strong class="rea-toast__title">Información</strong>
+                <p class="rea-toast__text">@infoMessage</p>
+            </div>
+            <button class="rea-toast__close" type="button" aria-label="Cerrar notificación">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    }
+</div>
+
+@if (modelErrors.Any())
+{
+    <div class="rea-error-overlay" id="reaErrorOverlay">
+        <div class="rea-error-dialog" role="alertdialog" aria-modal="true" aria-labelledby="reaErrorTitle">
+            <span class="rea-error-dialog__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="15" y1="9" x2="9" y2="15" />
+                    <line x1="9" y1="9" x2="15" y2="15" />
+                </svg>
+            </span>
+            <h2 class="rea-error-dialog__title" id="reaErrorTitle">Algo salió mal</h2>
+            <ul class="rea-error-dialog__list">
+                @foreach (var error in modelErrors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+            <button class="rea-error-dialog__close" type="button" id="reaErrorClose">Entendido</button>
+        </div>
+    </div>
+}

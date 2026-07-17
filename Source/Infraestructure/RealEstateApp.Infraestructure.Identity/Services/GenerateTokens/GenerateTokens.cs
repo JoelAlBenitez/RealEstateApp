@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using RealEstateApp.Core.Domain.Settings.JWT;
 using RealEstateApp.Infraestructure.Identity.Entities;
 using RealEstateApp.Infraestructure.Identity.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 namespace RealEstateApp.Infraestructure.Identity.Services.GenerateTokens
@@ -10,10 +15,46 @@ namespace RealEstateApp.Infraestructure.Identity.Services.GenerateTokens
     {
 
         private readonly UserManager<AppUsers> _userManager;
+        private readonly JwtSettings _jwtSettings;
 
-        public GenerateTokens(UserManager<AppUsers> userManager)
+        public GenerateTokens(
+            UserManager<AppUsers> userManager,
+            IOptions<JwtSettings> jwtSettings            
+            )
         {
             _userManager = userManager;
+            _jwtSettings = jwtSettings.Value;
+        }
+
+        public async Task<JwtSecurityToken> GenerateJwtToken(AppUsers user)
+        {
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            var rolesClaims = new List<Claim>();
+            foreach (var role in roles)
+            {
+                rolesClaims.Add(new Claim("roles", role));
+            }
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub,user.UserName ?? ""),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+                new Claim("uid",user.Id ?? "")
+            }.Union(userClaims).Union(rolesClaims);
+
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
+            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+            var jwtSecurityToken = new JwtSecurityToken(
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes),
+                signingCredentials: signingCredentials
+            );
+
+            return jwtSecurityToken;
         }
 
         public async Task<string> GenerateTokenConfirmEmail(AppUsers users, string origin)

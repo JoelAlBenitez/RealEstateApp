@@ -9,6 +9,7 @@ using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using RealEstateApp.Core.Domain.Common.Errors;
+using Microsoft.Extensions.Logging;
 
 namespace RealEstateApp.Core.Application.Services.Offers
 {
@@ -18,19 +19,22 @@ namespace RealEstateApp.Core.Application.Services.Offers
         private readonly IPropertyRepository _propertyRepository;
         private readonly IOfferValidationService _validationService;
         private readonly IUserSession _userSession;
+        private readonly ILogger<OfferService> _logger;
 
         public OfferService(
             IOfferRepository offerRepository,
             IPropertyRepository propertyRepository,
             IOfferValidationService validationService,
             IMapper mapper,
-            IUserSession userSession)
+            IUserSession userSession,
+            ILogger<OfferService> logger)
             : base(offerRepository, mapper)
         {
             _offerRepository = offerRepository;
             _propertyRepository = propertyRepository;
             _validationService = validationService;
             _userSession = userSession;
+            _logger = logger;
         }
 
         public override async Task<ValidationResult> AddAsync(SaveOfferDto dto)
@@ -43,10 +47,25 @@ namespace RealEstateApp.Core.Application.Services.Offers
                 {
                     return validation;
                 }
-                return await base.AddAsync(dto);
+
+                var offer = _mapper.Map<Domain.Entities.Offer>(dto);
+                offer.CreateAt = DateTimeOffset.UtcNow;
+                offer.UpdateAt = DateTimeOffset.UtcNow;
+
+                await _offerRepository.AddAsync(offer);
+                var result = await _offerRepository.SaveAsync();
+                if (result > 0)
+                {
+                    return ValidationResult.Success();
+                }
+                return ValidationResult.Failure(new Error("Oops", "Ocurrió un error al procesar la solicitud. Favor inténtelo de nuevo más tarde."));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                if (ex.InnerException != null && (ex.InnerException.Message.Contains("duplicate") || ex.InnerException.Message.Contains("UNIQUE")))
+                {
+                    return ValidationResult.Failure(new Error("Offer.Duplicate", "Ya tienes una oferta pendiente registrada para esta propiedad."));
+                }
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
         }
@@ -57,8 +76,9 @@ namespace RealEstateApp.Core.Application.Services.Offers
             {
                 return await base.RemoveAsync(id);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en OfferService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
         }
@@ -71,8 +91,9 @@ namespace RealEstateApp.Core.Application.Services.Offers
                 var dtos = _mapper.Map<IReadOnlyCollection<OfferDto>>(offers);
                 return ValidationResult<IReadOnlyCollection<OfferDto>>.Success(dtos);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en OfferService");
                 return ValidationResult<IReadOnlyCollection<OfferDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }
@@ -86,8 +107,25 @@ namespace RealEstateApp.Core.Application.Services.Offers
                 var dtos = _mapper.Map<IReadOnlyCollection<OfferDto>>(offers);
                 return ValidationResult<IReadOnlyCollection<OfferDto>>.Success(dtos);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en OfferService");
+                return ValidationResult<IReadOnlyCollection<OfferDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
+        }
+
+        public async Task<ValidationResult<IReadOnlyCollection<OfferDto>>> GetOffersByCustomerAndPropertyAsync(int propertyId)
+        {
+            try
+            {
+                var customerId = _userSession.GetIdCurrentUser();
+                var offers = await _offerRepository.GetOffersByClientAndPropertyAsync(customerId, propertyId);
+                var dtos = _mapper.Map<IReadOnlyCollection<OfferDto>>(offers);
+                return ValidationResult<IReadOnlyCollection<OfferDto>>.Success(dtos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocurrió un error en OfferService");
                 return ValidationResult<IReadOnlyCollection<OfferDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }
@@ -108,29 +146,25 @@ namespace RealEstateApp.Core.Application.Services.Offers
                     return ValidationResult.Failure(new Error("Offer.NotFound", "La oferta especificada no existe."));
                 }
 
-                offer.Status = OfferState.Accepted;
-                await _offerRepository.UpdateAsync(offer);
-                await _offerRepository.RejectOtherOffersByPropertyAsync(offer.PropertyId, offerId);
-
                 var property = await _propertyRepository.GetByIdAsync(offer.PropertyId);
                 if (property == null)
                 {
                     return ValidationResult.Failure(new Error("Property.NotFound", "La propiedad asociada a la oferta no existe."));
                 }
 
+                offer.Status = OfferState.Accepted;
+                await _offerRepository.UpdateAsync(offer);
+
+                await _offerRepository.RejectOtherOffersByPropertyAsync(offer.PropertyId, offerId);
+
                 property.Status = PropertyState.Sold;
                 await _propertyRepository.UpdateAsync(property);
 
-                var result = await _offerRepository.SaveAsync();
-                if (result <= 0)
-                {
-                    return ValidationResult.Failure(new Error("Oops", "Ocurrió un error al procesar la aceptación de la oferta. Inténtalo de nuevo más tarde."));
-                }
-
                 return ValidationResult.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en OfferService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
         }
@@ -152,18 +186,16 @@ namespace RealEstateApp.Core.Application.Services.Offers
                 }
 
                 offer.Status = OfferState.Rejected;
-                await _offerRepository.UpdateAsync(offer);
-
-                var result = await _offerRepository.SaveAsync();
-                if (result <= 0)
+                var result = await _offerRepository.UpdateAsync(offer);
+                if (!result)
                 {
                     return ValidationResult.Failure(new Error("Oops", "Ocurrió un error al rechazar la oferta. Inténtalo de nuevo más tarde."));
                 }
-
                 return ValidationResult.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en OfferService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
         }
@@ -184,18 +216,16 @@ namespace RealEstateApp.Core.Application.Services.Offers
                     return ValidationResult.Failure(new Error("Offer.NotFound", "La oferta especificada no existe."));
                 }
 
-                await _offerRepository.DeleteAsync(offer);
-
-                var result = await _offerRepository.SaveAsync();
-                if (result <= 0)
+                var result = await _offerRepository.DeleteAsync(offer);
+                if (!result)
                 {
                     return ValidationResult.Failure(new Error("Oops", "Ocurrió un error al cancelar la oferta. Inténtalo de nuevo más tarde."));
                 }
-
                 return ValidationResult.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en OfferService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
         }

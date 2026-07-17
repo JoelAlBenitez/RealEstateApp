@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RealEstateApp.Core.Domain.Interfaces.GenericRepository;
 using RealEstateApp.Infraestructure.Persistence.Context;
 
@@ -16,34 +16,34 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Generic
             _context = context;
         }
 
-        public async Task AddAsync(TEntity entity)
+        public virtual async Task AddAsync(TEntity entity)
         {
             await _context.Set<TEntity>().AddAsync(entity);
         }
 
-        public async Task<bool> DeleteAsync(TEntity entity)
+        public virtual async Task<bool> DeleteAsync(TEntity entity)
         {
            _context.Set<TEntity>().Remove(entity);
           return await _context.SaveChangesAsync() > 0; 
      
         }
 
-        public async Task<IReadOnlyCollection<TEntity>> GetAllAsync()
+        public  virtual async Task<IReadOnlyCollection<TEntity>> GetAllAsync()
         {
             return await _context.Set<TEntity>().AsNoTracking().ToListAsync();
         }
 
-        public async Task<TEntity> GetByIdAsync(Tkey key)
+        public virtual async Task<TEntity> GetByIdAsync(Tkey key)
         {
             return await _context.Set<TEntity>().FindAsync(key) ?? null!;
         }
 
-        public Task<int> SaveAsync()
+        public  Task<int> SaveAsync()
         {
            return  _context.SaveChangesAsync();
         }
 
-        public async Task<bool> UpdateAsync(TEntity entity)
+        public virtual async Task<bool> UpdateAsync(TEntity entity)
         {
            _context.Set<TEntity>().Update(entity);
           return await _context.SaveChangesAsync() > 0;

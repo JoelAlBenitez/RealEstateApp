@@ -1,4 +1,4 @@
-namespace RealEstateApp.Core.Application.DTOs.Property
+﻿namespace RealEstateApp.Core.Application.DTOs.Property
 {
     public sealed class TypeProperty
     {

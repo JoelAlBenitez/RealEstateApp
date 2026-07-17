@@ -34,7 +34,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.PropertyTypeRep
 
             // Si id == 0 (Create), busca cualquier coincidencia.
             // Si id != 0 (Update), busca cualquier coincidencia en OTROS registros.
-            return await _context.PropertyTypes
+            return await _context.Set<PropertyType>()
                 .AnyAsync(e => e.Name.ToLower() == lowerName && e.Id != id);
         }
     }
