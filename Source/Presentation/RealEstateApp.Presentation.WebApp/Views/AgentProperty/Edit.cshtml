@@ -92,9 +92,10 @@
 
                             <div class="col-md-4">
                                 <label class="form-label fw-bold" asp-for="ImageFiles">Agregar Nuevas Imágenes</label>
-                                <input class="form-control" type="file" asp-for="ImageFiles" accept="image/*" multiple />
-                                <span class="text-muted font-sm d-block mt-1">El total de fotos asociadas no puede exceder las 4 unidades.</span>
+                                <input class="form-control" type="file" asp-for="ImageFiles" id="imageFilesInput" accept="image/*" multiple />
+                                <span class="text-muted font-sm d-block mt-1">El total de fotos asociadas no puede exceder las 4 unidades (puedes seleccionar varias).</span>
                                 <span class="field-validation-error text-danger" asp-validation-for="ImageFiles"></span>
+                                <div id="imagePreviewGrid" class="row g-2 mt-2"></div>
                             </div>
                         </div>
 
@@ -181,3 +182,54 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('imageFilesInput').addEventListener('change', function (e) {
+            const container = document.getElementById('imagePreviewGrid');
+            container.innerHTML = '';
+            const files = e.target.files;
+            
+            // Contar imágenes preexistentes marcadas para mantener
+            const preExistingChecked = document.querySelectorAll('input[name="ExistingImageUrls"]:checked').length;
+            const totalImages = preExistingChecked + files.length;
+            
+            if (totalImages > 4) {
+                alert(`Solo se permite un total de 4 imágenes por propiedad. Tienes ${preExistingChecked} imágenes actuales seleccionadas para mantener, por lo que solo puedes subir un máximo de ${4 - preExistingChecked} imágenes adicionales.`);
+                e.target.value = '';
+                return;
+            }
+            
+            Array.from(files).forEach((file) => {
+                if (!file.type.startsWith('image/')) return;
+                
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const col = document.createElement('div');
+                    col.className = 'col-3';
+                    col.innerHTML = `
+                        <div class="position-relative border rounded overflow-hidden shadow-sm" style="height: 60px; background: var(--color-surface);">
+                            <img src="${event.target.result}" class="w-100 h-100" style="object-fit: cover;" alt="Preview" />
+                        </div>
+                    `;
+                    container.appendChild(col);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Escuchar cambios en los checks de imágenes existentes para recalcular el límite si el usuario cambia la selección
+        document.querySelectorAll('input[name="ExistingImageUrls"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const input = document.getElementById('imageFilesInput');
+                if (input.files.length > 0) {
+                    // Si ya hay archivos cargados y el usuario cambia las existentes, forzar nueva selección para evitar superar el límite de 4.
+                    alert('Has modificado las imágenes actuales. Por favor, vuelve a seleccionar las nuevas fotos para asegurar que no se exceda el límite de 4 en total.');
+                    input.value = '';
+                    document.getElementById('imagePreviewGrid').innerHTML = '';
+                }
+            });
+        });
+    </script>
+}
