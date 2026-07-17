@@ -9,6 +9,9 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
         Task<IReadOnlyCollection<Property>> GetAvailablePropertiesByAgentAsync(string agentId, int pageNumber = 1, int pageSize = 10);
         Task<Property?> GetAvailablePropertyByCodeAsync(string code);
         Task<IReadOnlyCollection<Property>> GetFilteredPropertiesAsync(PropertyFilterCriteria criteria, int pageNumber = 1, int pageSize = 10);
+        Task<int> CountAvailablePropertiesAsync();
+        Task<int> CountAvailablePropertiesByAgentAsync(string agentId);
+        Task<int> CountFilteredPropertiesAsync(PropertyFilterCriteria criteria);
         Task DeletePropertiesByAgentAsync(string agentId);
     }
 }

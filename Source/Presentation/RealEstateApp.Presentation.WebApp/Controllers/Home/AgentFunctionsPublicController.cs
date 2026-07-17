@@ -12,11 +12,6 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
     public class AgentFunctionsPublicController : Controller
     {
         private const int PageSize = 12;
-
-        // HANDOFF: el repositorio pagina a 10 por defecto; se pide un lote amplio y se
-        // pagina localmente a 12. Si el volumen de datos crece, cambiar a paginación
-        // real con total de registros expuesto por el servicio.
-        private const int ServiceFetchSize = 200;
         private const string HomeIndexView = "~/Views/Home/Index.cshtml";
 
         private readonly IPropertyService _propertyService;
@@ -48,7 +43,16 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
                 TempData["Warning"] = "El agente solicitado no existe o no se encuentra disponible.";
                 return View("Agents", await BuildAgentsAsync(null));
             }
-            var result = await _propertyService.GetAvailableByAgentAsync(AgentId, 1, ServiceFetchSize);
+
+            var totalPages = 1;
+            var countResult = await _propertyService.CountAvailableByAgentAsync(AgentId);
+            if (countResult.IsValid)
+            {
+                totalPages = Math.Max(1, (int)Math.Ceiling(countResult.Value / (double)PageSize));
+            }
+            page = Math.Clamp(page, 1, totalPages);
+
+            var result = await _propertyService.GetAvailableByAgentAsync(AgentId, page, PageSize);
             if (!result.IsValid)
             {
                 AddErrors(result.Errors);
@@ -56,7 +60,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             }
             var properties = _mapper.Map<IReadOnlyCollection<PropertyPublicViewModel>>(result.Value)
                 ?? Array.Empty<PropertyPublicViewModel>();
-            var vm = BuildAgentPropertiesViewModel(properties, page);
+            var vm = BuildAgentPropertiesViewModel(properties, page, totalPages);
             vm.AgentId = AgentId;
             vm.AgentName = $"{agent.Name} {agent.LastName}";
             return View(HomeIndexView, vm);
@@ -77,14 +81,11 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             var agents = result == null
                 ? Array.Empty<AgentViewModel>()
                 : _mapper.Map<IReadOnlyCollection<AgentViewModel>>(result);
-            if (agents == null || agents.Count == 0)
-            {
-                TempData["Info"] = "No se encontraron agentes activos con el nombre ingresado.";
-            }
             return View("Agents", new AgentsHomeViewModel
             {
                 Agents = agents ?? Array.Empty<AgentViewModel>(),
-                Consult = vm
+                Consult = vm,
+                IsConsult = true
             });
         }
         #endregion
@@ -121,14 +122,12 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
 
         private HomePropertiesViewModel BuildAgentPropertiesViewModel(
             IReadOnlyCollection<PropertyPublicViewModel> properties,
-            int page)
+            int page,
+            int totalPages)
         {
-            var totalPages = Math.Max(1, (int)Math.Ceiling(properties.Count / (double)PageSize));
-            page = Math.Clamp(page, 1, totalPages);
-            var items = properties.Skip((page - 1) * PageSize).Take(PageSize).ToList();
             return new HomePropertiesViewModel
             {
-                Properties = items,
+                Properties = properties,
                 Filter = new PropertyFilterViewModel(),
                 SearchByCode = new PropertySearchByCodeViewModel { Code = "" },
                 Page = page,

@@ -38,8 +38,11 @@ await DevSeedBootstrap.RunAsync(app.Services);
 
 if (!app.Environment.IsDevelopment())
 {
+    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+app.UseStatusCodePagesWithReExecute("/Home/StatusCodeError", "?code={0}");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

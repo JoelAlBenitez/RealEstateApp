@@ -84,6 +84,41 @@ namespace RealEstateApp.Core.Application.Services.Properties
             }
         }
 
+        public async Task<ValidationResult<int>> CountAvailableAsync(PropertyFilterDto? filters)
+        {
+            try
+            {
+                int total;
+                if (filters != null && (filters.MinPrice.HasValue || filters.MaxPrice.HasValue || filters.Bedrooms.HasValue || filters.Bathrooms.HasValue))
+                {
+                    var criteria = _mapper.Map<PropertyFilterCriteria>(filters);
+                    total = await _propertyRepository.CountFilteredPropertiesAsync(criteria);
+                }
+                else
+                {
+                    total = await _propertyRepository.CountAvailablePropertiesAsync();
+                }
+                return ValidationResult<int>.Success(total);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
+        }
+
+        public async Task<ValidationResult<int>> CountAvailableByAgentAsync(string agentId)
+        {
+            try
+            {
+                var total = await _propertyRepository.CountAvailablePropertiesByAgentAsync(agentId);
+                return ValidationResult<int>.Success(total);
+            }
+            catch (Exception)
+            {
+                return ValidationResult<int>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
+        }
+
         public async Task<ValidationResult<PropertyDto>> GetByCodeAsync(string code)
         {
             try

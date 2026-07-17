@@ -20,7 +20,10 @@
         <div class="agents__list">
             @if (Model.Agents.Count == 0)
             {
-                <partial name="_NoResults" model="@("No pudimos cargar agentes activos en este momento. Vuelve a intentarlo más tarde o ajusta tu búsqueda.")" />
+                var emptyMessage = Model.IsConsult
+                    ? "No se encontraron agentes activos con el nombre ingresado."
+                    : "No hay agentes activos disponibles en este momento. Vuelve a intentarlo más tarde.";
+                <partial name="_NoResults" model="@emptyMessage" />
             }
             else
             {

@@ -4,5 +4,6 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Consult
     {
         public required IReadOnlyCollection<AgentViewModel> Agents { get; set; }
         public required AgentConsultByNameOrLastNameViewModel Consult { get; set; }
+        public bool IsConsult { get; set; }
     }
 }

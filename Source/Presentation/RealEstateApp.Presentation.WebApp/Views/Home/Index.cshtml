@@ -110,11 +110,16 @@ else
         <div class="home-catalog__list">
             @if (Model.Properties.Count == 0)
             {
-                <partial name="_NoResults" model="@("Por el momento no pudimos cargar propiedades para esta búsqueda. Ajusta los filtros o vuelve a intentarlo más tarde.")" />
+                var emptyMessage = Model.IsAgentContext
+                    ? "Este agente no tiene propiedades disponibles en este momento."
+                    : Model.IsFiltered
+                        ? "No se encontraron propiedades disponibles con los filtros seleccionados."
+                        : "No hay propiedades disponibles en este momento. Vuelve a intentarlo más tarde.";
+                <partial name="_NoResults" model="@emptyMessage" />
             }
             else
             {
-                <div class="property-grid" id="propertyGrid" data-page-size="@Model.PageSize" data-client-paginate="@(Model.IsFiltered ? "true" : "false")">
+                <div class="property-grid" id="propertyGrid">
                     @foreach (var property in Model.Properties)
                     {
                         <partial name="_PropertyCard" model="property" />
@@ -122,7 +127,6 @@ else
                 </div>
                 <div class="home-catalog__pager">
                     <partial name="_Pagination" model="Model" />
-                    <nav class="pagination" id="clientPagination" aria-label="Paginación de resultados filtrados" hidden></nav>
                 </div>
             }
         </div>
