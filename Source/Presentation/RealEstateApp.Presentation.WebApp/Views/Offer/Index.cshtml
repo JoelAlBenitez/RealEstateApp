@@ -1,0 +1,120 @@
+@using RealEstateApp.Core.Application.ViewsModel.Offer
+@using RealEstateApp.Core.Domain.Common.Enums.OfferStatus
+@model List<OfferViewModel>
+@{
+    ViewData["Title"] = "Mis Ofertas Adquiridas";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h2 class="fw-bold mb-0" style="color: var(--color-text);">Mis Ofertas Realizadas</h2>
+        <span class="badge bg-primary">@ViewBag.TotalItems ofertas</span>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info border-0 shadow-sm text-center py-5">
+            <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 text-muted">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+            <h4 class="fw-bold">No has realizado ninguna oferta</h4>
+            <p class="text-muted mb-4">Cuando encuentres una propiedad de tu interés, podrás enviarle ofertas al agente a cargo.</p>
+            <a asp-controller="Customer" asp-action="Index" class="rea-btn rea-btn--primary">Ver Propiedades</a>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+            @foreach (var offer in Model)
+            {
+                var statusColor = offer.Status == OfferState.Accepted ? "#22c55e" : offer.Status == OfferState.Rejected ? "#ef4444" : "#f59e0b";
+                var statusText = offer.Status == OfferState.Accepted ? "Aceptada" : offer.Status == OfferState.Rejected ? "Rechazada" : "Pendiente";
+                var statusIcon = offer.Status == OfferState.Accepted ? "M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" : offer.Status == OfferState.Rejected ? "M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" : "M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z";
+
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: var(--radius-card); background: var(--color-surface); overflow: hidden; border-left: 4px solid @statusColor !important;">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span class="d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill fw-semibold" style="font-size: 0.75rem; background: @(statusColor)1a; color: @statusColor;">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="@statusIcon"/>
+                                        </svg>
+                                        @statusText
+                                    </span>
+                                </div>
+                                <a asp-controller="Customer" asp-action="Details" asp-route-id="@offer.PropertyId" class="text-decoration-none d-flex align-items-center gap-1" style="color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/>
+                                    </svg>
+                                    @offer.PropertyCode
+                                </a>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="d-block mb-1" style="color: var(--color-text-secondary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Monto Ofertado</small>
+                                <h3 class="fw-bold mb-0" style="color: #22c55e;">@string.Format("{0:C}", offer.Amount)</h3>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2 mb-3 py-2" style="border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--color-text-secondary); flex-shrink: 0;">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                                <small style="color: var(--color-text-secondary);">@offer.CreateAt.ToString("dd/MM/yyyy hh:mm tt")</small>
+                            </div>
+
+                            @if (offer.Status == OfferState.Pending)
+                            {
+                                <button type="button"
+                                        class="btn w-100 fw-semibold"
+                                        style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px;"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalCancelOffer"
+                                        data-offer-id="@offer.Id">
+                                    Cancelar Oferta
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <partial name="_Pagination" />
+    }
+</div>
+
+<div class="modal fade" id="modalCancelOffer" tabindex="-1" aria-labelledby="modalCancelOfferLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#f59e0b" stroke-width="2">
+                        <path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    </svg>
+                    <h5 class="modal-title fw-bold mb-0" id="modalCancelOfferLabel" style="color: var(--color-text);">Cancelar Oferta</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" style="filter: invert(1);"></button>
+            </div>
+            <div class="modal-body pt-3" style="color: var(--color-text-secondary);">
+                <p class="mb-0">¿Está seguro de que desea <strong style="color: var(--color-text);">cancelar</strong> esta oferta? Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Volver</button>
+                <form id="formCancelOffer" asp-controller="Offer" asp-action="Cancel" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="cancelOfferId" name="offerId" value="" />
+                    <button type="submit" class="btn btn-danger fw-semibold px-4">Sí, Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('modalCancelOffer').addEventListener('show.bs.modal', function (event) {
+        var btn = event.relatedTarget;
+        document.getElementById('cancelOfferId').value = btn.getAttribute('data-offer-id');
+    });
+</script>
+}

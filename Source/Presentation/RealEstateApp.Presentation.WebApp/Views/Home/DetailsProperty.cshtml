@@ -1,0 +1,229 @@
+@model RealEstateApp.Core.Application.ViewsModel.Property.PropertyDetailViewModel
+@using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus
+@{
+    ViewData["Title"] = $"Propiedad {Model.Code}";
+    var images = Model.ImageUrls ?? new List<string>();
+    var hasImages = images.Count > 0;
+    var agentDisplayName = string.IsNullOrWhiteSpace(Model.AgentName) ? "Agente Real Estate" : Model.AgentName;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/details-property/details-property.css" asp-append-version="true" />
+}
+
+<section class="detail">
+    <div class="detail__topbar">
+        <a class="rea-btn rea-btn--secondary" asp-controller="Home" asp-action="Index">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12 19 5 12 12 5" />
+            </svg>
+            <span>Volver al listado</span>
+        </a>
+    </div>
+
+    <div class="detail__layout">
+        <div class="detail__gallery">
+            @if (!hasImages)
+            {
+                <partial name="_NoResults" model="@("Esta propiedad todavía no tiene imágenes cargadas. El agente las publicará pronto.")" />
+            }
+            else
+            {
+                <div class="gallery" id="gallery">
+                    <div class="gallery__stage">
+                        @for (var i = 0; i < images.Count; i++)
+                        {
+                            <img class="gallery__slide@(i == 0 ? " gallery__slide--active" : "")"
+                                 src="~/@images[i]"
+                                 alt="Imagen @(i + 1) de la propiedad @Model.Code"
+                                 data-index="@i"
+                                 loading="lazy" />
+                        }
+                        <div class="gallery__peek" id="galleryPeek" hidden>
+                            <img id="galleryPeekImg" src="" alt="Vista previa de la siguiente imagen" />
+                            <span>Siguiente</span>
+                        </div>
+                        <button class="gallery__expand" id="galleryExpand" type="button" aria-label="Ver imagen en tamaño completo">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M15 3h6v6" />
+                                <path d="M9 21H3v-6" />
+                                <line x1="21" y1="3" x2="14" y2="10" />
+                                <line x1="3" y1="21" x2="10" y2="14" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="gallery__dots" id="galleryDots" aria-label="Selector de imágenes">
+                        @for (var i = 0; i < images.Count; i++)
+                        {
+                            <button class="gallery__dot@(i == 0 ? " gallery__dot--active" : "")" type="button" data-index="@i" aria-label="Ver imagen @(i + 1)"></button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="detail__info">
+            <div class="detail__header">
+                <span class="detail__status@(Model.Status == PropertyState.Available ? " detail__status--available" : " detail__status--sold")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="m8.5 12.5 2.5 2.5 5-6" />
+                    </svg>
+                    <span>@(Model.Status == PropertyState.Available ? "Disponible" : "Vendida")</span>
+                </span>
+                <span class="detail__code">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="4" y1="9" x2="20" y2="9" />
+                        <line x1="4" y1="15" x2="20" y2="15" />
+                        <line x1="10" y1="3" x2="8" y2="21" />
+                        <line x1="16" y1="3" x2="14" y2="21" />
+                    </svg>
+                    <span>@Model.Code</span>
+                </span>
+            </div>
+
+            <strong class="detail__price">$@Model.Price.ToString("N0")</strong>
+
+            <ul class="detail__specs">
+                <li title="Tamaño en metros cuadrados">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21.3 8.7 15.3 2.7a1 1 0 0 0-1.4 0L2.7 13.9a1 1 0 0 0 0 1.4l6 6a1 1 0 0 0 1.4 0l11.2-11.2a1 1 0 0 0 0-1.4z" />
+                        <path d="m7.5 10.5 2 2" />
+                        <path d="m10.5 7.5 2 2" />
+                        <path d="m13.5 4.5 2 2" />
+                    </svg>
+                    <span>@Model.Size.ToString("N0") m²</span>
+                </li>
+                <li title="Habitaciones">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M2 4v16" />
+                        <path d="M2 8h18a2 2 0 0 1 2 2v10" />
+                        <path d="M2 17h20" />
+                        <path d="M6 8v9" />
+                    </svg>
+                    <span>@Model.Bedrooms habitaciones</span>
+                </li>
+                <li title="Baños">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                    </svg>
+                    <span>@Model.Bathrooms baños</span>
+                </li>
+            </ul>
+
+            <div class="detail__description">
+                <h2>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>
+                    <span>Descripción</span>
+                </h2>
+                <p>@Model.Description</p>
+            </div>
+
+            <div class="detail__agent">
+                <button class="detail__agent-photo" id="agentPhotoBtn" type="button" aria-label="Ver foto del agente en tamaño completo">
+                    @if (!string.IsNullOrWhiteSpace(Model.AgentPhotoUrl))
+                    {
+                        <img id="agentPhotoImg" src="~/@Model.AgentPhotoUrl" alt="Foto del agente @agentDisplayName" />
+                    }
+                    else
+                    {
+                        <span class="detail__agent-initials">@agentDisplayName.Substring(0, 1)</span>
+                    }
+                </button>
+                <div class="detail__agent-data">
+                    <span class="detail__agent-role">Publicado por</span>
+                    <strong class="detail__agent-name">@agentDisplayName</strong>
+                    @if (!string.IsNullOrWhiteSpace(Model.AgentPhone))
+                    {
+                        <span class="detail__agent-contact">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+                            </svg>
+                            <span>@Model.AgentPhone</span>
+                        </span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.AgentEmail))
+                    {
+                        <span class="detail__agent-contact">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                            <span>@Model.AgentEmail</span>
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <aside class="detail-guide" aria-hidden="true">
+        <img class="detail-guide__img" src="~/resources/GuideTouritis.png" alt="Guía turístico acompañando el recorrido" />
+        <div class="detail-guide__bubble">
+            <p id="guideSpeech">¡Hola! Soy tu guía, te acompaño en este recorrido.</p>
+        </div>
+    </aside>
+</section>
+
+<div class="gallery-modal" id="galleryModal" hidden>
+    <div class="gallery-modal__backdrop" id="galleryModalBackdrop"></div>
+    <figure class="gallery-modal__figure">
+        <img id="galleryModalImg" src="" alt="Imagen de la propiedad en tamaño completo" />
+    </figure>
+    <div class="gallery-modal__controls">
+        <button class="gallery-modal__control" id="modalPrev" type="button" aria-label="Imagen anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12 19 5 12 12 5" />
+            </svg>
+        </button>
+        <button class="gallery-modal__control" id="modalRotate" type="button" aria-label="Rotar imagen 90 grados">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+            </svg>
+        </button>
+        <button class="gallery-modal__control" id="modalPerspective" type="button" aria-label="Cambiar perspectiva de la imagen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+        </button>
+        
+        <button class="gallery-modal__control" id="modalNext" type="button" aria-label="Imagen siguiente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+            </svg>
+        </button>
+    </div>
+    <button class="gallery-modal__close" id="galleryModalClose" type="button" aria-label="Cerrar imagen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+    </button>
+</div>
+
+<div class="agent-modal" id="agentModal" hidden>
+    <div class="agent-modal__backdrop" id="agentModalBackdrop"></div>
+    <figure class="agent-modal__figure">
+        <img id="agentModalImg" src="" alt="Foto del agente en tamaño completo" />
+        <figcaption>@agentDisplayName</figcaption>
+    </figure>
+    <button class="agent-modal__close" id="agentModalClose" type="button" aria-label="Cerrar foto del agente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+    </button>
+</div>
+
+@section Scripts {
+    <script src="~/js/details-property/details-property.js" asp-append-version="true"></script>
+}

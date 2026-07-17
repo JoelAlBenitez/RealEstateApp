@@ -43,6 +43,15 @@ namespace RealEstateApp.Core.Application.Services.MessagesAtC
                 errors.Add(new Error("Mensaje.PropiedadNoDisponible", "La propiedad de la conversación no existe o no está disponible."));
             }
 
+            if (roles.Contains(Roles.Agente.ToString()))
+            {
+                var propertyResult = await _propertyService.GetByIdAsync(dto.PropertyId);
+                if (!propertyResult.IsValid || propertyResult.Value == null || propertyResult.Value.AgentId != _userSession.GetIdCurrentUser())
+                {
+                    errors.Add(new Error("Mensaje.AgenteNoAutorizado", "No tienes permisos para enviar mensajes relacionados a esta propiedad."));
+                }
+            }
+
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();
         }
     }

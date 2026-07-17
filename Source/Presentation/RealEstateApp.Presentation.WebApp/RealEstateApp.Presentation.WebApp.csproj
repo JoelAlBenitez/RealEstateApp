@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\resources\GuideTouritis.png\**" />
+    <Content Remove="wwwroot\resources\GuideTouritis.png\**" />
+    <EmbeddedResource Remove="wwwroot\resources\GuideTouritis.png\**" />
+    <None Remove="wwwroot\resources\GuideTouritis.png\**" />
+  </ItemGroup>
+
+  <ItemGroup>
 
    <Folder Include="Controllers\Messages\" />
     <Folder Include="Controllers\Customers\" />
