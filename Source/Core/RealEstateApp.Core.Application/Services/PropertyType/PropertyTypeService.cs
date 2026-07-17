@@ -36,6 +36,9 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
                 var entities = await _propertyTypeRepository.GetAllAsync();
                 var dtos = _mapper.Map<List<PropertyTypeDto>>(entities);
                 
+                // Nota: se usa un conteo individual por elemento en vez de una consulta agrupada.
+                // Confirmado con el líder técnico (Joel) que esto es aceptable para catálogos
+                // maestros con pocos registros (no es un problema de rendimiento en este contexto).
                 foreach (var dto in dtos)
                 {
                     var countResult = await _propertyService.CountByPropertyTypeAsync(dto.Id);
