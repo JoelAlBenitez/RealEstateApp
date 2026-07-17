@@ -69,7 +69,7 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
             }
             else
             {
-                bool nameExists = await _propertyTypeRepository.ExistNameAsync(trimmedName, dto.Id);
+                bool nameExists = await _propertyTypeRepository.ExistNameAsync(trimmedName, dto.Id ?? 0);
                 
                 if (nameExists)
                 {
