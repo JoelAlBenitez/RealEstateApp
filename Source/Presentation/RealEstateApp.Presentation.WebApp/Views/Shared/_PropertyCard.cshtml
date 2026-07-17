@@ -1,0 +1,59 @@
+@model RealEstateApp.Core.Application.ViewsModel.Property.PropertyPublicViewModel
+
+<article class="property-card">
+    <div class="property-card__media">
+        <img src="@Model.FirtsImage" alt="Propiedad @Model.Code" loading="lazy" />
+        <span class="property-card__chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                <line x1="7" y1="7" x2="7" y2="7" />
+            </svg>
+            <span>@Model.TypeSale</span>
+        </span>
+    </div>
+    <div class="property-card__body">
+        <span class="property-card__code">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="4" y1="9" x2="20" y2="9" />
+                <line x1="4" y1="15" x2="20" y2="15" />
+                <line x1="10" y1="3" x2="8" y2="21" />
+                <line x1="16" y1="3" x2="14" y2="21" />
+            </svg>
+            <span>@Model.Code</span>
+        </span>
+        <strong class="property-card__price">$@Model.Price.ToString("N0")</strong>
+        <ul class="property-card__specs">
+            <li title="Habitaciones">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M2 4v16" />
+                    <path d="M2 8h18a2 2 0 0 1 2 2v10" />
+                    <path d="M2 17h20" />
+                    <path d="M6 8v9" />
+                </svg>
+                <span>@Model.NumberOfBedrooms</span>
+            </li>
+            <li title="Baños">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                </svg>
+                <span>@Model.NumberOfBathrooms</span>
+            </li>
+            <li title="Tamaño en metros cuadrados">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21.3 8.7 15.3 2.7a1 1 0 0 0-1.4 0L2.7 13.9a1 1 0 0 0 0 1.4l6 6a1 1 0 0 0 1.4 0l11.2-11.2a1 1 0 0 0 0-1.4z" />
+                    <path d="m7.5 10.5 2 2" />
+                    <path d="m10.5 7.5 2 2" />
+                    <path d="m13.5 4.5 2 2" />
+                </svg>
+                <span>@Model.Size.ToString("N0") m²</span>
+            </li>
+        </ul>
+        <a class="rea-btn rea-btn--primary property-card__cta" asp-controller="Home" asp-action="DetailtsProperty" asp-route-IdProperty="@Model.Id">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+            </svg>
+            <span>Ver detalles</span>
+        </a>
+    </div>
+</article>

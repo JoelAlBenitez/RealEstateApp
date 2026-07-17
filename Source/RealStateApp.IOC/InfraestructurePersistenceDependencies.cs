@@ -18,8 +18,12 @@ namespace RealStateApp.IOC
         public static IServiceCollection AddInfraestructurePersistence(
             this IServiceCollection services, IConfiguration configuration)
         {
+            //services.AddDbContext<DbContextRealEstateApp>(options =>
+            //    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDbContext<DbContextRealEstateApp>(options =>
-                options.UseInMemoryDatabase("RealEstateAppDb"));
+                options.UseInMemoryDatabase("RealEstateAppDb"));   // -> pruebas uso de memory
+
             #region customer repositories
             services.AddScoped<IPropertyRepository, PropertyRepository>();
             services.AddScoped<IOfferRepository, OfferRepository>();

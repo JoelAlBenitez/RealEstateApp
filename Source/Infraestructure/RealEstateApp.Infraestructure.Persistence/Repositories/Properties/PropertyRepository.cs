@@ -11,6 +11,18 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
     {
         public PropertyRepository(DbContextRealEstateApp context) : base(context) { }
 
+
+        public override async Task<IReadOnlyCollection<Property>> GetAllAsync()
+        {
+            return await _context.Properties
+                 .AsNoTracking()
+                 .Where(p => p.Status == PropertyState.Available)
+                 .Include(i => i.Images)
+                 .OrderByDescending(p => p.CreateAt)
+                 .ToListAsync();
+           
+        }
+
         public async Task<IReadOnlyCollection<Property>> GetAvailablePropertiesAsync(int pageNumber = 1, int pageSize = 10)
         {
             return await _context.Properties
@@ -85,6 +97,49 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+        }
+
+        public async Task<int> CountAvailablePropertiesAsync()
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .CountAsync(p => p.Status == PropertyState.Available);
+        }
+
+        public async Task<int> CountAvailablePropertiesByAgentAsync(string agentId)
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .CountAsync(p => p.AgentId == agentId && p.Status == PropertyState.Available);
+        }
+
+        public async Task<int> CountFilteredPropertiesAsync(PropertyFilterCriteria criteria)
+        {
+            var query = _context.Properties
+                .AsNoTracking()
+                .Where(p => p.Status == PropertyState.Available);
+
+            if (criteria.MinPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= criteria.MinPrice.Value);
+            }
+
+            if (criteria.MaxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= criteria.MaxPrice.Value);
+            }
+
+            if (criteria.Bedrooms.HasValue)
+            {
+                query = query.Where(p => p.Bedrooms == criteria.Bedrooms.Value);
+            }
+
+            if (criteria.Bathrooms.HasValue)
+            {
+                query = query.Where(p => p.Bathrooms == criteria.Bathrooms.Value);
+            }
+
+            return await query.CountAsync();
         }
 
         public async Task<IReadOnlyCollection<Property>> GetPropertiesByAgentAsync(string agentId, int pageNumber = 1, int pageSize = 10)

@@ -1,0 +1,45 @@
+@model RealEstateApp.Core.Application.ViewsModel.Users.Consult.AgentsHomeViewModel
+@{
+    ViewData["Title"] = "Agentes";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/agents/agents.css" asp-append-version="true" />
+}
+
+<section class="agents-hero">
+    <span class="agents-hero__badge">Equipo verificado</span>
+    <h1 class="agents-hero__title">Conoce a los agentes que te acompañan</h1>
+    <p class="agents-hero__subtitle">
+        Profesionales listos para mostrarte propiedades y ayudarte a tomar la mejor decisión.
+    </p>
+</section>
+
+<section class="agents">
+    <div class="agents__body">
+        <div class="agents__list">
+            @if (Model.Agents.Count == 0)
+            {
+                var emptyMessage = Model.IsConsult
+                    ? "No se encontraron agentes activos con el nombre ingresado."
+                    : "No hay agentes activos disponibles en este momento. Vuelve a intentarlo más tarde.";
+                <partial name="_NoResults" model="@emptyMessage" />
+            }
+            else
+            {
+                <div class="agent-grid" id="agentGrid">
+                    @foreach (var agent in Model.Agents)
+                    {
+                        <partial name="_AgentCard" model="agent" />
+                    }
+                </div>
+            }
+        </div>
+        <partial name="_AgentConsult" model="Model.Consult" />
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/agents/agents.js" asp-append-version="true"></script>
+}
