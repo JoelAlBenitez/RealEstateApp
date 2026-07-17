@@ -2,7 +2,8 @@
 @using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus
 @{
     ViewData["Title"] = $"Propiedad {Model.Code}";
-    var hasImages = Model.ImageUrls != null && Model.ImageUrls.Count > 0;
+    var images = Model.ImageUrls ?? new List<string>();
+    var hasImages = images.Count > 0;
     var agentDisplayName = string.IsNullOrWhiteSpace(Model.AgentName) ? "Agente Real Estate" : Model.AgentName;
 }
 
@@ -31,10 +32,10 @@
             {
                 <div class="gallery" id="gallery">
                     <div class="gallery__stage">
-                        @for (var i = 0; i < Model.ImageUrls.Count; i++)
+                        @for (var i = 0; i < images.Count; i++)
                         {
                             <img class="gallery__slide@(i == 0 ? " gallery__slide--active" : "")"
-                                 src="@Model.ImageUrls[i]"
+                                 src="@images[i]"
                                  alt="Imagen @(i + 1) de la propiedad @Model.Code"
                                  data-index="@i"
                                  loading="lazy" />
@@ -53,7 +54,7 @@
                         </button>
                     </div>
                     <div class="gallery__dots" id="galleryDots" aria-label="Selector de imágenes">
-                        @for (var i = 0; i < Model.ImageUrls.Count; i++)
+                        @for (var i = 0; i < images.Count; i++)
                         {
                             <button class="gallery__dot@(i == 0 ? " gallery__dot--active" : "")" type="button" data-index="@i" aria-label="Ver imagen @(i + 1)"></button>
                         }
