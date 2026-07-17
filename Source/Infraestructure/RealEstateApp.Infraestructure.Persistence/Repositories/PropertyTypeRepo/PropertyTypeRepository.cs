@@ -24,5 +24,18 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.PropertyTypeRep
             // TODO: Implementar la lógica real de borrado en cascada (acuerdo de Sebastián).
             return await Task.FromResult(true);
         }
+
+        public async Task<bool> ExistNameAsync(string name, int id = 0)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return false;
+
+            var lowerName = name.Trim().ToLower();
+
+            // Si id == 0 (Create), busca cualquier coincidencia.
+            // Si id != 0 (Update), busca cualquier coincidencia en OTROS registros.
+            return await _context.PropertyTypes
+                .AnyAsync(e => e.Name.ToLower() == lowerName && e.Id != id);
+        }
     }
 }

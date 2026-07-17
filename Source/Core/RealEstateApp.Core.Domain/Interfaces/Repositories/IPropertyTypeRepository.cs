@@ -14,5 +14,7 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
         // PENDIENTE: falta que Sebastián exponga el método que retorna los IDs de propiedades
         // asociadas a un PropertyType (ej. GetPropertyIdsByTypeAsync(int typeId)).
         Task<bool> DeleteWithAssociatedPropertiesAsync(PropertyType propertyType, IReadOnlyCollection<int> associatedPropertyIds);
+
+        Task<bool> ExistNameAsync(string name, int id = 0);
     }
 }
