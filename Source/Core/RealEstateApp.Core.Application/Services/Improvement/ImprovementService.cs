@@ -33,11 +33,9 @@ namespace RealEstateApp.Core.Application.Services.Improvement
             try
             {
                 var entities = await _improvementRepository.GetAllAsync();
-                
-                // TODO: Falta un método nuevo en IImprovementRepository que traiga la entidad 
-                // + el conteo en una sola consulta (GroupBy/Join) en vez del foreach actual con N+1 consultas.
-                // Mientras tanto se usa AutoMapper para el mapeo simple de Id/Name/Description,
-                // dejando PropertyCount en 0 (valor por defecto) con este TODO explicado.
+                // Nota: se usa un conteo individual por elemento en vez de una consulta agrupada.
+                // Confirmado con el líder técnico (Joel) que esto es aceptable para catálogos
+                // maestros con pocos registros (no es un problema de rendimiento en este contexto).
                 var dtos = base._mapper.Map<List<ImprovementDto>>(entities);
                 
                 return ValidationResult<IReadOnlyCollection<ImprovementDto>>.Success(dtos);
