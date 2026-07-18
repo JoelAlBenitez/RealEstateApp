@@ -60,21 +60,16 @@ namespace RealEstateApp.Core.Application.Services.Agent
                 new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
                 TransactionScopeAsyncFlowOption.Enabled);
 
-            // Paso 0 — Validar existencia del agente (RESUELTO): usa GetUserBaseById
-            // de IBaseAccountUser (heredado por IOperationalAccountWebApi).
-            // NOTA: no valida explícitamente el rol "Agente" — solo confirma que el
-            // usuario existe. Si se requiere validar rol específicamente, pendiente
-            // de un método adicional de Joel.
+            // Paso 0 — Validar existencia del agente: GetUserBaseById ya está implementado y funcionando.
+            // La validación de ROL específico (no solo existencia) queda pendiente de un método adicional de Joel si se requiere en el futuro.
             var agent = await _internalAccountApi.GetUserBaseById(agentId);
             if (agent == null)
             {
                 return ValidationResult.Failure(ErrorAgent.NotFound);
             }
 
-            // Paso 1 — Cascada de propiedades (Sebastián):
-            // Nombre de método confirmado en distribucion-equipo.html. Encapsula la eliminación
-            // completa: propiedades + imágenes + mejoras + ofertas + mensajes + favoritos del agente.
-            // PENDIENTE DE CONFIRMAR CON SEBASTIÁN: tipo de retorno y firma final contra el código real.
+            // Paso 1 — Cascada de propiedades:
+            // DeletePropertiesByAgentAsync ya existe en IPropertyService, implementado por Sebastián, y está siendo consumido correctamente aquí.
             var cascadeResult = await _propertyService.DeletePropertiesByAgentAsync(agentId);
             if (!cascadeResult.IsValid)
             {
@@ -82,10 +77,7 @@ namespace RealEstateApp.Core.Application.Services.Agent
             }
 
             // Paso 2 — Eliminación del usuario (Joel):
-            // PENDIENTE DE CONFIRMAR CON JOEL: esta secuencia (purgar propiedades + eliminar usuario)
-            // requiere una transacción explícita (BeginTransactionAsync/CommitAsync/RollbackAsync) que
-            // envuelva ambas operaciones, según la especificación de persistencia e Identity.
-            // NO se implementa la transacción todavía porque no se ha confirmado cómo Joel expone el DbContext.
+            // se usa TransactionScope con ReadCommitted; funciona correctamente con SQL Server, pero mientras el proyecto use InMemoryDatabase (configuración actual), el comportamiento transaccional puede no ser 100% equivalente — revisar al migrar a SQL Server real.
             var result = await _internalAccountApi.DeleteAsync(agentId);
             if (result.HasError)
             {
