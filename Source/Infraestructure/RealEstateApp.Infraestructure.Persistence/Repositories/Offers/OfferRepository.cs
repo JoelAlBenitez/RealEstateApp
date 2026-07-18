@@ -48,5 +48,40 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Offers
                 .Where(o => o.PropertyId == propertyId && o.Id != acceptedOfferId && o.Status == OfferState.Pending)
                 .ExecuteUpdateAsync(s => s.SetProperty(o => o.Status, OfferState.Rejected));
         }
+
+        public async Task<IReadOnlyCollection<Offer>> GetOffersByClientAndPropertyAsync(string customerId, int propertyId)
+        {
+            return await _context.Offers
+                .AsNoTracking()
+                .Where(o => o.CustomerId == customerId && o.PropertyId == propertyId)
+                .ToListAsync();
+        }
+
+        private Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction? _transaction;
+
+        public async Task BeginTransactionAsync()
+        {
+            _transaction = await _context.Database.BeginTransactionAsync();
+        }
+
+        public async Task CommitTransactionAsync()
+        {
+            if (_transaction != null)
+            {
+                await _transaction.CommitAsync();
+                await _transaction.DisposeAsync();
+                _transaction = null;
+            }
+        }
+
+        public async Task RollbackTransactionAsync()
+        {
+            if (_transaction != null)
+            {
+                await _transaction.RollbackAsync();
+                await _transaction.DisposeAsync();
+                _transaction = null;
+            }
+        }
     }
 }

@@ -61,7 +61,9 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
                 opt.LoginPath = "/Account/Login";
                 opt.Events.OnRedirectToLogin = context =>
                 {
-                    context.Response.Redirect("/Account/Login?expired=true");
+                    //sin cookie de sesión previa → Home público; con cookie (sesión vencida o invalidada) → login con aviso de expiración
+                    bool hadSession = context.Request.Cookies.ContainsKey(context.Options.Cookie.Name!);
+                    context.Response.Redirect(hadSession ? "/Account/Login?expired=true" : "/");
                     return Task.CompletedTask;
                 };
                 opt.Events.OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync;

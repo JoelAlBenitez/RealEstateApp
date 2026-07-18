@@ -55,7 +55,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.ExternalUsers
                 return "Su cuenta fue confirmada correctamente. Ya puede iniciar sesión y disfrutar de RealEstateApp.";
             }
 
-            return "Su cuenta no puede ser activada deste apartado. Favor de contactar con un administrador.";
+            return "Su cuenta no puede ser activada desde este apartado. Favor de contactar con un administrador.";
         }
 
         public async Task<UserResponseDto> ForgoutPasswordAsync(

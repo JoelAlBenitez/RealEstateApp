@@ -9,6 +9,7 @@ namespace RealEstateApp.Core.Domain.Entities
         public required int PropertyId { get; set; }
         public required string Content { get; set; }
         public required DateTime SentAt { get; set; }
+        public required bool IsFromAgent { get; set; }
 
         // Navigation Properties
         public Property? Property { get; set; }

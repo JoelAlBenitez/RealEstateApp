@@ -8,6 +8,7 @@ using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus;
 using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using RealEstateApp.Core.Domain.Common.Errors;
+using Microsoft.Extensions.Logging;
 
 namespace RealEstateApp.Core.Application.Services.FavoriteProperties
 {
@@ -16,17 +17,20 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperties
         private readonly IFavoritePropertyRepository _favoritePropertyRepository;
         private readonly IFavoritePropertyValidationService _validationService;
         private readonly IUserSession _userSession;
+        private readonly ILogger<FavoritePropertyService> _logger;
 
         public FavoritePropertyService(
             IFavoritePropertyRepository favoritePropertyRepository,
             IFavoritePropertyValidationService validationService,
             IMapper mapper,
-            IUserSession userSession)
+            IUserSession userSession,
+            ILogger<FavoritePropertyService> logger)
             : base(favoritePropertyRepository, mapper)
         {
             _favoritePropertyRepository = favoritePropertyRepository;
             _validationService = validationService;
             _userSession = userSession;
+            _logger = logger;
         }
 
         public override async Task<ValidationResult> AddAsync(SaveFavoritePropertyDto dto)
@@ -39,10 +43,25 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperties
                 {
                     return validation;
                 }
-                return await base.AddAsync(dto);
+
+                var favorite = _mapper.Map<Domain.Entities.FavoriteProperty>(dto);
+                favorite.CreateAt = DateTimeOffset.UtcNow;
+                favorite.UpdateAt = DateTimeOffset.UtcNow;
+
+                await _favoritePropertyRepository.AddAsync(favorite);
+                var result = await _favoritePropertyRepository.SaveAsync();
+                if (result > 0)
+                {
+                    return ValidationResult.Success();
+                }
+                return ValidationResult.Failure(new Error("Oops", "Ocurrió un error al procesar la solicitud. Favor inténtelo de nuevo más tarde."));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                if (ex.InnerException != null && (ex.InnerException.Message.Contains("duplicate") || ex.InnerException.Message.Contains("UNIQUE")))
+                {
+                    return ValidationResult.Failure(new Error("Favorite.Duplicate", "Esta propiedad ya se encuentra agregada a tus favoritos."));
+                }
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
         }
@@ -58,8 +77,9 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperties
                 }
                 return await base.RemoveAsync(id);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en FavoritePropertyService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
         }
@@ -74,8 +94,9 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperties
                 var dtos = _mapper.Map<IReadOnlyCollection<FavoritePropertyDto>>(availableFavorites);
                 return ValidationResult<IReadOnlyCollection<FavoritePropertyDto>>.Success(dtos);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en FavoritePropertyService");
                 return ValidationResult<IReadOnlyCollection<FavoritePropertyDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }
@@ -97,17 +118,16 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperties
                     return ValidationResult.Failure(new Error("Favorite.NotFound", "La propiedad favorita especificada no existe."));
                 }
 
-                await _favoritePropertyRepository.DeleteAsync(favorite);
-                var result = await _favoritePropertyRepository.SaveAsync();
-                if (result <= 0)
+                var result = await _favoritePropertyRepository.DeleteAsync(favorite);
+                if (!result)
                 {
                     return ValidationResult.Failure(new Error("Oops", "Ocurrió un error al eliminar el favorito. Inténtalo de nuevo más tarde."));
                 }
-
                 return ValidationResult.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Ocurrió un error en FavoritePropertyService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
         }

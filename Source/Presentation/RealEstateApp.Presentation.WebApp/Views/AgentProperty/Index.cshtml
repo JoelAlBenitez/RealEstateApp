@@ -1,0 +1,81 @@
+@using RealEstateApp.Core.Application.ViewsModel.Property
+@model List<PropertyCardViewModel>
+@{
+    ViewData["Title"] = "Mantenimiento de Propiedades";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h2 class="fw-bold mb-0" style="color: var(--color-text);">Mis Propiedades Disponibles</h2>
+        <a asp-action="Create" class="rea-btn rea-btn--primary">Registrar Nueva Propiedad</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info border-0 shadow-sm text-center py-5">
+            <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 text-muted">
+                <path d="M3 10.5 12 3l9 7.5" />
+                <path d="M5 9.5V21h14V9.5" />
+                <path d="M9.5 21v-6h5v6" />
+            </svg>
+            <h4 class="fw-bold">No tienes propiedades disponibles registradas</h4>
+            <p class="text-muted mb-4">Comienza registrando una propiedad para que los clientes puedan verla y realizar ofertas.</p>
+            <a asp-action="Create" class="rea-btn rea-btn--primary">Registrar Propiedad</a>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0" style="border-radius: var(--radius-card); background: var(--color-surface);">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr style="background: var(--color-surface-variant); border-bottom: 1px solid var(--color-border);">
+                                <th class="ps-4 py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Código</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Imagen</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Precio</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Habs</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Baños</th>
+                                <th class="py-3" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Construcción</th>
+                                <th class="pe-4 py-3 text-end" style="color: var(--color-text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var property in Model)
+                            {
+                                <tr style="border-bottom: 1px solid var(--color-border);">
+                                    <td class="ps-4 fw-bold" style="color: var(--color-text);">@property.Code</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(property.ImageUrl))
+                                        {
+                                            <img src="/@property.ImageUrl" class="rounded shadow-sm" style="width: 60px; height: 45px; object-fit: cover;" alt="Miniatura de @property.Code" />
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded bg-light d-flex align-items-center justify-content-center" style="width: 60px; height: 45px; color: var(--color-text-secondary);">
+                                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                                    <polyline points="21 15 16 10 5 21" />
+                                                </svg>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td class="fw-bold text-primary">@string.Format("{0:C}", property.Price)</td>
+                                    <td>@property.Bedrooms</td>
+                                    <td>@property.Bathrooms</td>
+                                    <td>@property.Size m²</td>
+                                    <td class="pe-4 text-end">
+                                        <a asp-controller="AgentOffers" asp-action="Index" asp-route-propertyId="@property.Id" class="btn btn-outline-success btn-sm me-2 px-3">Ver Ofertas</a>
+                                        <a asp-action="Edit" asp-route-id="@property.Id" class="btn btn-outline-primary btn-sm me-2 px-3">Editar</a>
+                                        <a asp-action="Delete" asp-route-id="@property.Id" class="btn btn-outline-danger btn-sm px-3">Eliminar</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <partial name="_Pagination" />
+    }
+</div>
