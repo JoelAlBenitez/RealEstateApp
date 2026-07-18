@@ -7,6 +7,7 @@ using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Common.Errors;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace RealEstateApp.Core.Application.Services.Agent
 {
@@ -48,13 +49,22 @@ namespace RealEstateApp.Core.Application.Services.Agent
 
         public async Task<ValidationResult> DeleteAgentAsync(string agentId)
         {
-            // Paso 0 — Validar existencia y rol del agente (PENDIENTE DE CONFIRMAR CON JOEL):
-            // El documento funcional exige verificar que el agente exista y tenga rol Agente antes
-            // de ejecutar cualquier purga. Requiere un método de consulta en IOperationalAccountWebApi
-            // (ej. GetUserByIdAsync o similar) que todavía no existe.
-            // Si el agente no existe → retornar ValidationResult.Failure(ErrorAgent.NotFound)
-            // Si el usuario existe pero no tiene rol Agente → retornar un error de rol incorrecto.
-            // NO ejecutar el Paso 1 sin resolver este paso primero.
+            // NOTA: TransactionScope requiere que el proveedor de base de datos soporte
+            // transacciones distribuidas/ambient. Mientras el proyecto use
+            // UseInMemoryDatabase (configuración actual confirmada en
+            // InfraestructurePersistenceDependencies.cs), esta transacción puede no
+            // comportarse igual que con SQL Server real — verificar al migrar a
+            // producción con SQL Server.
+            using var scope = new TransactionScope(
+                TransactionScopeOption.Required,
+                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
+                TransactionScopeAsyncFlowOption.Enabled);
+
+            // Paso 0 — Validar existencia del agente (RESUELTO): usa GetUserBaseById
+            // de IBaseAccountUser (heredado por IOperationalAccountWebApi).
+            // NOTA: no valida explícitamente el rol "Agente" — solo confirma que el
+            // usuario existe. Si se requiere validar rol específicamente, pendiente
+            // de un método adicional de Joel.
             var agent = await _internalAccountApi.GetUserBaseById(agentId);
             if (agent == null)
             {
@@ -68,7 +78,7 @@ namespace RealEstateApp.Core.Application.Services.Agent
             var cascadeResult = await _propertyService.DeletePropertiesByAgentAsync(agentId);
             if (!cascadeResult.IsValid)
             {
-                return cascadeResult;
+                return cascadeResult; // el 'using' libera el scope sin scope.Complete() = rollback automático
             }
 
             // Paso 2 — Eliminación del usuario (Joel):
@@ -82,6 +92,7 @@ namespace RealEstateApp.Core.Application.Services.Agent
                 return ValidationResult.Failure(new Error("Identity_Error", string.Join(", ", result.Errors ?? new List<string>())));
             }
 
+            scope.Complete(); // confirma la transacción completa solo si todo fue exitoso
             return ValidationResult.Success();
         }
     }
