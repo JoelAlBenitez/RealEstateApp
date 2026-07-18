@@ -44,9 +44,23 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Offers
 
         public async Task RejectOtherOffersByPropertyAsync(int propertyId, int acceptedOfferId)
         {
-            await _context.Offers
-                .Where(o => o.PropertyId == propertyId && o.Id != acceptedOfferId && o.Status == OfferState.Pending)
-                .ExecuteUpdateAsync(s => s.SetProperty(o => o.Status, OfferState.Rejected));
+            var query = _context.Offers
+                .Where(o => o.PropertyId == propertyId && o.Id != acceptedOfferId && o.Status == OfferState.Pending);
+
+            if (_context.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
+            {
+                var otherOffers = await query.ToListAsync();
+                foreach (var offer in otherOffers)
+                {
+                    offer.Status = OfferState.Rejected;
+                    _context.Entry(offer).State = EntityState.Modified;
+                }
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                await query.ExecuteUpdateAsync(s => s.SetProperty(o => o.Status, OfferState.Rejected));
+            }
         }
 
         public async Task<IReadOnlyCollection<Offer>> GetOffersByClientAndPropertyAsync(string customerId, int propertyId)
