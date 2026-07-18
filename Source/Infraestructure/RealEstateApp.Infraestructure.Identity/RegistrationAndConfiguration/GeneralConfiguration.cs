@@ -9,9 +9,12 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
     {
         public static void AddGeneralConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<DbContextIdentityRealStateApp>(opt =>
-                opt.UseInMemoryDatabase("RealEstateAppIdentityDb"));
+            //services.AddDbContext<DbContextIdentityRealStateApp>(opt =>
+            //    opt.UseInMemoryDatabase("RealEstateAppIdentityDb"));
 
+            services.AddDbContext<DbContextIdentityRealStateApp>(opt =>
+            opt.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+            );
         }
     }
 }
