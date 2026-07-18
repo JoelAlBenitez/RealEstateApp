@@ -44,7 +44,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             return View(await BuildHomeAsync(filters, filter, page, isFiltered));
         }
 
-        public async Task<IActionResult> DetailtsProperty(int IdProperty)
+        public async Task<IActionResult> DetailsProperty(int IdProperty)
         {
             var result = await _propertyService.GetByIdWithDetailsAsync(IdProperty);
             if (!result.IsValid)
@@ -108,7 +108,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
                 TempData["Warning"] = "La propiedad indicada no pudo ser encontrada.";
                 return View("Index", await BuildHomeAsync(null, new PropertyFilterViewModel(), 1, false));
             }
-            return RedirectToAction(nameof(DetailtsProperty), new { IdProperty = consult.Value.Id });
+            return RedirectToAction(nameof(DetailsProperty), new { IdProperty = consult.Value.Id });
         }
 
         [ValidateAntiForgeryToken]

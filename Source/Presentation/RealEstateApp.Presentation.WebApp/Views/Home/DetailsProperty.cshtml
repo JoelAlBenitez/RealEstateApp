@@ -34,8 +34,8 @@
                     <div class="gallery__stage">
                         @for (var i = 0; i < images.Count; i++)
                         {
-                            <img class="~/gallery__slide@(i == 0 ? " gallery__slide--active" : "")"
-                                 src="@images[i]"
+                            <img class="gallery__slide@(i == 0 ? " gallery__slide--active" : "")"
+                                 src="~/@images[i]"
                                  alt="Imagen @(i + 1) de la propiedad @Model.Code"
                                  data-index="@i"
                                  loading="lazy" />
@@ -196,6 +196,7 @@
                 <line x1="12" y1="22.08" x2="12" y2="12" />
             </svg>
         </button>
+        
         <button class="gallery-modal__control" id="modalNext" type="button" aria-label="Imagen siguiente">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <line x1="5" y1="12" x2="19" y2="12" />
