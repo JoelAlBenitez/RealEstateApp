@@ -305,5 +305,19 @@
         var btn = event.relatedTarget;
         document.getElementById('cancelOfferDetailId').value = btn.getAttribute('data-offer-id');
     });
+
+    const offerInput = document.getElementById('offerAmount');
+    if (offerInput) {
+        offerInput.addEventListener('keydown', function (e) {
+            if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+') {
+                e.preventDefault();
+            }
+        });
+        offerInput.addEventListener('input', function (e) {
+            if (parseFloat(this.value) < 0) {
+                this.value = '';
+            }
+        });
+    }
 </script>
 }
