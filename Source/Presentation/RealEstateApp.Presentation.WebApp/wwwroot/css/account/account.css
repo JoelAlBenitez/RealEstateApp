@@ -117,6 +117,10 @@
     justify-content: center;
 }
 
+.account-panel--wide {
+    max-width: 850px;
+}
+
 .account-card {
     width: 100%;
     padding: var(--space-8) var(--space-6);

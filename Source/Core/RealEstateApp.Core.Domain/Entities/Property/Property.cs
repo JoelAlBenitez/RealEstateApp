@@ -22,7 +22,7 @@ namespace RealEstateApp.Core.Domain.Entities
        // public PropertyType? PropertyType { get; set; } = null!;
        // public SaleType? SaleType { get; set; } = null!;
         public IReadOnlyCollection<PropertyImage> Images { get; set; } = null!;
-       // public IReadOnlyCollection<Propertyimprovement> PropertyImprovements { get; set; } = null!;
+        public IReadOnlyCollection<PropertyImprovement> PropertyImprovements { get; set; } = null!;
         public IReadOnlyCollection<Offer> Offers { get; set; } = null!;
     }
 }

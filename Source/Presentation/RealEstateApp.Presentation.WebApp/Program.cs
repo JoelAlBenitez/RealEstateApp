@@ -28,17 +28,19 @@ builder.Services.AddDependenciesWebApp();
 builder.Services.AddDependenciesWebApi();
 builder.Services.AddScoped<IUserSession,UserSession>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-builder.Services.AddSession();
 #endregion
 
 var app = builder.Build();
+
 await app.Services.GenerateDataSeedUsers();
 
 if (!app.Environment.IsDevelopment())
 {
+    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+app.UseStatusCodePagesWithReExecute("/Home/StatusCodeError", "?code={0}");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

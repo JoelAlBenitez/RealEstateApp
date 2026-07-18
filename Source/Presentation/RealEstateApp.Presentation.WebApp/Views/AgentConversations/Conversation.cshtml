@@ -1,0 +1,100 @@
+@using RealEstateApp.Core.Application.ViewsModel.MessageAtC
+@model List<MessageAtCViewModel>
+@{
+    var customerName = Model.FirstOrDefault()?.CustomerName ?? "Cliente Interesado";
+    ViewData["Title"] = $"Conversación con {customerName}";
+}
+
+<div class="container py-4">
+    <div class="mb-3">
+        <a asp-action="Index" class="text-decoration-none d-inline-flex align-items-center" style="color: var(--color-primary); font-weight: 600;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Volver a la bandeja
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0" style="border-radius: var(--radius-card); overflow: hidden; background: var(--color-surface); border: 1px solid var(--color-border);">
+        <div class="card-header p-3 d-flex align-items-center" style="background: var(--color-surface-variant); border-bottom: 1px solid var(--color-border);">
+            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 46px; height: 46px; background: var(--color-primary); color: #fff; flex-shrink: 0;">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+            </div>
+            <div>
+                <h5 class="fw-bold mb-0" style="color: var(--color-text);">@customerName</h5>
+                <small style="color: var(--color-text-secondary);">Chat sobre tu Propiedad #@ViewBag.PropertyId</small>
+            </div>
+        </div>
+
+        <div class="card-body p-4" id="chatContainer" style="height: 420px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; background: var(--color-background);">
+            @if (!Model.Any())
+            {
+                <div class="text-center my-auto py-5" style="color: var(--color-text-secondary);">
+                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 d-block mx-auto" style="opacity: 0.4;">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <p class="m-0 fw-semibold">No hay mensajes anteriores.</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var msg in Model)
+                {
+                    if (!msg.IsFromAgent)
+                    {
+                        <div class="d-flex align-items-end" style="max-width: 70%;">
+                            <div class="p-3" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px 16px 16px 4px; max-width: 100%;">
+                                <p class="mb-1" style="font-size: 0.95rem; word-break: break-word; white-space: pre-wrap; color: var(--color-text);">@msg.Content</p>
+                                <div class="text-end">
+                                    <small style="font-size: 0.72rem; color: var(--color-text-secondary);">@msg.CreateAt.ToString("hh:mm tt")</small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-end justify-content-end ms-auto" style="max-width: 70%;">
+                            <div class="p-3 text-white" style="background: var(--color-primary); border-radius: 16px 16px 4px 16px; max-width: 100%;">
+                                <p class="mb-1" style="font-size: 0.95rem; word-break: break-word; white-space: pre-wrap;">@msg.Content</p>
+                                <div class="text-start">
+                                    <small style="font-size: 0.72rem; opacity: 0.75;">@msg.CreateAt.ToString("hh:mm tt")</small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            }
+        </div>
+
+        <div class="card-footer p-3" style="background: var(--color-surface-variant); border-top: 1px solid var(--color-border);">
+            <form asp-controller="AgentConversations" asp-action="Send" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="PropertyId" value="@ViewBag.PropertyId" />
+                <input type="hidden" name="CustomerId" value="@ViewBag.CustomerId" />
+                <div class="input-group">
+                    <input type="text" class="form-control" name="Content" placeholder="Escribe un mensaje..." required maxlength="500" autocomplete="off" style="border-radius: 8px 0 0 8px; background: var(--color-surface); border-color: var(--color-border); color: var(--color-text);" />
+                    <button class="rea-btn rea-btn--primary" type="submit" style="border-radius: 0 8px 8px 0; margin-top: 0; padding-top: 0; padding-bottom: 0;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var chatContainer = document.getElementById("chatContainer");
+            if (chatContainer) {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        });
+    </script>
+}

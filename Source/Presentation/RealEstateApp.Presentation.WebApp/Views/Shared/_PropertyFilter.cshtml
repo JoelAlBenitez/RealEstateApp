@@ -1,0 +1,85 @@
+@model RealEstateApp.Core.Application.ViewsModel.Property.PropertyFilterViewModel
+
+<div class="property-filter">
+    <h2 class="property-filter__title">Filtra y encuentra tu próximo hogar</h2>
+    <p class="property-filter__subtitle">Ajusta el precio, las habitaciones, los baños y el tipo de propiedad a tu medida.</p>
+    <form class="property-filter__form" asp-controller="Home" asp-action="FilterProperty" method="post">
+        <div class="property-filter__field">
+            <label asp-for="MinPrice">Precio mínimo</label>
+            <div class="property-filter__control">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="12" y1="1" x2="12" y2="23" />
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                <input asp-for="MinPrice" type="number" min="0" step="1000" inputmode="numeric" placeholder="Desde $0" />
+            </div>
+        </div>
+        <div class="property-filter__field">
+            <label asp-for="MaxPrice">Precio máximo</label>
+            <div class="property-filter__control">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="12" y1="1" x2="12" y2="23" />
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                <input asp-for="MaxPrice" type="number" min="0" step="1000" inputmode="numeric" placeholder="Hasta $5,000,000" />
+            </div>
+        </div>
+        <div class="property-filter__field">
+            <label asp-for="Bedrooms">Habitaciones</label>
+            <div class="property-filter__control">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M2 4v16" />
+                    <path d="M2 8h18a2 2 0 0 1 2 2v10" />
+                    <path d="M2 17h20" />
+                    <path d="M6 8v9" />
+                </svg>
+                <input asp-for="Bedrooms" type="number" min="0" step="1" inputmode="numeric" placeholder="Cantidad mínima" />
+            </div>
+        </div>
+        <div class="property-filter__field">
+            <label asp-for="Bathrooms">Baños</label>
+            <div class="property-filter__control">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                </svg>
+                <input asp-for="Bathrooms" type="number" min="0" step="1" inputmode="numeric" placeholder="Cantidad mínima" />
+            </div>
+        </div>
+        <div class="property-filter__field">
+            <label asp-for="IdTypeProperty">Tipo de propiedad</label>
+            <div class="property-filter__control">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 10.5 12 3l9 7.5" />
+                    <path d="M5 9.5V21h14V9.5" />
+                    <path d="M9.5 21v-6h5v6" />
+                </svg>
+                <select asp-for="IdTypeProperty">
+                    <option value="">Todos los tipos</option>
+                    @if (Model.TypePropery != null)
+                    {
+                        foreach (var type in Model.TypePropery)
+                        {
+                            <option value="@type.Id">@type.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="property-filter__actions">
+            <button class="rea-btn rea-btn--primary" type="submit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <span>Aplicar filtros</span>
+            </button>
+            <a class="rea-btn rea-btn--secondary" asp-controller="Home" asp-action="Index">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                </svg>
+                <span>Limpiar</span>
+            </a>
+        </div>
+    </form>
+</div>
