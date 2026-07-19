@@ -27,53 +27,50 @@ namespace RealEstateApp.Core.Application.Services.Admin
 
         public async Task<ValidationResult<IReadOnlyCollection<GetInternalUserDto>>> GetAdministratorsAsync()
         {
-            var admins = await _internalAccountApi.GetAllInternalUsersByRol(Roles.Administrador);
-            return ValidationResult<IReadOnlyCollection<GetInternalUserDto>>.Success(admins);
-        }
-
-        public async Task<ValidationResult> CreateAsync(RegisterInternalUsersDto dto)
-        {
-            var result = await _internalAccountApi.CreateInternalUserAsync(dto);
-            if (result.HasError)
+            try
             {
-                return ValidationResult.Failure(new Error("Identity_Error", string.Join(", ", result.Errors ?? new List<string>())));
+                var admins = await _internalAccountApi.GetAllInternalUsersByRol(Roles.Administrador);
+                return ValidationResult<IReadOnlyCollection<GetInternalUserDto>>.Success(admins);
             }
-            return ValidationResult.Success();
-        }
-
-        public async Task<ValidationResult> EditAsync(EditInternalUserDto dto)
-        {
-
-            var result = await _internalAccountApi.UpdateInternalUserAsync(dto);
-            if (result.HasError)
+            catch (Exception)
             {
-                return ValidationResult.Failure(new Error("Identity_Error", string.Join(", ", result.Errors ?? new List<string>())));
+                return ValidationResult<IReadOnlyCollection<GetInternalUserDto>>.Failure(
+                    new Error("Query_Error", "Al parecer esta función no está disponible en este momento. Favor intente de nuevo más tarde.")
+                );
             }
-            return ValidationResult.Success();
         }
 
         public async Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto, string currentAdminId)
         {
-            var selfCheck = _administratorValidationService.ValidateSelfInactivation(dto, currentAdminId);
-            if (!selfCheck.IsValid)
+            try
             {
-                return selfCheck;
-            }
+                var selfCheck = _administratorValidationService.ValidateSelfInactivation(dto, currentAdminId);
+                if (!selfCheck.IsValid)
+                {
+                    return selfCheck;
+                }
 
-            var minCheck = await _administratorValidationService.ValidateMinimumActiveAdmin(dto);
-            if (!minCheck.IsValid)
+                var minCheck = await _administratorValidationService.ValidateMinimumActiveAdmin(dto);
+                if (!minCheck.IsValid)
+                {
+                    return minCheck;
+                }
+
+                var result = await _internalAccountApi.ChangeStateAsync(dto);
+                
+                if (result.HasError)
+                {
+                    return ValidationResult.Failure(new Error("Identity_Error", string.Join(", ", result.Errors ?? new List<string>())));
+                }
+
+                return ValidationResult.Success();
+            }
+            catch (Exception)
             {
-                return minCheck;
+                return ValidationResult.Failure(
+                    new Error("Toggle_Error", "Al parecer esta función no está disponible en este momento. Favor intente de nuevo más tarde.")
+                );
             }
-
-            var result = await _internalAccountApi.ChangeStateAsync(dto);
-            
-            if (result.HasError)
-            {
-                return ValidationResult.Failure(new Error("Identity_Error", string.Join(", ", result.Errors ?? new List<string>())));
-            }
-
-            return ValidationResult.Success();
         }
     }
 }

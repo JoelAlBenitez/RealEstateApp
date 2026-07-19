@@ -13,13 +13,6 @@ namespace RealEstateApp.Core.Application.Contracts.Admin
         // Obtiene el listado de administradores registrados en el sistema
         Task<ValidationResult<IReadOnlyCollection<GetInternalUserDto>>> GetAdministratorsAsync();
 
-
-        // Registra un nuevo administrador
-        Task<ValidationResult> CreateAsync(RegisterInternalUsersDto dto);
-
-        // Edita un administrador existente, delegando la validación de auto-edición a Identity
-        Task<ValidationResult> EditAsync(EditInternalUserDto dto);
-
         // Cambia el estado de un administrador, aplicando validación de auto-inactivación y mínimo un administrador activo
         Task<ValidationResult> ToggleStatusAsync(AlterStateUserDto dto, string currentAdminId);
     }
