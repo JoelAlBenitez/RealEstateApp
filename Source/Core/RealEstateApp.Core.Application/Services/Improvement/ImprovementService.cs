@@ -36,12 +36,17 @@ namespace RealEstateApp.Core.Application.Services.Improvement
             try
             {
                 var entities = await _improvementRepository.GetAllAsync();
+                var dtos = _mapper.Map<IReadOnlyCollection<ImprovementDto>>(entities);
+                
                 // Nota: se usa un conteo individual por elemento en vez de una consulta agrupada.
                 // Confirmado con el líder técnico (Joel) que esto es aceptable para catálogos
                 // maestros con pocos registros (no es un problema de rendimiento en este contexto).
-                return ValidationResult<IReadOnlyCollection<ImprovementDto>>.Success(
-                    _mapper.Map<IReadOnlyCollection<ImprovementDto>>(entities)
-                );
+                foreach (var dto in dtos)
+                {
+                    dto.PropertyCount = await _improvementRepository.CountByImprovementAsync(dto.Id);
+                }
+                
+                return ValidationResult<IReadOnlyCollection<ImprovementDto>>.Success(dtos);
             }
             catch (Exception)
             {
