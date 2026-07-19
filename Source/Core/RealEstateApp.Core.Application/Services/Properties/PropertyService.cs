@@ -82,6 +82,10 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 if (dto.ImageFiles != null && dto.ImageFiles.Any())
                 {
                     var savedPaths = await _fileManager.SaveManyAsync(dto.ImageFiles, "Properties");
+                    if (savedPaths.NumberFailed > 0)
+                    {
+                        return ValidationResult.Failure(new Error("Property.ImageSaveError", "Ocurrió un error al procesar una o más imágenes de la propiedad."));
+                    }
                     foreach (var path in savedPaths.Files)
                     {
                         images.Add(new PropertyImage
@@ -546,7 +550,9 @@ namespace RealEstateApp.Core.Application.Services.Properties
         {
             try
             {
-                return await Task.FromResult(ValidationResult<int>.Success(0));
+                var propertyImprovements = await _propertyImprovementRepository.GetAllAsync();
+                var count = propertyImprovements.Count(pi => pi.ImprovementId == improvementId);
+                return ValidationResult<int>.Success(count);
             }
             catch (Exception ex)
             {

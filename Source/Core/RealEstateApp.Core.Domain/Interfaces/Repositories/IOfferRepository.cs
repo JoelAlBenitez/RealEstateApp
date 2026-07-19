@@ -11,6 +11,7 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
         Task<IReadOnlyCollection<Offer>> GetPendingOffersByPropertyAsync(int propertyId);
         Task RejectOtherOffersByPropertyAsync(int propertyId, int acceptedOfferId);
         Task<IReadOnlyCollection<Offer>> GetOffersByClientAndPropertyAsync(string customerId, int propertyId);
+        Task<IReadOnlyCollection<Offer>> GetOffersByPropertyAsync(int propertyId);
         Task BeginTransactionAsync();
         Task CommitTransactionAsync();
         Task RollbackTransactionAsync();

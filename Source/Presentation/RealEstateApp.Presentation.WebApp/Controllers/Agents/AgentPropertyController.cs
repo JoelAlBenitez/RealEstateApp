@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.Properties;
+using RealEstateApp.Core.Application.Contracts.Offers;
+using RealEstateApp.Core.Application.Contracts.Messages;
 using RealEstateApp.Core.Application.DTOs.Property;
 using RealEstateApp.Core.Application.ViewsModel.Property;
 using RealEstateApp.Core.Application.ViewsModel.Common;
+using RealEstateApp.Core.Application.ViewsModel.Offer;
+using RealEstateApp.Core.Application.ViewsModel.MessageAtC;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using AutoMapper;
 
@@ -13,15 +17,21 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
     public class AgentPropertyController : Controller
     {
         private readonly IPropertyService _propertyService;
+        private readonly IOfferService _offerService;
+        private readonly IMessageAtCService _messageService;
         private readonly IUserSession _userSession;
         private readonly IMapper _mapper;
 
         public AgentPropertyController(
             IPropertyService propertyService,
+            IOfferService offerService,
+            IMessageAtCService messageService,
             IUserSession userSession,
             IMapper mapper)
         {
             _propertyService = propertyService;
+            _offerService = offerService;
+            _messageService = messageService;
             _userSession = userSession;
             _mapper = mapper;
         }
@@ -31,13 +41,13 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             if (pageNumber < 1) pageNumber = 1;
 
             var agentId = _userSession.GetIdCurrentUser();
-            var countResult = await _propertyService.CountAvailableByAgentAsync(agentId);
+            var countResult = await _propertyService.CountByAgentAsync(agentId);
             var totalItems = countResult.IsValid ? countResult.Value : 0;
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
             if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
 
-            var result = await _propertyService.GetAvailableByAgentAsync(agentId, pageNumber, pageSize);
+            var result = await _propertyService.GetPropertiesByAgentAsync(agentId, pageNumber, pageSize);
             if (!result.IsValid)
             {
                 return View(new AgentPropertiesViewModel { Properties = new List<PropertyCardViewModel>() });
@@ -160,7 +170,25 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
                 return RedirectToAction(nameof(Index));
             }
 
-            var viewModel = _mapper.Map<PropertyDetailViewModel>(result.Value);
+            var propertyVm = _mapper.Map<PropertyDetailViewModel>(result.Value);
+
+            var offersResult = await _offerService.GetOffersByPropertyAsync(id);
+            var offers = offersResult.IsValid && offersResult.Value != null
+                ? _mapper.Map<List<OfferViewModel>>(offersResult.Value)
+                : new List<OfferViewModel>();
+
+            var chatsResult = await _messageService.GetChatsByAgentAsync();
+            var conversations = chatsResult.IsValid && chatsResult.Value != null
+                ? _mapper.Map<List<MessageAtCViewModel>>(chatsResult.Value.Where(m => m.PropertyId == id))
+                : new List<MessageAtCViewModel>();
+
+            var viewModel = new AgentPropertyDetailsViewModel
+            {
+                Property = propertyVm,
+                Offers = offers,
+                Conversations = conversations
+            };
+
             return View(viewModel);
         }
 

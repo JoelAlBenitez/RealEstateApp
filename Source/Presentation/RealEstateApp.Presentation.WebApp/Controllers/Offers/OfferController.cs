@@ -72,17 +72,6 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cancel(int offerId)
-        {
-            var result = await _offerService.CancelOfferAsync(offerId);
-            if (!result.IsValid)
-            {
-                TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al cancelar la oferta.";
-            }
 
-            return RedirectToAction(nameof(Index));
-        }
     }
 }

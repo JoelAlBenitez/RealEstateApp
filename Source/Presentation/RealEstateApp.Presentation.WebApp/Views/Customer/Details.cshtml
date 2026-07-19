@@ -117,7 +117,6 @@
                                         <th>Monto de Oferta</th>
                                         <th>Fecha Realizada</th>
                                         <th>Estado</th>
-                                        <th>Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -138,22 +137,6 @@
                                                 else if (offer.Status == OfferState.Rejected)
                                                 {
                                                     <span class="badge bg-danger">Rechazada</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (offer.Status == OfferState.Pending)
-                                                {
-                                                    <button type="button"
-                                                            class="btn btn-outline-danger btn-sm"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#modalCancelOfferDetail"
-                                                            data-offer-id="@offer.Id">
-                                                        Cancelar
-                                                    </button>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">—</span>
                                                 }
                                             </td>
                                         </tr>
@@ -245,7 +228,7 @@
                         @if (Model.HasPendingOffer)
                         {
                             <div class="alert alert-warning border-0 m-0">
-                                Ya tienes una oferta pendiente de respuesta para esta propiedad. Debes esperar a que sea procesada o cancelarla antes de ofertar nuevamente.
+                                Ya tienes una oferta pendiente de respuesta para esta propiedad. Debes esperar a que sea procesada antes de ofertar nuevamente.
                             </div>
                         }
                         else
@@ -270,42 +253,8 @@
     </div>
 </div>
 
-<!-- Modal: Cancelar Oferta -->
-<div class="modal fade" id="modalCancelOfferDetail" tabindex="-1" aria-labelledby="modalCancelOfferDetailLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
-            <div class="modal-header border-0 pb-0">
-                <div class="d-flex align-items-center gap-2">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#f59e0b" stroke-width="2">
-                        <path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    </svg>
-                    <h5 class="modal-title fw-bold mb-0" id="modalCancelOfferDetailLabel" style="color: var(--color-text);">Cancelar Oferta</h5>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" style="filter: invert(1);"></button>
-            </div>
-            <div class="modal-body pt-3" style="color: var(--color-text-secondary);">
-                <p class="mb-0">¿Está seguro de que desea <strong style="color: var(--color-text);">cancelar</strong> esta oferta? Esta acción no se puede deshacer.
-                </p>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Volver</button>
-                <form id="formCancelOfferDetail" asp-controller="Offer" asp-action="Cancel" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" id="cancelOfferDetailId" name="offerId" value="" />
-                    <button type="submit" class="btn btn-danger fw-semibold px-4">Sí, Cancelar</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 @section Scripts {
 <script>
-    document.getElementById('modalCancelOfferDetail').addEventListener('show.bs.modal', function (event) {
-        var btn = event.relatedTarget;
-        document.getElementById('cancelOfferDetailId').value = btn.getAttribute('data-offer-id');
-    });
-
     const offerInput = document.getElementById('offerAmount');
     if (offerInput) {
         offerInput.addEventListener('keydown', function (e) {

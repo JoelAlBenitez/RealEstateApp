@@ -12,16 +12,7 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
         public PropertyRepository(DbContextRealEstateApp context) : base(context) { }
 
 
-        public override async Task<IReadOnlyCollection<Property>> GetAllAsync()
-        {
-            return await _context.Properties
-                 .AsNoTracking()
-                 .Where(p => p.Status == PropertyState.Available)
-                 .Include(i => i.Images)
-                 .OrderByDescending(p => p.CreateAt)
-                 .ToListAsync();
-           
-        }
+
 
         public async Task<IReadOnlyCollection<Property>> GetAvailablePropertiesAsync(int pageNumber = 1, int pageSize = 10)
         {
