@@ -9,23 +9,21 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.ImprovementRepo
 {
     public sealed class ImprovementRepository : GenericRepository<Improvement, int>, IImprovementRepository
     {
-        public ImprovementRepository(DbContextRealEstateApp context) : base(context)
+        private readonly IPropertyImprovementRepository _propertyImprovementRepository;
+
+        public ImprovementRepository(DbContextRealEstateApp context, IPropertyImprovementRepository propertyImprovementRepository) : base(context)
         {
+            _propertyImprovementRepository = propertyImprovementRepository;
         }
 
         public async Task<int> CountByImprovementAsync(int improvementId)
         {
-            // Nota: La relación N:M (PropertyImprovement) aún no está descomentada 
-            // ni configurada en Property.cs o el DbContext.
-            // PENDIENTE: Ajustar este método cuando Sebastián agregue la tabla puente.
-            return await Task.FromResult(0);
+            var allAssociations = await _propertyImprovementRepository.GetAllAsync();
+            return allAssociations.Count(pi => pi.ImprovementId == improvementId);
         }
 
         public async Task<bool> ExistNameAsync(string name, int id = 0)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                return false;
-
             var lowerName = name.Trim().ToLower();
 
             return await _context.Set<Improvement>()

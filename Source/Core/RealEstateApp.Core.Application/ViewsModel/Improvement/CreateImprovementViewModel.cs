@@ -11,7 +11,7 @@ namespace RealEstateApp.Core.Application.ViewsModel.Improvement
         public required string Name { get; set; }
 
         [Required(ErrorMessage = "Debe completar todos los campos requeridos.")]
-        [StringLength(500, ErrorMessage = "La descripción no debe superar los 500 caracteres.")]
+        [StringLength(250, ErrorMessage = "La descripción no debe superar los 250 caracteres.")]
         [Display(Name = "Descripción")]
         public required string Description { get; set; }
     }

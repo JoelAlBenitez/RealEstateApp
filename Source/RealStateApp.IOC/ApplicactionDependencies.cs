@@ -21,6 +21,9 @@ using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Message;
 using RealEstateApp.Core.Application.Contracts.Improvement;
 using RealEstateApp.Core.Application.Services.Improvement;
 
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Improvement;
+using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Improvement;
+
 namespace RealStateApp.IOC
 {
     public static class ApplicactionDependencies
@@ -58,6 +61,11 @@ namespace RealStateApp.IOC
                 configuration.AddProfile<OfferDtoToViewModelAndReverse>();
                 configuration.AddProfile<MessageMappingProfile>();
                 configuration.AddProfile<MessageDtoToViewModelAndReverse>();
+                #endregion
+
+                #region maper Improvement
+                configuration.AddProfile<ImprovementDtoToViewModelAndReverse>();
+                configuration.AddProfile<ImprovementEntityToDtoAndReverse>();
                 #endregion
             });
 
