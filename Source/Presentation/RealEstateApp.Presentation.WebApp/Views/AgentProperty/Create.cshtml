@@ -157,6 +157,53 @@
     <script>
         let selectedFiles = [];
 
+        function showToast(message, type = 'warning') {
+            let container = document.querySelector('.rea-toasts');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'rea-toasts';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `rea-toast rea-toast--${type}`;
+            toast.setAttribute('role', 'status');
+
+            toast.innerHTML = `
+                <span class="rea-toast__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12" y2="17" />
+                    </svg>
+                </span>
+                <div class="rea-toast__content">
+                    <strong class="rea-toast__title">${type === 'success' ? 'Éxito' : 'Alerta'}</strong>
+                    <p class="rea-toast__text">${message}</p>
+                </div>
+                <button class="rea-toast__close" type="button" aria-label="Cerrar notificación">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            const closeBtn = toast.querySelector('.rea-toast__close');
+            closeBtn.addEventListener('click', () => {
+                toast.classList.add('is-leaving');
+                setTimeout(() => toast.remove(), 240);
+            });
+
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('is-leaving');
+                    setTimeout(() => toast.remove(), 240);
+                }
+            }, 6000);
+        }
+
         document.getElementById('imageFilesInput').addEventListener('change', function (e) {
             const files = e.target.files;
             if (!files.length) return;
@@ -166,7 +213,7 @@
                 if (!file.type.startsWith('image/')) continue;
 
                 if (selectedFiles.length >= 4) {
-                    alert('Solo se permite subir un máximo de 4 imágenes por propiedad.');
+                    showToast('Solo se permite subir un máximo de 4 imágenes por propiedad.');
                     break;
                 }
 
