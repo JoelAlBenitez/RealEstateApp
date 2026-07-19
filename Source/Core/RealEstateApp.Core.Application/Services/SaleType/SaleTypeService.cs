@@ -37,7 +37,7 @@ namespace RealEstateApp.Core.Application.Services.SaleType
             try
             {
                 var entities = await _saleTypeRepository.GetAllAsync();
-                var dtos = base._mapper.Map<List<SaleTypeDto>>(entities);
+                var dtos = base._mapper.Map<IReadOnlyCollection<SaleTypeDto>>(entities);
 
                 // Nota: se usa un conteo individual por elemento en vez de una consulta agrupada.
                 // Confirmado con el líder técnico (Joel) que esto es aceptable para catálogos
@@ -82,8 +82,8 @@ namespace RealEstateApp.Core.Application.Services.SaleType
             }
 
             dto = dto with { 
-                Name = dto.Name?.Trim() ?? string.Empty, 
-                Description = dto.Description?.Trim() ?? string.Empty 
+                Name = dto.Name.Trim(), 
+                Description = dto.Description.Trim() 
             };
             
             return await base.AddAsync(dto);
@@ -98,8 +98,8 @@ namespace RealEstateApp.Core.Application.Services.SaleType
             }
 
             dto = dto with { 
-                Name = dto.Name?.Trim() ?? string.Empty, 
-                Description = dto.Description?.Trim() ?? string.Empty 
+                Name = dto.Name.Trim(), 
+                Description = dto.Description.Trim() 
             };
             
             return await base.UpdateAsync(dto);
