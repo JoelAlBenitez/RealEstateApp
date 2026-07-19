@@ -20,6 +20,11 @@ using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Offer;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Offer;
 using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Message;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Message;
+using RealEstateApp.Core.Application.Contracts.Admin;
+using RealEstateApp.Core.Application.Services.Admin;
+using RealEstateApp.Core.Application.Contracts.Dashboard;
+using RealEstateApp.Core.Application.Services.Dashboard;
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Dashboard;
 
 namespace RealStateApp.IOC
 {
@@ -52,6 +57,11 @@ namespace RealStateApp.IOC
                 configuration.AddProfile<MessageMappingProfile>();
                 configuration.AddProfile<MessageDtoToViewModelAndReverse>();
                 #endregion
+
+                #region maper admin
+                configuration.AddProfile<DashboardDtoToViewModel>();
+                configuration.AddProfile<GetInternalUserDtoToAdministratorViewModel>();
+                #endregion
             });
 
 
@@ -65,6 +75,12 @@ namespace RealStateApp.IOC
             services.AddScoped<IFavoritePropertyValidationService, FavoritePropertyValidationService>();
             services.AddScoped<IOfferValidationService, OfferValidationService>();
             services.AddScoped<IMessageAtCValidationService, MessageAtCValidationService>();
+            #endregion
+
+            #region admin services
+            services.AddScoped<IAdministratorService, AdministratorService>();
+            services.AddScoped<IAdministratorValidationService, AdministratorValidationService>();
+            services.AddScoped<IDashboardService, DashboardService>();
             #endregion
 
             return services;
