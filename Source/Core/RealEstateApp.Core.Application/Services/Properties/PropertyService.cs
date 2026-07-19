@@ -171,7 +171,7 @@ namespace RealEstateApp.Core.Application.Services.Properties
             try
             {
                 int total;
-                if (filters != null && (filters.MinPrice.HasValue || filters.MaxPrice.HasValue || filters.Bedrooms.HasValue || filters.Bathrooms.HasValue))
+                if (filters != null && (filters.MinPrice.HasValue || filters.MaxPrice.HasValue || filters.Bedrooms.HasValue || filters.Bathrooms.HasValue || filters.PropertyTypeId.HasValue))
                 {
                     var criteria = _mapper.Map<PropertyFilterCriteria>(filters);
                     total = await _propertyRepository.CountFilteredPropertiesAsync(criteria);

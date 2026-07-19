@@ -155,33 +155,66 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        let selectedFiles = [];
+
         document.getElementById('imageFilesInput').addEventListener('change', function (e) {
+            const files = e.target.files;
+            if (!files.length) return;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (!file.type.startsWith('image/')) continue;
+
+                if (selectedFiles.length >= 4) {
+                    alert('Solo se permite subir un máximo de 4 imágenes por propiedad.');
+                    break;
+                }
+
+                const isDuplicate = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+                if (!isDuplicate) {
+                    selectedFiles.push(file);
+                }
+            }
+
+            e.target.value = '';
+
+            renderPreviews();
+            updateInputFiles();
+        });
+
+        function renderPreviews() {
             const container = document.getElementById('imagePreviewGrid');
             container.innerHTML = '';
-            const files = e.target.files;
-            
-            if (files.length > 4) {
-                alert('Solo se permite subir un máximo de 4 imágenes.');
-                e.target.value = '';
-                return;
-            }
-            
-            Array.from(files).forEach((file) => {
-                if (!file.type.startsWith('image/')) return;
-                
+
+            selectedFiles.forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = function (event) {
                     const col = document.createElement('div');
-                    col.className = 'col-3';
+                    col.className = 'col-3 position-relative';
                     col.innerHTML = `
                         <div class="position-relative border rounded overflow-hidden shadow-sm" style="height: 60px; background: var(--color-surface);">
                             <img src="${event.target.result}" class="w-100 h-100" style="object-fit: cover;" alt="Preview" />
+                            <button type="button" class="btn btn-danger btn-xs position-absolute top-0 end-0 m-1 px-1 py-0" style="font-size: 10px; line-height: 1; border-radius: 50%; padding: 0px 4px; opacity: 0.85; border: none; color: white;" onclick="removeNewFile(${index})">
+                                &times;
+                            </button>
                         </div>
                     `;
                     container.appendChild(col);
                 };
                 reader.readAsDataURL(file);
             });
-        });
+        }
+
+        window.removeNewFile = function(index) {
+            selectedFiles.splice(index, 1);
+            renderPreviews();
+            updateInputFiles();
+        };
+
+        function updateInputFiles() {
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            document.getElementById('imageFilesInput').files = dataTransfer.files;
+        }
     </script>
 }
