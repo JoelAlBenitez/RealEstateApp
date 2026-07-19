@@ -307,7 +307,7 @@
                                     </div>
                                 </div>
                                 <div class="chat-contact-meta">
-                                    <div class="chat-contact-time">@chat.CreateAt.ToString("dd/MM")</div>
+                                    <div class="chat-contact-time">@chat.CreateAt.ToLocalTime().ToString("dd/MM")</div>
                                     <div class="chat-contact-property">#@chat.PropertyCode</div>
                                 </div>
                             </a>
@@ -354,14 +354,14 @@
                             {
                                 <div class="chat-bubble chat-bubble--received">
                                     <div>@msg.Content</div>
-                                    <div class="chat-bubble-time">@msg.CreateAt.ToString("hh:mm tt")</div>
+                                    <div class="chat-bubble-time">@msg.CreateAt.ToLocalTime().ToString("hh:mm tt")</div>
                                 </div>
                             }
                             else
                             {
                                 <div class="chat-bubble chat-bubble--sent">
                                     <div>@msg.Content</div>
-                                    <div class="chat-bubble-time">@msg.CreateAt.ToString("hh:mm tt")</div>
+                                    <div class="chat-bubble-time">@msg.CreateAt.ToLocalTime().ToString("hh:mm tt")</div>
                                 </div>
                             }
                         }
