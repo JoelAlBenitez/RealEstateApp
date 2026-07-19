@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Auth;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Consult;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Operational;
@@ -18,6 +18,8 @@ using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Offer;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Offer;
 using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Message;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Message;
+using RealEstateApp.Core.Application.Contracts.Improvement;
+using RealEstateApp.Core.Application.Services.Improvement;
 
 namespace RealStateApp.IOC
 {
@@ -70,6 +72,12 @@ namespace RealStateApp.IOC
             services.AddScoped<IOfferValidationService, OfferValidationService>();
             services.AddScoped<IMessageAtCValidationService, MessageAtCValidationService>();
             #endregion
+
+            #region Improvement Services
+            services.AddScoped<IImprovementService, ImprovementService>();
+            services.AddScoped<IImprovementValidationService, ImprovementValidationService>();
+            #endregion
+
             return services;
         }
     }
