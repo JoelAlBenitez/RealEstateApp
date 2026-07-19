@@ -146,11 +146,13 @@
                                                         <form asp-controller="AgentOffers" asp-action="Accept" method="post" class="d-inline">
                                                             @Html.AntiForgeryToken()
                                                             <input type="hidden" name="offerId" value="@offer.Id" />
+                                                            <input type="hidden" name="propertyId" value="@Model.Property.Id" />
                                                             <button type="submit" class="btn btn-sm btn-success fw-semibold">Aceptar</button>
                                                         </form>
                                                         <form asp-controller="AgentOffers" asp-action="Reject" method="post" class="d-inline">
                                                             @Html.AntiForgeryToken()
                                                             <input type="hidden" name="offerId" value="@offer.Id" />
+                                                            <input type="hidden" name="propertyId" value="@Model.Property.Id" />
                                                             <button type="submit" class="btn btn-sm btn-outline-danger fw-semibold">Rechazar</button>
                                                         </form>
                                                     </div>

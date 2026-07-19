@@ -93,7 +93,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al procesar la aceptación de la oferta.";
             }
 
-            return RedirectToAction(nameof(Index), new { propertyId });
+            return RedirectToAction("Details", "AgentProperty", new { id = propertyId });
         }
 
         [HttpPost]
@@ -113,7 +113,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al procesar el rechazo de la oferta.";
             }
 
-            return RedirectToAction(nameof(Index), new { propertyId });
+            return RedirectToAction("Details", "AgentProperty", new { id = propertyId });
         }
     }
 }
