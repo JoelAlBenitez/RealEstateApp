@@ -23,9 +23,6 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.PropertyTypeRep
 
         public async Task<bool> ExistNameAsync(string name, int id = 0)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                return false;
-
             var lowerName = name.Trim().ToLower();
 
             // Si id == 0 (Create), busca cualquier coincidencia.

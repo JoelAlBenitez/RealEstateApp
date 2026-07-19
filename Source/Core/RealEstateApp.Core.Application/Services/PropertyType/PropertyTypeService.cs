@@ -34,7 +34,7 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
             try
             {
                 var entities = await _propertyTypeRepository.GetAllAsync();
-                var dtos = _mapper.Map<List<PropertyTypeDto>>(entities);
+                var dtos = _mapper.Map<IReadOnlyCollection<PropertyTypeDto>>(entities);
                 
                 // Nota: se usa un conteo individual por elemento en vez de una consulta agrupada.
                 // Confirmado con el líder técnico (Joel) que esto es aceptable para catálogos
@@ -71,8 +71,8 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
             }
 
             dto = dto with { 
-                Name = dto.Name?.Trim() ?? string.Empty, 
-                Description = dto.Description?.Trim() ?? string.Empty 
+                Name = dto.Name.Trim(), 
+                Description = dto.Description.Trim() 
             };
             
             return await base.AddAsync(dto);
@@ -87,8 +87,8 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
             }
 
             dto = dto with { 
-                Name = dto.Name?.Trim() ?? string.Empty, 
-                Description = dto.Description?.Trim() ?? string.Empty 
+                Name = dto.Name.Trim(), 
+                Description = dto.Description.Trim() 
             };
             
             return await base.UpdateAsync(dto);
