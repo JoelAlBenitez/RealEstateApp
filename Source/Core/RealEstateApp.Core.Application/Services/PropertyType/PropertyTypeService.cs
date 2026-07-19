@@ -34,16 +34,18 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
             try
             {
                 var entities = await _propertyTypeRepository.GetAllAsync();
-                var dtos = _mapper.Map<IReadOnlyCollection<PropertyTypeDto>>(entities);
+                var dtos = _mapper.Map<List<PropertyTypeDto>>(entities);
                 
-                // Nota: se usa un conteo individual por elemento en vez de una consulta agrupada.
-                // Confirmado con el líder técnico (Joel) que esto es aceptable para catálogos
-                // maestros con pocos registros (no es un problema de rendimiento en este contexto).
-                foreach (var dto in dtos)
+                // Nota: se usa un conteo individual por elemento ejecutado en paralelo con Task.WhenAll
+                // en vez de una consulta agrupada. Confirmado con el líder técnico (Joel) que esto es
+                // aceptable para catálogos maestros con pocos registros (no es un problema de rendimiento en este contexto).
+                var countTasks = dtos.Select(async dto =>
                 {
                     var countResult = await _propertyService.CountByPropertyTypeAsync(dto.Id);
                     dto.PropertyCount = countResult.IsValid ? countResult.Value : 0;
-                }
+                }).ToList();
+                
+                await Task.WhenAll(countTasks);
                 
                 return ValidationResult<IReadOnlyCollection<PropertyTypeDto>>.Success(dtos);
             }
