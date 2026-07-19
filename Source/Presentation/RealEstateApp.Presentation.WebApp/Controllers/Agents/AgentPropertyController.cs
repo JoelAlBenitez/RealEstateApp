@@ -1,14 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.Properties;
-// using RealEstateApp.Core.Application.Contracts.PropertyType;
-// using RealEstateApp.Core.Application.Contracts.SaleType;
-// using RealEstateApp.Core.Application.Contracts.Improvement;
 using RealEstateApp.Core.Application.DTOs.Property;
-// using RealEstateApp.Core.Application.DTOs.PropertyType;
-// using RealEstateApp.Core.Application.DTOs.SaleType;
-// using RealEstateApp.Core.Application.DTOs.Improvement;
 using RealEstateApp.Core.Application.ViewsModel.Property;
+using RealEstateApp.Core.Application.ViewsModel.Common;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using AutoMapper;
 
@@ -18,24 +13,15 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
     public class AgentPropertyController : Controller
     {
         private readonly IPropertyService _propertyService;
-        // private readonly IPropertyTypeService _propertyTypeService;
-        // private readonly ISaleTypeService _saleTypeService;
-        // private readonly IImprovementService _improvementService;
         private readonly IUserSession _userSession;
         private readonly IMapper _mapper;
 
         public AgentPropertyController(
             IPropertyService propertyService,
-            // IPropertyTypeService propertyTypeService,
-            // ISaleTypeService saleTypeService,
-            // IImprovementService improvementService,
             IUserSession userSession,
             IMapper mapper)
         {
             _propertyService = propertyService;
-            // _propertyTypeService = propertyTypeService;
-            // _saleTypeService = saleTypeService;
-            // _improvementService = improvementService;
             _userSession = userSession;
             _mapper = mapper;
         }
@@ -54,19 +40,21 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var result = await _propertyService.GetAvailableByAgentAsync(agentId, pageNumber, pageSize);
             if (!result.IsValid)
             {
-                ViewBag.CurrentPage = 1;
-                ViewBag.TotalPages = 1;
-                ViewBag.TotalItems = 0;
-                return View(new List<PropertyCardViewModel>());
+                return View(new AgentPropertiesViewModel { Properties = new List<PropertyCardViewModel>() });
             }
 
             var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
 
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.TotalItems = totalItems;
+            var viewModel = new AgentPropertiesViewModel
+            {
+                Properties = viewModels,
+                Page = pageNumber,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+                PageSize = pageSize
+            };
 
-            return View(viewModels);
+            return View(viewModel);
         }
 
         public IActionResult Create()

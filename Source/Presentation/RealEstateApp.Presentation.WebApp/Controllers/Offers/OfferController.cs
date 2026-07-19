@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.Offers;
 using RealEstateApp.Core.Application.DTOs.Offer;
 using RealEstateApp.Core.Application.ViewsModel.Offer;
+using RealEstateApp.Core.Application.ViewsModel.Property;
 using AutoMapper;
 
 namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
@@ -25,10 +26,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
             var result = await _offerService.GetByCustomerAsync();
             if (!result.IsValid)
             {
-                ViewBag.CurrentPage = 1;
-                ViewBag.TotalPages = 1;
-                ViewBag.TotalItems = 0;
-                return View(new List<OfferViewModel>());
+                return View(new CustomerOffersViewModel { Offers = new List<OfferViewModel>() });
             }
 
             var viewModels = _mapper.Map<List<OfferViewModel>>(result.Value);
@@ -39,11 +37,16 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
 
             var paginatedViewModels = viewModels.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.TotalItems = totalItems;
+            var viewModel = new CustomerOffersViewModel
+            {
+                Offers = paginatedViewModels,
+                Page = pageNumber,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+                PageSize = pageSize
+            };
 
-            return View(paginatedViewModels);
+            return View(viewModel);
         }
 
         [HttpPost]

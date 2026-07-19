@@ -1,6 +1,6 @@
 @using RealEstateApp.Core.Application.ViewsModel.Offer
 @using RealEstateApp.Core.Domain.Common.Enums.OfferStatus
-@model List<OfferViewModel>
+@model RealEstateApp.Core.Application.ViewsModel.Property.CustomerOffersViewModel
 @{
     ViewData["Title"] = "Mis Ofertas Adquiridas";
 }
@@ -8,10 +8,10 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
         <h2 class="fw-bold mb-0" style="color: var(--color-text);">Mis Ofertas Realizadas</h2>
-        <span class="badge bg-primary">@ViewBag.TotalItems ofertas</span>
+        <span class="badge bg-primary">@Model.TotalItems ofertas</span>
     </div>
 
-    @if (!Model.Any())
+    @if (!Model.Offers.Any())
     {
         <div class="alert alert-info border-0 shadow-sm text-center py-5">
             <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 text-muted">
@@ -25,7 +25,7 @@
     else
     {
         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-            @foreach (var offer in Model)
+            @foreach (var offer in Model.Offers)
             {
                 var statusColor = offer.Status == OfferState.Accepted ? "#22c55e" : offer.Status == OfferState.Rejected ? "#ef4444" : "#f59e0b";
                 var statusText = offer.Status == OfferState.Accepted ? "Aceptada" : offer.Status == OfferState.Rejected ? "Rechazada" : "Pendiente";

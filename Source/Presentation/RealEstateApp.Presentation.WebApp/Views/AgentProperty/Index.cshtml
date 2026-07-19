@@ -1,5 +1,5 @@
 @using RealEstateApp.Core.Application.ViewsModel.Property
-@model List<PropertyCardViewModel>
+@model RealEstateApp.Core.Application.ViewsModel.Property.AgentPropertiesViewModel
 @{
     ViewData["Title"] = "Mantenimiento de Propiedades";
 }
@@ -10,7 +10,7 @@
         <a asp-action="Create" class="rea-btn rea-btn--primary">Registrar Nueva Propiedad</a>
     </div>
 
-    @if (!Model.Any())
+    @if (!Model.Properties.Any())
     {
         <div class="alert alert-info border-0 shadow-sm text-center py-5">
             <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 text-muted">
@@ -26,7 +26,7 @@
     else
     {
         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-            @foreach (var property in Model)
+            @foreach (var property in Model.Properties)
             {
                 <div class="col">
                     <div class="card h-100 border-0 shadow-sm" style="border-radius: var(--radius-card); background: var(--color-surface); overflow: hidden; display: flex; flex-direction: column;">

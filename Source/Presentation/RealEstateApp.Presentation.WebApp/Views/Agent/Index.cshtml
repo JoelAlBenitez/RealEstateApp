@@ -1,11 +1,11 @@
 @using RealEstateApp.Core.Application.ViewsModel.Property
 @using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus
-@model List<PropertyCardViewModel>
+@model RealEstateApp.Core.Application.ViewsModel.Property.AgentDashboardViewModel
 @{
     ViewData["Title"] = "Panel de Agente";
-    var totalCount = Model.Count;
-    var availableCount = Model.Count(p => p.Status == PropertyState.Available);
-    var soldCount = Model.Count(p => p.Status == PropertyState.Sold);
+    var totalCount = Model.TotalProperties;
+    var availableCount = Model.AvailableProperties;
+    var soldCount = Model.SoldProperties;
 }
 
 <div class="container py-4">
@@ -47,7 +47,7 @@
 
     <!-- Properties List -->
     <h3 class="fw-bold mb-4">Mis Publicaciones</h3>
-    @if (!Model.Any())
+    @if (!Model.Properties.Any())
     {
         <div class="alert alert-info border-0 shadow-sm text-center py-5">
             <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 text-muted">
@@ -63,7 +63,7 @@
     else
     {
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            @foreach (var property in Model)
+            @foreach (var property in Model.Properties)
             {
                 <div class="col">
                     <div class="card h-100 shadow-sm border-0" style="border-radius: var(--radius-card); overflow: hidden;">
@@ -124,6 +124,6 @@
                 </div>
             }
         </div>
-        <partial name="_Pagination" />
+        <partial name="_Pagination" model="Model" />
     }
 </div>

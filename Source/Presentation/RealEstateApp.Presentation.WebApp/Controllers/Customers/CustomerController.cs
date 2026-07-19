@@ -11,6 +11,7 @@ using AutoMapper;
 using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 using RealEstateApp.Core.Application.ViewsModel.Users.Consult;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
+using RealEstateApp.Core.Application.ViewsModel.Common;
 
 namespace RealEstateApp.Presentation.WebApp.Controllers
 {
@@ -50,10 +51,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             var result = await _propertyService.GetAvailableAsync(filters, pageNumber, pageSize);
             if (!result.IsValid)
             {
-                ViewBag.CurrentPage = 1;
-                ViewBag.TotalPages = 1;
-                ViewBag.TotalItems = 0;
-                return View(new List<PropertyCardViewModel>());
+                return View(new CustomerPropertiesViewModel { Properties = new List<PropertyCardViewModel>() });
             }
 
             var favoritesResult = await _favoritePropertyService.GetByCustomerAsync();
@@ -64,9 +62,14 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
             viewModels.ForEach(vm => vm.IsFavorite = favoriteIds.Contains(vm.Id));
 
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.TotalItems = totalItems;
+            var viewModel = new CustomerPropertiesViewModel
+            {
+                Properties = viewModels,
+                Page = pageNumber,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+                PageSize = pageSize
+            };
 
             ViewBag.PropertyTypeId = filters.PropertyTypeId;
             ViewBag.MinPrice = filters.MinPrice;
@@ -74,7 +77,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             ViewBag.Bedrooms = filters.Bedrooms;
             ViewBag.Bathrooms = filters.Bathrooms;
 
-            return View(viewModels);
+            return View(viewModel);
         }
 
         public async Task<IActionResult> Details(int id)
@@ -164,12 +167,9 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             var result = await _propertyService.GetAvailableByAgentAsync(AgentId, pageNumber, pageSize);
             if (!result.IsValid)
             {
-                ViewBag.CurrentPage = 1;
-                ViewBag.TotalPages = 1;
-                ViewBag.TotalItems = 0;
                 ViewBag.AgentName = $"{agentResult.Name} {agentResult.LastName}";
                 ViewBag.AgentId = AgentId;
-                return View(new List<PropertyCardViewModel>());
+                return View(new CustomerPropertiesViewModel { Properties = new List<PropertyCardViewModel>() });
             }
 
             var favoritesResult = await _favoritePropertyService.GetByCustomerAsync();
@@ -180,13 +180,19 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
             viewModels.ForEach(vm => vm.IsFavorite = favoriteIds.Contains(vm.Id));
 
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.TotalItems = totalItems;
+            var viewModel = new CustomerPropertiesViewModel
+            {
+                Properties = viewModels,
+                Page = pageNumber,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+                PageSize = pageSize
+            };
+
             ViewBag.AgentName = $"{agentResult.Name} {agentResult.LastName}";
             ViewBag.AgentId = AgentId;
 
-            return View(viewModels);
+            return View(viewModel);
         }
     }
 }
