@@ -89,9 +89,10 @@
 
                             <div class="col-md-4">
                                 <label class="form-label fw-bold" asp-for="ImageFiles">Imágenes de la Propiedad</label>
-                                <input class="form-control" type="file" asp-for="ImageFiles" accept="image/*" multiple />
-                                <span class="text-muted font-sm d-block mt-1">Sube de 1 a 4 fotos claras.</span>
+                                <input class="form-control" type="file" asp-for="ImageFiles" id="imageFilesInput" accept="image/*" multiple />
+                                <span class="text-muted font-sm d-block mt-1">Sube de 1 a 4 fotos claras (puedes seleccionar varias).</span>
                                 <span class="field-validation-error text-danger" asp-validation-for="ImageFiles"></span>
+                                <div id="imagePreviewGrid" class="row g-2 mt-2"></div>
                             </div>
                         </div>
 
@@ -150,3 +151,37 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('imageFilesInput').addEventListener('change', function (e) {
+            const container = document.getElementById('imagePreviewGrid');
+            container.innerHTML = '';
+            const files = e.target.files;
+            
+            if (files.length > 4) {
+                alert('Solo se permite subir un máximo de 4 imágenes.');
+                e.target.value = '';
+                return;
+            }
+            
+            Array.from(files).forEach((file) => {
+                if (!file.type.startsWith('image/')) return;
+                
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const col = document.createElement('div');
+                    col.className = 'col-3';
+                    col.innerHTML = `
+                        <div class="position-relative border rounded overflow-hidden shadow-sm" style="height: 60px; background: var(--color-surface);">
+                            <img src="${event.target.result}" class="w-100 h-100" style="object-fit: cover;" alt="Preview" />
+                        </div>
+                    `;
+                    container.appendChild(col);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    </script>
+}

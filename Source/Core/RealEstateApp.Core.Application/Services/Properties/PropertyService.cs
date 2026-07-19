@@ -9,6 +9,7 @@ using RealEstateApp.Core.Application.Services.Generic;
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Application.Contracts.FileManager;
 using Microsoft.Extensions.Logging;
+using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 
 namespace RealEstateApp.Core.Application.Services.Properties
 {
@@ -19,6 +20,7 @@ namespace RealEstateApp.Core.Application.Services.Properties
         private readonly IFileManager _fileManager;
         private readonly IPropertyImprovementRepository _propertyImprovementRepository;
         private readonly ILogger<PropertyService> _logger;
+        private readonly IOperationalAccountWebApp _accountWebApp;
 
         public PropertyService(
             IPropertyRepository propertyRepository,
@@ -26,7 +28,8 @@ namespace RealEstateApp.Core.Application.Services.Properties
             IMapper mapper,
             IFileManager fileManager,
             IPropertyImprovementRepository propertyImprovementRepository,
-            ILogger<PropertyService> _logger)
+            ILogger<PropertyService> _logger,
+            IOperationalAccountWebApp accountWebApp)
             : base(propertyRepository, mapper)
         {
             _propertyRepository = propertyRepository;
@@ -34,6 +37,7 @@ namespace RealEstateApp.Core.Application.Services.Properties
             _fileManager = fileManager;
             _propertyImprovementRepository = propertyImprovementRepository;
             this._logger = _logger;
+            _accountWebApp = accountWebApp;
         }
 
         public override async Task<ValidationResult> AddAsync(SavePropertyDto dto)
@@ -251,6 +255,26 @@ namespace RealEstateApp.Core.Application.Services.Properties
                     return ValidationResult<PropertyDto>.Failure(new List<Error> { new Error("Property.NotFound", "La propiedad no existe.") });
                 }
                 var dto = _mapper.Map<PropertyDto>(property);
+                
+                if (!string.IsNullOrEmpty(dto.AgentId))
+                {
+                    try
+                    {
+                        var agent = await _accountWebApp.GetConsultAgentById(dto.AgentId);
+                        if (agent != null)
+                        {
+                            dto.AgentName = $"{agent.Name} {agent.LastName}";
+                            dto.AgentPhone = agent.PhoneNumber;
+                            dto.AgentEmail = agent.Email;
+                            dto.AgentPhotoUrl = agent.ProfileImgAgent;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"No se pudo obtener la información de identidad del agente con id {dto.AgentId}");
+                    }
+                }
+
                 return ValidationResult<PropertyDto>.Success(dto);
             }
             catch (Exception ex)
