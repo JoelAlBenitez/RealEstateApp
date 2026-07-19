@@ -151,6 +151,19 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            var agentId = _userSession.GetIdCurrentUser();
+            var result = await _propertyService.GetByIdWithDetailsAsync(id);
+            if (!result.IsValid || result.Value == null || result.Value.AgentId != agentId)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var viewModel = _mapper.Map<PropertyDetailViewModel>(result.Value);
+            return View(viewModel);
+        }
+
         public async Task<IActionResult> Delete(int id)
         {
             var agentId = _userSession.GetIdCurrentUser();
