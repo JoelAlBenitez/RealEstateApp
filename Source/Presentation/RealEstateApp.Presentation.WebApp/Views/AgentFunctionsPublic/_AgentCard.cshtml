@@ -1,4 +1,7 @@
 @model RealEstateApp.Core.Application.ViewsModel.Users.Consult.AgentViewModel
+@{
+    var controllerName = User.IsInRole("Cliente") ? "Customer" : "AgentFunctionsPublic";
+}
 
 <article class="agent-card">
     <div class="agent-card__media">
@@ -19,7 +22,7 @@
             <span>Agente inmobiliario</span>
         </span>
         <h3 class="agent-card__name">@Model.Name @Model.LastName</h3>
-        <a class="rea-btn rea-btn--primary agent-card__cta" asp-controller="AgentFunctionsPublic" asp-action="PropertyByAgent" asp-route-AgentId="@Model.Id">
+        <a class="rea-btn rea-btn--primary agent-card__cta" asp-controller="@controllerName" asp-action="PropertyByAgent" asp-route-AgentId="@Model.Id">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M3 10.5 12 3l9 7.5" />
                 <path d="M5 9.5V21h14V9.5" />
