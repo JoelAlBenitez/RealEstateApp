@@ -60,12 +60,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
                 return RedirectToAction("Details", "Customer", new { id = model.PropertyId });
             }
 
-            var dto = new SaveOfferDto
-            {
-                PropertyId = model.PropertyId,
-                Amount = model.Amount,
-                CustomerId = string.Empty
-            };
+            var dto = _mapper.Map<SaveOfferDto>(model);
 
             var result = await _offerService.AddAsync(dto);
             if (!result.IsValid)

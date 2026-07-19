@@ -86,14 +86,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
                 return RedirectToAction(nameof(Index));
             }
 
-            var viewModel = new EditExternalUserViewModel
-            {
-                Id = result.Id,
-                Name = result.Name,
-                LastName = result.LastName,
-                PhoneNumber = result.PhoneNumber,
-                ProfileImgCurrent = result.ProfileImgAgent
-            };
+            var viewModel = _mapper.Map<EditExternalUserViewModel>(result);
 
             return View(viewModel);
         }
@@ -107,19 +100,12 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
                 return View(model);
             }
 
-            var editDto = new EditAgentUserDto
-            {
-                Id = model.Id,
-                Name = model.Name,
-                LastName = model.LastName,
-                PhoneNumber = model.PhoneNumber,
-                ProfileImg = model.ProfileImgCurrent,
-                ChangePorfileImg = false
-            };
+            var editDto = _mapper.Map<EditAgentUserDto>(model);
 
             if (model.NewProfileImage != null)
             {
-                var newImgPath = await _fileManager.SaveAsync(model.NewProfileImage, "Users", model.Id);
+                var guidFolder = Guid.NewGuid().ToString();
+                var newImgPath = await _fileManager.SaveAsync(model.NewProfileImage, "Users", guidFolder);
                 if (!string.IsNullOrEmpty(newImgPath))
                 {
                     editDto.ProfileImg = newImgPath;

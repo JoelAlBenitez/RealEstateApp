@@ -67,6 +67,12 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SavePropertyViewModel model)
         {
+            var filesCount = model.ImageFiles?.Count ?? 0;
+            if (filesCount < 1 || filesCount > 4)
+            {
+                ModelState.AddModelError("ImageFiles", "Debe seleccionar entre 1 y 4 imágenes para crear la propiedad.");
+            }
+
             if (!ModelState.IsValid)
             {
                 // await PopulateDropdownsAsync(model);
@@ -112,6 +118,12 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(SavePropertyViewModel model)
         {
+            var currentCount = (model.ExistingImageUrls?.Count ?? 0) + (model.ImageFiles?.Count ?? 0);
+            if (currentCount < 1 || currentCount > 4)
+            {
+                ModelState.AddModelError("ImageFiles", "El total de imágenes de la propiedad (existentes conservadas + nuevas agregadas) debe ser de al menos 1 y no exceder las 4 unidades.");
+            }
+
             if (!ModelState.IsValid)
             {
                 // await PopulateDropdownsAsync(model);
