@@ -15,18 +15,18 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
     {
         private readonly IPropertyTypeRepository _propertyTypeRepository;
         private readonly IPropertyTypeValidationService _propertyTypeValidationService;
-        private readonly IPropertyService _propertyService;
+        private readonly IPropertyCascadeService _propertyCascadeService;
 
         public PropertyTypeService(
             IPropertyTypeRepository propertyTypeRepository, 
             IMapper mapper, 
             IPropertyTypeValidationService propertyTypeValidationService,
-            IPropertyService propertyService)
+            IPropertyCascadeService propertyCascadeService)
             : base(propertyTypeRepository, mapper)
         {
             _propertyTypeRepository = propertyTypeRepository;
             _propertyTypeValidationService = propertyTypeValidationService;
-            _propertyService = propertyService;
+            _propertyCascadeService = propertyCascadeService;
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<PropertyTypeDto>>> GetAllWithCountAsync()
@@ -41,7 +41,7 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
                 // aceptable para catálogos maestros con pocos registros (no es un problema de rendimiento en este contexto).
                 var countTasks = dtos.Select(async dto =>
                 {
-                    var countResult = await _propertyService.CountByPropertyTypeAsync(dto.Id);
+                    var countResult = await _propertyCascadeService.CountByPropertyTypeAsync(dto.Id);
                     dto.PropertyCount = countResult.IsValid ? countResult.Value : 0;
                 }).ToList();
                 
@@ -98,7 +98,7 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
 
         public override async Task<ValidationResult> RemoveAsync(int id)
         {
-            var cascadeResult = await _propertyService.DeletePropertiesByTypeAsync(id);
+            var cascadeResult = await _propertyCascadeService.DeletePropertiesByTypeAsync(id);
             if (!cascadeResult.IsValid)
             {
                 return cascadeResult;

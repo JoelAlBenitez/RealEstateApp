@@ -33,6 +33,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 var app = builder.Build();
 
 await app.Services.GenerateDataSeedUsers();
+await app.Services.SeedPropertyTypesAsync();
 
 if (!app.Environment.IsDevelopment())
 {
