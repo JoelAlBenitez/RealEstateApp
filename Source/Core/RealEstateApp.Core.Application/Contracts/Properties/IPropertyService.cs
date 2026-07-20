@@ -15,6 +15,8 @@ namespace RealEstateApp.Core.Application.Contracts.Properties
         Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAvailableByAgentAsync(string agentId, int pageNumber = 1, int pageSize = 10);
         Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetPropertiesByAgentAsync(string agentId, int pageNumber = 1, int pageSize = 10);
         Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAllWithDetailsAsync();
+        Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAllForApiAsync();
+        Task<ValidationResult<PropertyDto>> GetByCodeForApiAsync(string code);
         Task<ValidationResult<PropertyTotalsDto>> GetTotalsByStatusAsync();
         Task<ValidationResult<int>> CountByAgentAsync(string agentId);
         Task<ValidationResult<int>> CountByAgentAndStatusAsync(string agentId, RealEstateApp.Core.Domain.Common.Enums.PropertyStatus.PropertyState status);

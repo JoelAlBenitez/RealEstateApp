@@ -329,6 +329,76 @@ namespace RealEstateApp.Core.Application.Services.Properties
             }
         }
 
+        public async Task<ValidationResult<IReadOnlyCollection<PropertyDto>>> GetAllForApiAsync()
+        {
+            try
+            {
+                var properties = await _propertyRepository.GetAllWithImagesAsync();
+                var dtos = _mapper.Map<IReadOnlyCollection<PropertyDto>>(properties);
+                await FillAgentNamesAsync(dtos);
+                return ValidationResult<IReadOnlyCollection<PropertyDto>>.Success(dtos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService.GetAllForApiAsync");
+                return ValidationResult<IReadOnlyCollection<PropertyDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
+        }
+
+        public async Task<ValidationResult<PropertyDto>> GetByCodeForApiAsync(string code)
+        {
+            try
+            {
+                var property = await _propertyRepository.GetByCodeAsync(code);
+                if (property == null)
+                {
+                    return ValidationResult<PropertyDto>.Failure(new List<Error> { new Error("Property.NotFound", "No existe una propiedad registrada con el código enviado.") });
+                }
+                var dto = _mapper.Map<PropertyDto>(property);
+                await FillAgentNamesAsync(new List<PropertyDto> { dto });
+                return ValidationResult<PropertyDto>.Success(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocurrió un error en PropertyService.GetByCodeForApiAsync");
+                return ValidationResult<PropertyDto>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
+            }
+        }
+
+        private async Task FillAgentNamesAsync(IReadOnlyCollection<PropertyDto> dtos)
+        {
+            var agentIds = dtos
+                .Where(d => !string.IsNullOrEmpty(d.AgentId))
+                .Select(d => d.AgentId)
+                .Distinct()
+                .ToList();
+
+            var agentNames = new Dictionary<string, string>();
+            foreach (var agentId in agentIds)
+            {
+                try
+                {
+                    var agent = await _accountWebApp.GetUserBaseById(agentId);
+                    if (agent != null)
+                    {
+                        agentNames[agentId] = $"{agent.Name} {agent.LastName}";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"No se pudo obtener la información del agente con id {agentId}");
+                }
+            }
+
+            foreach (var dto in dtos)
+            {
+                if (agentNames.TryGetValue(dto.AgentId, out var name))
+                {
+                    dto.AgentName = name;
+                }
+            }
+        }
+
         public async Task<ValidationResult<PropertyTotalsDto>> GetTotalsByStatusAsync()
         {
             try

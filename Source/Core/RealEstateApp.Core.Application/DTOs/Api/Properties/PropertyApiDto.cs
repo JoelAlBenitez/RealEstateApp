@@ -9,7 +9,6 @@ namespace RealEstateApp.Core.Application.DTOs.Api.Properties
         // se completarán cuando el módulo de catálogos del administrador esté disponible.
         public string? PropertyType { get; set; }
         public string? SaleType { get; set; }
-        public List<int> ImprovementIds { get; set; } = new();
         public List<string> Improvements { get; set; } = new();
 
         public decimal Price { get; set; }
