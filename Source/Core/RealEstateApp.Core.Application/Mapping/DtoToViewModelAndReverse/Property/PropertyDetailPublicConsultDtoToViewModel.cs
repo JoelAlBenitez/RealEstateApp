@@ -20,9 +20,10 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Proper
                 .ForMember(opt => opt.AgentImg, des => des.MapFrom(src => src.AgentPhotoUrl))
                 .ForMember(opt => opt.AgentPhone, des => des.MapFrom(src => src.AgentPhone))
                 .ForMember(opt => opt.Description, des => des.MapFrom(src => src.Description))
+                .ForMember(opt => opt.TypePropertyName, des => des.MapFrom(src => src.PropertyTypeName))
+                .ForMember(opt => opt.TypeSalesName, des => des.MapFrom(src => src.SaleTypeName))
                 .ForMember(opt => opt.ImgUrls, des => des.MapFrom(src => src.Images.Select(a => a.Url)))
-                .ForMember(opt => opt.Improvents, des => des.Ignore());
-                //.ForMember(opt => opt.Improvents, des => des.MapFrom(src => src.Impro)) //descomentar cuqando sebastian termine
+                .ForMember(opt => opt.Improvents, des => des.MapFrom(src => src.Improvements));
         }
     }
 }

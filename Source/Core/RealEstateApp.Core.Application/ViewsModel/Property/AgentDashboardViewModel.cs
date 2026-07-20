@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace RealEstateApp.Core.Application.ViewsModel.Property
 {
     public sealed class AgentDashboardViewModel : Common.IPaginatedViewModel

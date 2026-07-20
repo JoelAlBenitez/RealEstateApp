@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.Properties;
+using RealEstateApp.Core.Application.Contracts.PropertyType;
 using RealEstateApp.Core.Application.Contracts.FavoriteProperties;
 using RealEstateApp.Core.Application.Contracts.Offers;
 using RealEstateApp.Core.Application.DTOs.Property;
@@ -19,6 +20,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
     public class CustomerController : Controller
     {
         private readonly IPropertyQueryService _propertyQueryService;
+        private readonly IPropertyTypeService _propertyTypeService;
         private readonly IFavoritePropertyService _favoritePropertyService;
         private readonly IOfferService _offerService;
         private readonly IMapper _mapper;
@@ -26,12 +28,14 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
 
         public CustomerController(
             IPropertyQueryService propertyQueryService,
+            IPropertyTypeService propertyTypeService,
             IFavoritePropertyService favoritePropertyService,
             IOfferService offerService,
             IMapper mapper,
             IOperationalAccountWebApp accountWebApp)
         {
             _propertyQueryService = propertyQueryService;
+            _propertyTypeService = propertyTypeService;
             _favoritePropertyService = favoritePropertyService;
             _offerService = offerService;
             _mapper = mapper;
@@ -71,6 +75,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
                 PageSize = pageSize
             };
 
+            ViewBag.PropertyTypes = await GetPropertyTypeOptionsAsync();
             ViewBag.PropertyTypeId = filters.PropertyTypeId;
             ViewBag.MinPrice = filters.MinPrice;
             ViewBag.MaxPrice = filters.MaxPrice;
@@ -78,6 +83,14 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             ViewBag.Bathrooms = filters.Bathrooms;
 
             return View(viewModel);
+        }
+
+        private async Task<IReadOnlyCollection<RealEstateApp.Core.Application.DTOs.Property.TypeProperty>> GetPropertyTypeOptionsAsync()
+        {
+            var result = await _propertyTypeService.GetAllForSelectAsync();
+            return result.IsValid && result.Value != null
+                ? result.Value
+                : new List<RealEstateApp.Core.Application.DTOs.Property.TypeProperty>();
         }
 
         public async Task<IActionResult> Details(int id)
