@@ -14,17 +14,17 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
         private const int PageSize = 12;
         private const string HomeIndexView = "~/Views/Home/Index.cshtml";
 
-        private readonly IPropertyService _propertyService;
+        private readonly IPropertyQueryService _propertyQueryService;
         private readonly IOperationalAccountWebApp _operationalAccountWebApp;
         private readonly IMapper _mapper;
 
         public AgentFunctionsPublicController(
-            IPropertyService propertyService,
+            IPropertyQueryService propertyQueryService,
             IMapper mapper,
             IOperationalAccountWebApp operationalAccountWebApp
             )
         {
-            _propertyService = propertyService;
+            _propertyQueryService = propertyQueryService;
             _mapper = mapper;
             _operationalAccountWebApp = operationalAccountWebApp;
         }
@@ -45,14 +45,14 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             }
 
             var totalPages = 1;
-            var countResult = await _propertyService.CountAvailableByAgentAsync(AgentId);
+            var countResult = await _propertyQueryService.CountAvailableByAgentAsync(AgentId);
             if (countResult.IsValid)
             {
                 totalPages = Math.Max(1, (int)Math.Ceiling(countResult.Value / (double)PageSize));
             }
             page = Math.Clamp(page, 1, totalPages);
 
-            var result = await _propertyService.GetAvailableByAgentAsync(AgentId, page, PageSize);
+            var result = await _propertyQueryService.GetAvailableByAgentAsync(AgentId, page, PageSize);
             if (!result.IsValid)
             {
                 AddErrors(result.Errors);

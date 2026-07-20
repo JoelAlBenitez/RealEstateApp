@@ -11,12 +11,17 @@ namespace RealEstateApp.Core.Application.Services.MessagesAtC
 {
     public sealed class MessageAtCValidationService : IMessageAtCValidationService
     {
-        private readonly IPropertyService _propertyService;
+        private readonly IPropertyQueryService _propertyQueryService;
+        private readonly IAgentPropertyService _agentPropertyService;
         private readonly IUserSession _userSession;
 
-        public MessageAtCValidationService(IPropertyService propertyService, IUserSession userSession)
+        public MessageAtCValidationService(
+            IPropertyQueryService propertyQueryService,
+            IAgentPropertyService agentPropertyService,
+            IUserSession userSession)
         {
-            _propertyService = propertyService;
+            _propertyQueryService = propertyQueryService;
+            _agentPropertyService = agentPropertyService;
             _userSession = userSession;
         }
 
@@ -37,7 +42,7 @@ namespace RealEstateApp.Core.Application.Services.MessagesAtC
                 return ValidationResult.Failure(errors);
             }
 
-            var isAvailable = await _propertyService.IsAvailableAsync(dto.PropertyId);
+            var isAvailable = await _propertyQueryService.IsAvailableAsync(dto.PropertyId);
             if (!isAvailable)
             {
                 errors.Add(new Error("Mensaje.PropiedadNoDisponible", "La propiedad de la conversación no existe o no está disponible."));
@@ -45,7 +50,7 @@ namespace RealEstateApp.Core.Application.Services.MessagesAtC
 
             if (roles.Contains(Roles.Agente.ToString()))
             {
-                var propertyResult = await _propertyService.GetByIdAsync(dto.PropertyId);
+                var propertyResult = await _agentPropertyService.GetByIdAsync(dto.PropertyId);
                 if (!propertyResult.IsValid || propertyResult.Value == null || propertyResult.Value.AgentId != _userSession.GetIdCurrentUser())
                 {
                     errors.Add(new Error("Mensaje.AgenteNoAutorizado", "No tienes permisos para enviar mensajes relacionados a esta propiedad."));
