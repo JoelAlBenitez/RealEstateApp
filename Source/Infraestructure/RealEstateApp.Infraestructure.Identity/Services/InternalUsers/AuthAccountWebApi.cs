@@ -80,7 +80,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
                 response.Errors.Add("Los datos de acceso son inválidos.");
                 return response;
             }
-            if (!user.EmailConfirmed && !user.IsActive)
+            if (!user.EmailConfirmed || !user.IsActive)
             {
                 response.HasError = true;
                 response.Errors.Add("El usuario se encuentra inactivo y no puede autenticarse.");
