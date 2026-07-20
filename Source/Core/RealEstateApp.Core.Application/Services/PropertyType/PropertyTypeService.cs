@@ -15,13 +15,13 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
     {
         private readonly IPropertyTypeRepository _propertyTypeRepository;
         private readonly IPropertyTypeValidationService _propertyTypeValidationService;
-        private readonly IPropertyService _propertyService;
+        private readonly IPropertyCascadeService _propertyService;
 
         public PropertyTypeService(
-            IPropertyTypeRepository propertyTypeRepository, 
-            IMapper mapper, 
+            IPropertyTypeRepository propertyTypeRepository,
+            IMapper mapper,
             IPropertyTypeValidationService propertyTypeValidationService,
-            IPropertyService propertyService)
+            IPropertyCascadeService propertyService)
             : base(propertyTypeRepository, mapper)
         {
             _propertyTypeRepository = propertyTypeRepository;
