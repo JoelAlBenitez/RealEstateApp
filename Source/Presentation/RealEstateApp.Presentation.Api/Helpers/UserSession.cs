@@ -22,10 +22,11 @@ namespace RealEstateApp.Presentation.Api.Helpers
 
         public List<string> GetRolesCurrentUser()
         {
+            // El token JWT emite los roles en el claim "roles" (ver GenerateTokens).
             return _httpContextAccessor.HttpContext?.User?
-                .FindAll(ClaimTypes.Role)
-                .Select(r => r.Value).ToList() ?? new List<string>(); 
-         
+                .FindAll("roles")
+                .Select(r => r.Value).ToList() ?? new List<string>();
+
         }
 
         public string GetUserName()
