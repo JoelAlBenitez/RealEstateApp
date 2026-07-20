@@ -13,16 +13,16 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperties
     public class FavoritePropertyValidationService : IFavoritePropertyValidationService
     {
         private readonly IFavoritePropertyRepository _favoritePropertyRepository;
-        private readonly IPropertyService _propertyService;
+        private readonly IPropertyQueryService _propertyQueryService;
         private readonly IUserSession _userSession;
 
         public FavoritePropertyValidationService(
             IFavoritePropertyRepository favoritePropertyRepository,
-            IPropertyService propertyService,
+            IPropertyQueryService propertyQueryService,
             IUserSession userSession)
         {
             _favoritePropertyRepository = favoritePropertyRepository;
-            _propertyService = propertyService;
+            _propertyQueryService = propertyQueryService;
             _userSession = userSession;
         }
 
@@ -37,7 +37,7 @@ namespace RealEstateApp.Core.Application.Services.FavoriteProperties
                 return ValidationResult.Failure(errors);
             }
 
-            var isAvailable = await _propertyService.IsAvailableAsync(dto.PropertyId);
+            var isAvailable = await _propertyQueryService.IsAvailableAsync(dto.PropertyId);
             if (!isAvailable)
             {
                 errors.Add(new Error("Favorito.PropiedadNoEncontrada", "La propiedad especificada no existe o no está disponible."));
