@@ -1,7 +1,14 @@
+
 using Microsoft.Extensions.DependencyInjection;
 using RealEstateApp.Core.Application.Contracts.Agent;
 using RealEstateApp.Core.Application.Services.Agent;
 using RealEstateApp.Core.Application.Contracts.GenericServices;
+using RealEstateApp.Core.Application.Contracts.SaleType;
+using RealEstateApp.Core.Application.Services.SaleType;
+using RealEstateApp.Core.Application.Contracts.GenericServices;
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.SaleType;
+using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.SaleType;
+
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Auth;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Consult;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Operational;
@@ -64,7 +71,19 @@ namespace RealStateApp.IOC
                 configuration.AddProfile<GetInternalUserDtoToAdministratorViewModel>();
                 configuration.AddProfile<GetInternalUserDtoToDeveloperViewModel>();
                 #endregion
+
+                #region maper SaleType
+                configuration.AddProfile<SaleTypeDtoToViewModelAndReverse>();
+                configuration.AddProfile<SaleTypeEntityToDtoAndReverse>();
+                #endregion
             });
+
+
+
+            #region Sale Type Services
+            services.AddScoped<ISaleTypeService, SaleTypeService>();
+            services.AddScoped<ISaleTypeValidationService, SaleTypeValidationService>();
+            #endregion
 
 
             #region customer services
@@ -92,6 +111,7 @@ namespace RealStateApp.IOC
             services.AddScoped<IDeveloperService, DeveloperService>();
             services.AddScoped<IDashboardService, DashboardService>();
             #endregion
+
 
             return services;
         }
