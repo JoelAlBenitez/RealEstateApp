@@ -34,6 +34,7 @@ var app = builder.Build();
 
 await app.Services.GenerateDataSeedUsers();
 await app.Services.SeedSaleTypesAsync();
+await app.Services.SeedPropertyTypesAsync();
 
 if (!app.Environment.IsDevelopment())
 {

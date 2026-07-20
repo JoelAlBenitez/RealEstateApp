@@ -9,6 +9,8 @@ using RealEstateApp.Infraestructure.Persistence.Repositories.FavoriteProperties;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Messages;
 using RealEstateApp.Infraestructure.Persistence.Repositories.PropertyImprovements;
 using RealEstateApp.Infraestructure.Persistence.Repositories.SaleTypeRepo;
+using RealEstateApp.Infraestructure.Persistence.Repositories.PropertyTypeRepo;
+
 namespace RealStateApp.IOC
 {
     public static class InfraestructurePersistenceDependencies
@@ -31,6 +33,10 @@ namespace RealStateApp.IOC
 
             #region Sale Type Repositories
             services.AddScoped<ISaleTypeRepository, SaleTypeRepository>();
+            #endregion
+
+            #region Property Type Repositories
+            services.AddScoped<IPropertyTypeRepository, PropertyTypeRepository>();
             #endregion
 
             return services;

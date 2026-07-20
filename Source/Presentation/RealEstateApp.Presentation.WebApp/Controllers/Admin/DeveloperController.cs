@@ -40,6 +40,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return View(viewModels);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpGet]
         public IActionResult Create()
         {
@@ -58,6 +59,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return View(viewModel);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Create(CreateInternalUserViewModel viewModel)
         {
@@ -82,6 +84,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return RedirectToAction(nameof(Index));
         }
 
+        [ValidateAntiForgeryToken]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
@@ -92,7 +95,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
                 return RedirectToAction(nameof(Index));
             }
 
-            var devDto = devsResult.Value.FirstOrDefault(d => d.Id == id);
+            var devDto = devsResult.Value!.FirstOrDefault(d => d.Id == id);
             if (devDto == null)
             {
                 TempData["ErrorMessage"] = "El desarrollador solicitado no existe.";
@@ -103,6 +106,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return View(viewModel);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Edit(EditInternalUserViewModel viewModel)
         {
@@ -127,6 +131,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return RedirectToAction(nameof(Index));
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> ToggleStatus(string id, bool active)
         {

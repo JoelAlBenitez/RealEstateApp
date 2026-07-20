@@ -8,7 +8,6 @@ using RealEstateApp.Core.Domain.Common.ValidationResult;
 
 namespace RealEstateApp.Core.Application.Services.Admin
 {
-    // Servicio para la pantalla de mantenimiento de desarrolladores
     public sealed class DeveloperService : IDeveloperService
     {
         private readonly IOperationalAccountWebApi _internalAccountApi;

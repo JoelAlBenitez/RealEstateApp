@@ -1,0 +1,58 @@
+@using RealEstateApp.Core.Application.ViewsModel.PropertyType
+@model SavePropertyTypeViewModel
+@{
+    ViewData["Title"] = "Editar Tipo de Propiedad";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0" style="border-radius: var(--radius-card);">
+                <div class="card-body p-4 p-md-5">
+                    <div class="mb-4">
+                        <a asp-action="Index" class="text-decoration-none d-inline-flex align-items-center" style="color: var(--color-primary); font-weight: 600;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                            </svg>
+                            Volver al listado
+                        </a>
+                    </div>
+
+                    <h2 class="fw-bold mb-1" style="color: var(--color-primary);">Editar Tipo de Propiedad</h2>
+                    <p class="text-muted mb-4">Modifica los detalles del tipo de propiedad seleccionado.</p>
+
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="validation-summary-errors text-danger mb-3" asp-validation-summary="ModelOnly"></div>
+
+                        <!-- Nombre -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold" asp-for="Name">Nombre del tipo de propiedad</label>
+                            <input class="form-control" type="text" asp-for="Name" placeholder="Ej: Apartamento, Casa, Villa, etc." />
+                            <span class="field-validation-error text-danger" asp-validation-for="Name"></span>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold" asp-for="Description">Descripción</label>
+                            <textarea class="form-control" asp-for="Description" rows="4" placeholder="Describe brevemente este tipo de propiedad..." maxlength="500"></textarea>
+                            <span class="field-validation-error text-danger" asp-validation-for="Description"></span>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
+                            <a asp-action="Index" class="rea-btn rea-btn--secondary">Cancelar</a>
+                            <button type="submit" class="rea-btn rea-btn--primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

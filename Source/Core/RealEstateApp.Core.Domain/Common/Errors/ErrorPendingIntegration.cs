@@ -31,7 +31,7 @@ namespace RealEstateApp.Core.Application.Common.Errors
                 "La activación o inactivación del agente está pendiente de integración con el servicio de cuentas de Joel.");
 
         /// <summary>
-        /// PENDIENTE: DeletePropertiesByAgentAsync() de IPropertyService (Sebastián) +
+        /// PENDIENTE: DeletePropertiesByAgentAsync() de IPropertyCascadeService (Sebastián) +
         /// DeleteUserAsync() de IOperationalAccountWebApp (Joel), dentro de una transacción explícita.
         /// </summary>
         public static Error AgentDelete =>

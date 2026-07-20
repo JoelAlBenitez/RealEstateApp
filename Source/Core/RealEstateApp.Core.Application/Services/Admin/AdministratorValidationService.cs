@@ -1,9 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using RealEstateApp.Core.Application.Contracts.Admin;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
-using RealEstateApp.Core.Application.Contracts.Users.Base;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 using RealEstateApp.Core.Domain.Common.Enums;
 using RealEstateApp.Core.Domain.Common.Errors;
