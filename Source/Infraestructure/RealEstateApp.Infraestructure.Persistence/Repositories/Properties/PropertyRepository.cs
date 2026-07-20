@@ -320,5 +320,12 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
 
             return await query.CountAsync();
         }
+
+        public async Task<int> GetPropertiesCountByStatusGlobalAsync(PropertyState status)
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .CountAsync(p => p.Status == status);
+        }
     }
 }
