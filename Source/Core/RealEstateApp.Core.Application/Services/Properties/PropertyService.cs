@@ -13,7 +13,7 @@ using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 
 namespace RealEstateApp.Core.Application.Services.Properties
 {
-    public sealed class PropertyService : GenericServices<SavePropertyDto, Property, int>, IPropertyService
+    public sealed class PropertyService : GenericServices<SavePropertyDto, Property, int>, IPropertyService, IPropertyCascadeService
     {
         private readonly IPropertyRepository _propertyRepository;
         private readonly IPropertyValidationService _validationService;

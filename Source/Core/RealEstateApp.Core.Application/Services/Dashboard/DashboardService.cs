@@ -12,10 +12,10 @@ namespace RealEstateApp.Core.Application.Services.Dashboard
     // Servicio para la pantalla de indicadores (Home del Administrador)
     public sealed class DashboardService : IDashboardService
     {
-        private readonly IPropertyService _propertyService;
+        private readonly IPropertyCascadeService _propertyService;
         private readonly IOperationalAccountWebApi _internalAccountApi;
 
-        public DashboardService(IPropertyService propertyService, IOperationalAccountWebApi internalAccountApi)
+        public DashboardService(IPropertyCascadeService propertyService, IOperationalAccountWebApi internalAccountApi)
         {
             _propertyService = propertyService;
             _internalAccountApi = internalAccountApi;
