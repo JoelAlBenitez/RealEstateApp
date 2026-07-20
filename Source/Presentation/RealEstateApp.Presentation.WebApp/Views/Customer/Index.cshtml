@@ -1,5 +1,5 @@
 @using RealEstateApp.Core.Application.ViewsModel.Property
-@model List<PropertyCardViewModel>
+@model RealEstateApp.Core.Application.ViewsModel.Property.CustomerPropertiesViewModel
 @{
     ViewData["Title"] = "Propiedades Disponibles";
 }
@@ -57,10 +57,10 @@
     <div class="col-xl-9 col-lg-8">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold mb-0" style="color: var(--color-text);">Resultados Encontrados</h2>
-            <span class="badge bg-secondary">@ViewBag.TotalItems propiedades</span>
+            <span class="badge bg-secondary">@Model.TotalItems propiedades</span>
         </div>
 
-        @if (!Model.Any())
+        @if (!Model.Properties.Any())
         {
             <div class="alert alert-info border-0 shadow-sm text-center py-5">
                 No se encontraron propiedades que coincidan con los criterios de búsqueda.
@@ -69,7 +69,7 @@
         else
         {
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-                @foreach (var property in Model)
+                @foreach (var property in Model.Properties)
                 {
                     <div class="col">
                         <div class="card h-100 shadow-sm border-0" style="border-radius: var(--radius-card); overflow: hidden;">

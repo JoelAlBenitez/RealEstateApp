@@ -29,5 +29,6 @@ namespace RealEstateApp.Core.Domain.Interfaces.Repositories
         Task<IReadOnlyCollection<Property>> GetPropertiesByAgentWithImagesAsync(string agentId);
         Task<int> GetAvailablePropertiesCountAsync(PropertyFilterCriteria? criteria = null);
         Task<int> GetPropertiesCountByAgentAsync(string agentId, PropertyState? status = null);
+        Task<int> GetPropertiesCountByStatusGlobalAsync(PropertyState status);
     }
 }
