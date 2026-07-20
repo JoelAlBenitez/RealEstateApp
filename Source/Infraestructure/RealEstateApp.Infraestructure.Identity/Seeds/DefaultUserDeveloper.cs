@@ -16,7 +16,7 @@ namespace RealEstateApp.Infraestructure.Identity.Seeds
                 LastName = "Peguero",
                 EmailConfirmed = true,
                 Email = "sebastiandev@gmail.com",
-                UserName = "SPeguero",
+                UserName = "PegueroS",
                 IDCard = "00911222245",
                 ProfileImg = "NA",
                 IsActive = true,
