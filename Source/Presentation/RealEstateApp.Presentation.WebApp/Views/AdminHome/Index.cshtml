@@ -1,0 +1,108 @@
+@using RealEstateApp.Core.Application.ViewsModel.Users.Consult
+@model DashboardViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Dashboard Administrador";
+}
+
+<div class="container py-4">
+    <!-- Header Section -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-5 border-bottom pb-4">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: var(--color-text);">Panel Consolidado</h2>
+            <p class="text-muted mb-0">Visualiza estadísticas y el estado de los usuarios y propiedades simultáneamente en tiempo real.</p>
+        </div>
+    </div>
+
+    <!-- Metrics Cards Grid -->
+    <h3 class="fw-bold mb-4" style="color: var(--color-text); font-size: 1.25rem;">Indicadores Generales</h3>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+        <!-- Available Properties -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 admin-dashboard__card" style="border-radius: var(--radius-card); background: var(--color-surface);">
+                <div class="card-body p-4 text-center">
+                    <h5 class="fw-bold text-uppercase mb-2" style="font-size: 0.75rem; color: var(--color-text-secondary); letter-spacing: 0.1em;">Propiedades Disponibles</h5>
+                    <h1 class="fw-bold m-0" style="color: var(--color-secondary); font-size: 3rem;">@Model.AvailableProperties</h1>
+                    <small class="text-muted d-block mt-2">Disponibles para venta/alquiler</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sold Properties -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 admin-dashboard__card" style="border-radius: var(--radius-card); background: var(--color-surface);">
+                <div class="card-body p-4 text-center">
+                    <h5 class="fw-bold text-uppercase mb-2" style="font-size: 0.75rem; color: var(--color-text-secondary); letter-spacing: 0.1em;">Propiedades Vendidas</h5>
+                    <h1 class="fw-bold m-0" style="color: var(--color-success); font-size: 3rem;">@Model.SoldProperties</h1>
+                    <small class="text-muted d-block mt-2">Transacciones finalizadas</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agents Active -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 admin-dashboard__card" style="border-radius: var(--radius-card); background: var(--color-surface);">
+                <div class="card-body p-4 text-center">
+                    <h5 class="fw-bold text-uppercase mb-2" style="font-size: 0.75rem; color: var(--color-text-secondary); letter-spacing: 0.1em;">Agentes Activos</h5>
+                    <h1 class="fw-bold m-0" style="color: var(--color-primary); font-size: 3rem;">@Model.ActiveAgents</h1>
+                    <small class="text-muted d-block mt-2">Asociados al sistema inmobiliario</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agents Inactive -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 admin-dashboard__card" style="border-radius: var(--radius-card); background: var(--color-surface);">
+                <div class="card-body p-4 text-center">
+                    <h5 class="fw-bold text-uppercase mb-2" style="font-size: 0.75rem; color: var(--color-text-secondary); letter-spacing: 0.1em;">Agentes Inactivos</h5>
+                    <h1 class="fw-bold m-0" style="color: #6c757d; font-size: 3rem;">@Model.InactiveAgents</h1>
+                    <small class="text-muted d-block mt-2">Cuentas suspendidas</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clients Active -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 admin-dashboard__card" style="border-radius: var(--radius-card); background: var(--color-surface);">
+                <div class="card-body p-4 text-center">
+                    <h5 class="fw-bold text-uppercase mb-2" style="font-size: 0.75rem; color: var(--color-text-secondary); letter-spacing: 0.1em;">Clientes Activos</h5>
+                    <h1 class="fw-bold m-0" style="color: var(--color-accent); font-size: 3rem;">@Model.ActiveClients</h1>
+                    <small class="text-muted d-block mt-2">Buscando o comprando hogares</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Clients Inactive -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 admin-dashboard__card" style="border-radius: var(--radius-card); background: var(--color-surface);">
+                <div class="card-body p-4 text-center">
+                    <h5 class="fw-bold text-uppercase mb-2" style="font-size: 0.75rem; color: var(--color-text-secondary); letter-spacing: 0.1em;">Clientes Inactivos</h5>
+                    <h1 class="fw-bold m-0" style="color: #6c757d; font-size: 3rem;">@Model.InactiveClients</h1>
+                    <small class="text-muted d-block mt-2">Cuentas suspendidas</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Developers Active -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 admin-dashboard__card" style="border-radius: var(--radius-card); background: var(--color-surface);">
+                <div class="card-body p-4 text-center">
+                    <h5 class="fw-bold text-uppercase mb-2" style="font-size: 0.75rem; color: var(--color-text-secondary); letter-spacing: 0.1em;">Desarrolladores Activos</h5>
+                    <h1 class="fw-bold m-0" style="color: var(--color-secondary); font-size: 3rem;">@Model.ActiveDevelopers</h1>
+                    <small class="text-muted d-block mt-2">Conectados a la API pública</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Developers Inactive -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 admin-dashboard__card" style="border-radius: var(--radius-card); background: var(--color-surface);">
+                <div class="card-body p-4 text-center">
+                    <h5 class="fw-bold text-uppercase mb-2" style="font-size: 0.75rem; color: var(--color-text-secondary); letter-spacing: 0.1em;">Desarrolladores Inactivos</h5>
+                    <h1 class="fw-bold m-0" style="color: #6c757d; font-size: 3rem;">@Model.InactiveDevelopers</h1>
+                    <small class="text-muted d-block mt-2">Cuentas suspendidas</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

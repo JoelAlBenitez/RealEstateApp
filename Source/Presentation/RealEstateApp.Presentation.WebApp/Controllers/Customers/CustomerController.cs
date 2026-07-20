@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.Properties;
+using RealEstateApp.Core.Application.Contracts.PropertyType;
 using RealEstateApp.Core.Application.Contracts.FavoriteProperties;
 using RealEstateApp.Core.Application.Contracts.Offers;
 using RealEstateApp.Core.Application.DTOs.Property;
@@ -11,6 +12,7 @@ using AutoMapper;
 using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 using RealEstateApp.Core.Application.ViewsModel.Users.Consult;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
+using RealEstateApp.Core.Application.ViewsModel.Common;
 
 namespace RealEstateApp.Presentation.WebApp.Controllers
 {
@@ -18,6 +20,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
     public class CustomerController : Controller
     {
         private readonly IPropertyQueryService _propertyQueryService;
+        private readonly IPropertyTypeService _propertyTypeService;
         private readonly IFavoritePropertyService _favoritePropertyService;
         private readonly IOfferService _offerService;
         private readonly IMapper _mapper;
@@ -25,12 +28,14 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
 
         public CustomerController(
             IPropertyQueryService propertyQueryService,
+            IPropertyTypeService propertyTypeService,
             IFavoritePropertyService favoritePropertyService,
             IOfferService offerService,
             IMapper mapper,
             IOperationalAccountWebApp accountWebApp)
         {
             _propertyQueryService = propertyQueryService;
+            _propertyTypeService = propertyTypeService;
             _favoritePropertyService = favoritePropertyService;
             _offerService = offerService;
             _mapper = mapper;
@@ -50,10 +55,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             var result = await _propertyQueryService.GetAvailableAsync(filters, pageNumber, pageSize);
             if (!result.IsValid)
             {
-                ViewBag.CurrentPage = 1;
-                ViewBag.TotalPages = 1;
-                ViewBag.TotalItems = 0;
-                return View(new List<PropertyCardViewModel>());
+                return View(new CustomerPropertiesViewModel { Properties = new List<PropertyCardViewModel>() });
             }
 
             var favoritesResult = await _favoritePropertyService.GetByCustomerAsync();
@@ -64,17 +66,31 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
             viewModels.ForEach(vm => vm.IsFavorite = favoriteIds.Contains(vm.Id));
 
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.TotalItems = totalItems;
+            var viewModel = new CustomerPropertiesViewModel
+            {
+                Properties = viewModels,
+                Page = pageNumber,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+                PageSize = pageSize
+            };
 
+            ViewBag.PropertyTypes = await GetPropertyTypeOptionsAsync();
             ViewBag.PropertyTypeId = filters.PropertyTypeId;
             ViewBag.MinPrice = filters.MinPrice;
             ViewBag.MaxPrice = filters.MaxPrice;
             ViewBag.Bedrooms = filters.Bedrooms;
             ViewBag.Bathrooms = filters.Bathrooms;
 
-            return View(viewModels);
+            return View(viewModel);
+        }
+
+        private async Task<IReadOnlyCollection<RealEstateApp.Core.Application.DTOs.Property.TypeProperty>> GetPropertyTypeOptionsAsync()
+        {
+            var result = await _propertyTypeService.GetAllForSelectAsync();
+            return result.IsValid && result.Value != null
+                ? result.Value
+                : new List<RealEstateApp.Core.Application.DTOs.Property.TypeProperty>();
         }
 
         public async Task<IActionResult> Details(int id)
@@ -164,12 +180,9 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             var result = await _propertyQueryService.GetAvailableByAgentAsync(AgentId, pageNumber, pageSize);
             if (!result.IsValid)
             {
-                ViewBag.CurrentPage = 1;
-                ViewBag.TotalPages = 1;
-                ViewBag.TotalItems = 0;
                 ViewBag.AgentName = $"{agentResult.Name} {agentResult.LastName}";
                 ViewBag.AgentId = AgentId;
-                return View(new List<PropertyCardViewModel>());
+                return View(new CustomerPropertiesViewModel { Properties = new List<PropertyCardViewModel>() });
             }
 
             var favoritesResult = await _favoritePropertyService.GetByCustomerAsync();
@@ -180,13 +193,19 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
             viewModels.ForEach(vm => vm.IsFavorite = favoriteIds.Contains(vm.Id));
 
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.TotalItems = totalItems;
+            var viewModel = new CustomerPropertiesViewModel
+            {
+                Properties = viewModels,
+                Page = pageNumber,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+                PageSize = pageSize
+            };
+
             ViewBag.AgentName = $"{agentResult.Name} {agentResult.LastName}";
             ViewBag.AgentId = AgentId;
 
-            return View(viewModels);
+            return View(viewModel);
         }
     }
 }

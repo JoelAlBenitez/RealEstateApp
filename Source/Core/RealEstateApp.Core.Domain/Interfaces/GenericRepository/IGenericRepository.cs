@@ -8,5 +8,6 @@ namespace RealEstateApp.Core.Domain.Interfaces.GenericRepository
         Task<IReadOnlyCollection<TEntity>> GetAllAsync();
         Task<bool> DeleteAsync(TEntity emtity);
         Task<TEntity> GetByIdAsync(TKey key);
+     
     }
 }

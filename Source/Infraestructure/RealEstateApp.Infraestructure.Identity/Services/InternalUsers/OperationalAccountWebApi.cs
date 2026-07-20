@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.Contracts.Users.Validation;
 using RealEstateApp.Core.Application.DTOs.Api.Agents;
@@ -19,7 +18,6 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
     {
 
         private readonly IServicesValidateUsers _servicesValidateUsers;
-
 
         public OperationalAccountWebApi(
             UserManager<AppUsers> userManager,
@@ -96,13 +94,13 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             var response = new EditResponseDto
             {
                 Errors = new List<string>(),
-                HasError = false   
+                HasError = false
             };
             var validate = await _servicesValidateUsers
                 .UpdateInternalValidateUserAsync(edit, response);
             if (validate != null && validate.HasError) return validate;
             var user = await _userManager.FindByIdAsync(edit.Id);
-            if(user == null)
+            if (user == null)
             {
                 response.HasError = true;
                 response.Errors.Add("Ha ocurrido un error al seleccionar el usuario.");
@@ -113,8 +111,13 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             user.Name = edit.Name;
             user.UserName = edit.UserName;
             user.LastName = edit.LastName;
-            if (!string.IsNullOrWhiteSpace(edit.NewPassword)) {
-                var changePassword = await _userManager.ChangePasswordAsync(user, user.PasswordHash!,edit.NewPassword);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+
+            if (!string.IsNullOrWhiteSpace(edit.NewPassword))
+            {
+                var changePassword = await _userManager.ResetPasswordAsync(user, token, edit.NewPassword);
+
                 if (!changePassword.Succeeded)
                 {
                     response.HasError = true;
@@ -123,10 +126,11 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
                 }
                 return response;
             }
-            
+
             var update = await _userManager.UpdateAsync(user);
             if (!update.Succeeded)
             {
+
                 response.HasError = true;
                 response.Errors.Add("Ha ocurrido un error inesperado al editar el usuario.");
                 return response;
@@ -175,19 +179,20 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
 
         public async Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAgentPendientConfirmAccount()
         {
-            var result = await _userManager.Users
-                 .AsNoTracking()
-                 .Where(u => !u.EmailConfirmed && !u.IsActive).ToListAsync();
-            if (result == null) return [];
-            var select = result.Select(s => new AdminConsultAgentDto
-            {
-                Email = s.Email!,
-                Id = s.Id,
-                State = s.IsActive,
-                LastName = s.LastName,
-                Name = s.Name,
-                Properties = 0
-            }).ToList();
+            // Solo agentes que aún no han confirmado su cuenta (nunca activados por un administrador).
+            var agents = await _userManager.GetUsersInRoleAsync(Roles.Agente.ToString());
+            if (agents == null) return [];
+            var select = agents
+                .Where(u => !u.EmailConfirmed && !u.IsActive)
+                .Select(s => new AdminConsultAgentDto
+                {
+                    Email = s.Email!,
+                    Id = s.Id,
+                    State = s.IsActive,
+                    LastName = s.LastName,
+                    Name = s.Name,
+                    Properties = 0
+                }).ToList();
             return select;
         }
 
@@ -243,9 +248,17 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             return users.Count(u => u.IsActive == isActive);
         }
 
-       
+        public async Task<List<string>> GetRolesConfirmRol(string IdUser)
+        {
+            var user = await _userManager.FindByIdAsync(IdUser);
+            if(user == null) { return new List<string>(); }
+            var roles = await _userManager.GetRolesAsync(user);
+            return (List<string>)roles;
+        }
+
+
 
         #endregion
-        
+
     }
 }

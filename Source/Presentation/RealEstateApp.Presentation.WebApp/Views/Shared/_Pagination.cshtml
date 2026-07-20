@@ -4,7 +4,12 @@
     int totalPages = 1;
     bool isHomeModel = Model is RealEstateApp.Core.Application.ViewsModel.Property.HomePropertiesViewModel;
 
-    if (Model is RealEstateApp.Core.Application.ViewsModel.Property.HomePropertiesViewModel homeModelSetup)
+    if (Model is RealEstateApp.Core.Application.ViewsModel.Common.IPaginatedViewModel paginatedModel)
+    {
+        currentPage = paginatedModel.CurrentPage;
+        totalPages = paginatedModel.TotalPages;
+    }
+    else if (Model is RealEstateApp.Core.Application.ViewsModel.Property.HomePropertiesViewModel homeModelSetup)
     {
         currentPage = homeModelSetup.Page;
         totalPages = homeModelSetup.TotalPages;

@@ -14,7 +14,6 @@ namespace RealEstateApp.Core.Application.DTOs.Property
         public int Bathrooms { get; set; }
         public string? AgentId { get; set; } 
         public PropertyState Status { get; set; } = PropertyState.Available;
-
         public int PropertyTypeId { get; set; }
         public int SaleTypeId { get; set; }
         public List<int> ImprovementIds { get; set; } = new();

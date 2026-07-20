@@ -19,15 +19,12 @@ namespace RealEstateApp.Core.Application.DTOs.Property
         public string? AgentPhone { get; set; }
         public string? AgentEmail { get; set; }
         public string? AgentPhotoUrl { get; set; }
-
-
-        // Comentados por límites de módulo (Joel)
-        // public int PropertyTypeId { get; set; }
-        // public string? PropertyTypeName { get; set; }
-        // public int SaleTypeId { get; set; }
-        // public string? SaleTypeName { get; set; }
+        public int PropertyTypeId { get; set; }
+        public string? PropertyTypeName { get; set; }
+        public int SaleTypeId { get; set; }
+        public string? SaleTypeName { get; set; }
 
         public List<PropertyImageDto> Images { get; set; } = null!;
-        // public List<string> Improvements { get; set; } = new();
+        public List<string> Improvements { get; set; } = new();
     }
 }

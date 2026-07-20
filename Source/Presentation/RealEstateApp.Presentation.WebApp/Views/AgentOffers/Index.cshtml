@@ -1,7 +1,7 @@
 @using RealEstateApp.Core.Application.ViewsModel.Offer
-@model List<OfferViewModel>
+@model RealEstateApp.Core.Application.ViewsModel.Property.AgentOffersViewModel
 @{
-    ViewData["Title"] = $"Ofertas de Propiedad {ViewBag.PropertyCode}";
+    ViewData["Title"] = $"Ofertas de Propiedad {Model.PropertyCode}";
 }
 
 <div class="container py-4">
@@ -17,12 +17,12 @@
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
         <div>
             <h2 class="fw-bold mb-1" style="color: var(--color-text);">Ofertas Recibidas</h2>
-            <p class="mb-0" style="color: var(--color-text-secondary);">Propiedad Código: <strong style="color: var(--color-text);">@ViewBag.PropertyCode</strong></p>
+            <p class="mb-0" style="color: var(--color-text-secondary);">Propiedad Código: <strong style="color: var(--color-text);">@Model.PropertyCode</strong></p>
         </div>
-        <span class="badge bg-primary">@ViewBag.TotalItems ofertas pendientes</span>
+        <span class="badge bg-primary">@Model.TotalItems ofertas pendientes</span>
     </div>
 
-    @if (!Model.Any())
+    @if (!Model.Offers.Any())
     {
         <div class="alert alert-info border-0 shadow-sm text-center py-5">
             <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 text-muted">
@@ -34,8 +34,8 @@
     }
     else
     {
-        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-            @foreach (var offer in Model)
+        <div class="row row-cols-1 g-4">
+            @foreach (var offer in Model.Offers)
             {
                 <div class="col">
                     <div class="card h-100 border-0 shadow-sm" style="border-radius: var(--radius-card); background: var(--color-surface); overflow: hidden;">

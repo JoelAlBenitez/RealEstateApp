@@ -12,9 +12,9 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToApi
             CreateMap<PropertyDto, PropertyApiDto>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
                     src.Status == PropertyState.Available ? "Disponible" : "Vendida"))
-                .ForMember(dest => dest.PropertyType, opt => opt.Ignore())
-                .ForMember(dest => dest.SaleType, opt => opt.Ignore())
-                .ForMember(dest => dest.Improvements, opt => opt.Ignore());
+                .ForMember(dest => dest.PropertyType, opt => opt.MapFrom(src => src.PropertyTypeName))
+                .ForMember(dest => dest.SaleType, opt => opt.MapFrom(src => src.SaleTypeName))
+                .ForMember(dest => dest.Improvements, opt => opt.MapFrom(src => src.Improvements));
         }
     }
 }

@@ -70,6 +70,16 @@
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
                             <span class="badge bg-primary mb-2">CÓDIGO: @Model.Code</span>
+                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                @if (!string.IsNullOrWhiteSpace(Model.PropertyTypeName))
+                                {
+                                    <span class="badge bg-secondary">@Model.PropertyTypeName</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.SaleTypeName))
+                                {
+                                    <span class="badge bg-dark">@Model.SaleTypeName</span>
+                                }
+                            </div>
                             <h2 class="fw-bold mb-0">Detalles de la Propiedad</h2>
                         </div>
                         <div class="text-end">
@@ -97,6 +107,17 @@
                             <span class="text-muted font-sm">Área Construida</span>
                         </div>
                     </div>
+
+                    @if (Model.Improvements != null && Model.Improvements.Any())
+                    {
+                        <h4 class="fw-bold mb-3 border-bottom pb-2">Mejoras</h4>
+                        <div class="d-flex flex-wrap gap-2 mb-2">
+                            @foreach (var improvement in Model.Improvements)
+                            {
+                                <span class="badge bg-light text-dark border px-3 py-2" style="font-size: 0.85rem; border-radius: 999px; font-weight: 500;">@improvement</span>
+                            }
+                        </div>
+                    }
                 </div>
             </div>
 
@@ -117,7 +138,6 @@
                                         <th>Monto de Oferta</th>
                                         <th>Fecha Realizada</th>
                                         <th>Estado</th>
-                                        <th>Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -138,22 +158,6 @@
                                                 else if (offer.Status == OfferState.Rejected)
                                                 {
                                                     <span class="badge bg-danger">Rechazada</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (offer.Status == OfferState.Pending)
-                                                {
-                                                    <button type="button"
-                                                            class="btn btn-outline-danger btn-sm"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#modalCancelOfferDetail"
-                                                            data-offer-id="@offer.Id">
-                                                        Cancelar
-                                                    </button>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">—</span>
                                                 }
                                             </td>
                                         </tr>
@@ -245,7 +249,7 @@
                         @if (Model.HasPendingOffer)
                         {
                             <div class="alert alert-warning border-0 m-0">
-                                Ya tienes una oferta pendiente de respuesta para esta propiedad. Debes esperar a que sea procesada o cancelarla antes de ofertar nuevamente.
+                                Ya tienes una oferta pendiente de respuesta para esta propiedad. Debes esperar a que sea procesada antes de ofertar nuevamente.
                             </div>
                         }
                         else
@@ -270,42 +274,8 @@
     </div>
 </div>
 
-<!-- Modal: Cancelar Oferta -->
-<div class="modal fade" id="modalCancelOfferDetail" tabindex="-1" aria-labelledby="modalCancelOfferDetailLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
-            <div class="modal-header border-0 pb-0">
-                <div class="d-flex align-items-center gap-2">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#f59e0b" stroke-width="2">
-                        <path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    </svg>
-                    <h5 class="modal-title fw-bold mb-0" id="modalCancelOfferDetailLabel" style="color: var(--color-text);">Cancelar Oferta</h5>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" style="filter: invert(1);"></button>
-            </div>
-            <div class="modal-body pt-3" style="color: var(--color-text-secondary);">
-                <p class="mb-0">¿Está seguro de que desea <strong style="color: var(--color-text);">cancelar</strong> esta oferta? Esta acción no se puede deshacer.
-                </p>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Volver</button>
-                <form id="formCancelOfferDetail" asp-controller="Offer" asp-action="Cancel" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" id="cancelOfferDetailId" name="offerId" value="" />
-                    <button type="submit" class="btn btn-danger fw-semibold px-4">Sí, Cancelar</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 @section Scripts {
 <script>
-    document.getElementById('modalCancelOfferDetail').addEventListener('show.bs.modal', function (event) {
-        var btn = event.relatedTarget;
-        document.getElementById('cancelOfferDetailId').value = btn.getAttribute('data-offer-id');
-    });
-
     const offerInput = document.getElementById('offerAmount');
     if (offerInput) {
         offerInput.addEventListener('keydown', function (e) {
@@ -320,4 +290,47 @@
         });
     }
 </script>
+}
+
+@section Styles {
+<style>
+    /* Estilos específicos para las flechas del carrusel de esta propiedad */
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 44px;
+        height: 44px;
+        background-color: rgba(15, 23, 42, 0.65) !important; /* Slate oscuro semi-transparente */
+        backdrop-filter: blur(4px); /* Glassmorphism */
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 50% !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        opacity: 0.85 !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .carousel-control-prev {
+        left: 15px !important;
+    }
+
+    .carousel-control-next {
+        right: 15px !important;
+    }
+
+    .carousel-control-prev:hover,
+    .carousel-control-next:hover {
+        background-color: var(--color-primary, #0f172a) !important;
+        opacity: 1 !important;
+        transform: translateY(-50%) scale(1.08) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 20px !important;
+        height: 20px !important;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) !important;
+    }
+</style>
 }

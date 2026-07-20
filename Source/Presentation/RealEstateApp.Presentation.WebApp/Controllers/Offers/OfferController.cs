@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.Offers;
 using RealEstateApp.Core.Application.DTOs.Offer;
 using RealEstateApp.Core.Application.ViewsModel.Offer;
+using RealEstateApp.Core.Application.ViewsModel.Property;
 using AutoMapper;
 
 namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
@@ -25,10 +26,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
             var result = await _offerService.GetByCustomerAsync();
             if (!result.IsValid)
             {
-                ViewBag.CurrentPage = 1;
-                ViewBag.TotalPages = 1;
-                ViewBag.TotalItems = 0;
-                return View(new List<OfferViewModel>());
+                return View(new CustomerOffersViewModel { Offers = new List<OfferViewModel>() });
             }
 
             var viewModels = _mapper.Map<List<OfferViewModel>>(result.Value);
@@ -39,11 +37,16 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
 
             var paginatedViewModels = viewModels.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.TotalItems = totalItems;
+            var viewModel = new CustomerOffersViewModel
+            {
+                Offers = paginatedViewModels,
+                Page = pageNumber,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+                PageSize = pageSize
+            };
 
-            return View(paginatedViewModels);
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -57,12 +60,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
                 return RedirectToAction("Details", "Customer", new { id = model.PropertyId });
             }
 
-            var dto = new SaveOfferDto
-            {
-                PropertyId = model.PropertyId,
-                Amount = model.Amount,
-                CustomerId = string.Empty
-            };
+            var dto = _mapper.Map<SaveOfferDto>(model);
 
             var result = await _offerService.AddAsync(dto);
             if (!result.IsValid)
@@ -74,17 +72,6 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Offers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cancel(int offerId)
-        {
-            var result = await _offerService.CancelOfferAsync(offerId);
-            if (!result.IsValid)
-            {
-                TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al cancelar la oferta.";
-            }
 
-            return RedirectToAction(nameof(Index));
-        }
     }
 }

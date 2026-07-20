@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.FileManager;
 using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
@@ -42,7 +42,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
             else if(User.IsInRole(Roles.Cliente.ToString()))
                 return RedirectToRoute(new {controller = "Customer", action = "Index"});
             else if (User.IsInRole(Roles.Administrador.ToString()))
-                return RedirectToRoute(new {controller = "Admin", action = "Index"});
+                return RedirectToRoute(new {controller = "AdminHome", action = "Index"});
             #endregion
             if (expired)
                 TempData["Message"] = "Su sesión finalizó por inactividad. Inicie sesión nuevamente para continuar.";
@@ -112,7 +112,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
             else if (User.IsInRole(Roles.Cliente.ToString()))
                 homeController = "Customer";
             else if (User.IsInRole(Roles.Administrador.ToString()))
-                homeController = "Admin";
+                homeController = "AdminHome";
 
             return View(new AccessDeniedViewModel
             {
@@ -263,7 +263,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Account
             else if (result!.Roles.Contains(Roles.Cliente.ToString()))
                 return RedirectToRoute(new { controller = "Customer", action = "Index" });
             else if (result!.Roles.Contains(Roles.Administrador.ToString()))
-                return RedirectToRoute(new { controller = "Admin", action = "Index" });
+                return RedirectToRoute(new { controller = "AdminHome", action = "Index" });
             vm.Password = "";
             ModelState.AddModelError("", "Ha ocurrido un error inesperado.");
             return View(vm);

@@ -1,8 +1,9 @@
 @using RealEstateApp.Core.Application.ViewsModel.Property
 @using RealEstateApp.Core.Domain.Common.Enums.PropertyStatus
-@model PropertyDetailViewModel
+@using RealEstateApp.Core.Domain.Common.Enums.OfferStatus
+@model AgentPropertyDetailsViewModel
 @{
-    ViewData["Title"] = $"Detalles de Propiedad {Model.Code}";
+    ViewData["Title"] = $"Detalles de Propiedad {Model.Property.Code}";
 }
 
 <div class="container py-4">
@@ -17,20 +18,19 @@
 
     <div class="row g-4">
         <div class="col-lg-8">
-            <!-- Image gallery carousel -->
             <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-card); background: var(--color-surface); overflow: hidden;">
-                @if (Model.ImageUrls != null && Model.ImageUrls.Any())
+                @if (Model.Property.ImageUrls != null && Model.Property.ImageUrls.Any())
                 {
                     <div id="propertyGallery" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner" style="height: 400px; background: #000;">
-                            @for (int i = 0; i < Model.ImageUrls.Count; i++)
+                            @for (int i = 0; i < Model.Property.ImageUrls.Count; i++)
                             {
                                 <div class="carousel-item @(i == 0 ? "active" : "") h-100">
-                                    <img src="/@Model.ImageUrls[i]" class="d-block w-100 h-100" style="object-fit: contain;" alt="Foto @(i+1) de @Model.Code" />
+                                    <img src="/@Model.Property.ImageUrls[i]" class="d-block w-100 h-100" style="object-fit: contain;" alt="Foto @(i+1) de @Model.Property.Code" />
                                 </div>
                             }
                         </div>
-                        @if (Model.ImageUrls.Count > 1)
+                        @if (Model.Property.ImageUrls.Count > 1)
                         {
                             <button class="carousel-control-prev" type="button" data-bs-target="#propertyGallery" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -55,17 +55,26 @@
                 }
             </div>
 
-            <!-- Property Description & Info -->
             <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-card); background: var(--color-surface);">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
                             <span class="badge bg-dark px-3 py-2 mb-2" style="font-size: 0.8rem; font-weight: 700; border-radius: 6px; letter-spacing: 0.05em; opacity: 0.85;">
-                                CÓDIGO: #@Model.Code
+                                CÓDIGO: #@Model.Property.Code
                             </span>
+                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                @if (!string.IsNullOrWhiteSpace(Model.Property.PropertyTypeName))
+                                {
+                                    <span class="badge bg-secondary px-3 py-2" style="font-size: 0.8rem; border-radius: 6px;">@Model.Property.PropertyTypeName</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.Property.SaleTypeName))
+                                {
+                                    <span class="badge bg-primary px-3 py-2" style="font-size: 0.8rem; border-radius: 6px;">@Model.Property.SaleTypeName</span>
+                                }
+                            </div>
                             <h2 class="fw-bold mb-0" style="color: var(--color-text);">Detalles de la Publicación</h2>
                         </div>
-                        <h2 class="fw-bold text-success m-0">@string.Format("{0:C}", Model.Price)</h2>
+                        <h2 class="fw-bold text-success m-0">@string.Format("{0:C}", Model.Property.Price)</h2>
                     </div>
 
                     <div class="d-flex align-items-center justify-content-between py-3 mb-4 border-top border-bottom" style="font-size: 0.95rem; color: var(--color-text);">
@@ -73,41 +82,157 @@
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-text-secondary);">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                             </svg>
-                            <span><strong>@Model.Bedrooms</strong> Habitaciones</span>
+                            <span><strong>@Model.Property.Bedrooms</strong> Habitaciones</span>
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-text-secondary);">
                                 <path d="M4 19h16M4 15h16" />
                             </svg>
-                            <span><strong>@Model.Bathrooms</strong> Baños</span>
+                            <span><strong>@Model.Property.Bathrooms</strong> Baños</span>
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-text-secondary);">
                                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8" />
                             </svg>
-                            <span><strong>@Model.Size</strong> m² de Construcción</span>
+                            <span><strong>@Model.Property.Size</strong> m² de Construcción</span>
                         </div>
                     </div>
 
                     <div class="mb-4">
                         <h5 class="fw-bold mb-2" style="color: var(--color-text);">Descripción de la Propiedad</h5>
-                        <p style="color: var(--color-text-secondary); line-height: 1.6; white-space: pre-line;">@Model.Description</p>
+                        <p style="color: var(--color-text-secondary); line-height: 1.6; white-space: pre-line;">@Model.Property.Description</p>
                     </div>
+
+                    @if (Model.Property.Improvements != null && Model.Property.Improvements.Any())
+                    {
+                        <div class="mb-2">
+                            <h5 class="fw-bold mb-2" style="color: var(--color-text);">Mejoras</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var improvement in Model.Property.Improvements)
+                                {
+                                    <span class="badge bg-light text-dark border px-3 py-2" style="font-size: 0.8rem; border-radius: 999px; font-weight: 500;">@improvement</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-card); background: var(--color-surface);">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4 border-bottom pb-2">Ofertas Recibidas e Historial</h4>
+                    @if (Model.Offers == null || !Model.Offers.Any())
+                    {
+                        <p class="text-muted m-0">No se han recibido ofertas por esta propiedad.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Cliente</th>
+                                        <th>Monto Ofertado</th>
+                                        <th>Fecha</th>
+                                        <th>Estado</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var offer in Model.Offers.OrderByDescending(o => o.CreateAt))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">@offer.CustomerName</div>
+                                                <small class="text-muted">@offer.CustomerEmail</small>
+                                            </td>
+                                            <td class="fw-bold text-success">@string.Format("{0:C}", offer.Amount)</td>
+                                            <td>@offer.CreateAt.ToString("dd/MM/yyyy hh:mm tt")</td>
+                                            <td>
+                                                @if (offer.Status == OfferState.Pending)
+                                                {
+                                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                                }
+                                                else if (offer.Status == OfferState.Accepted)
+                                                {
+                                                    <span class="badge bg-success">Aceptada</span>
+                                                }
+                                                else if (offer.Status == OfferState.Rejected)
+                                                {
+                                                    <span class="badge bg-danger">Rechazada</span>
+                                                }
+                                            </td>
+                                            <td class="text-end">
+                                                @if (offer.Status == OfferState.Pending && Model.Property.Status == PropertyState.Available)
+                                                {
+                                                    <div class="d-inline-flex gap-2">
+                                                        <form asp-controller="AgentOffers" asp-action="Accept" method="post" class="d-inline">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="offerId" value="@offer.Id" />
+                                                            <input type="hidden" name="propertyId" value="@Model.Property.Id" />
+                                                            <button type="submit" class="btn btn-sm btn-success fw-semibold">Aceptar</button>
+                                                        </form>
+                                                        <form asp-controller="AgentOffers" asp-action="Reject" method="post" class="d-inline">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="offerId" value="@offer.Id" />
+                                                            <input type="hidden" name="propertyId" value="@Model.Property.Id" />
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger fw-semibold">Rechazar</button>
+                                                        </form>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">—</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-card); background: var(--color-surface);">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4 border-bottom pb-2">Chats con Clientes Interesados</h4>
+                    @if (Model.Conversations == null || !Model.Conversations.Any())
+                    {
+                        <p class="text-muted m-0">No hay chats abiertos por esta propiedad.</p>
+                    }
+                    else
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var chat in Model.Conversations.GroupBy(c => c.CustomerId).Select(g => g.OrderByDescending(c => c.SentAt).First()))
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3" style="background: transparent; border-color: var(--color-border);">
+                                    <div>
+                                        <h6 class="fw-bold mb-1" style="color: var(--color-text);">@chat.CustomerName</h6>
+                                        <p class="text-muted mb-0 text-truncate" style="max-width: 400px; font-size: 0.875rem;">@chat.Content</p>
+                                        <small style="color: var(--color-text-secondary); font-size: 0.75rem;">@chat.SentAt.ToString("dd/MM/yyyy hh:mm tt")</small>
+                                    </div>
+                                    <a asp-controller="AgentConversations" asp-action="Conversation" asp-route-customerId="@chat.CustomerId" asp-route-propertyId="@Model.Property.Id" class="rea-btn rea-btn--primary py-1 px-3 fw-semibold btn-sm">
+                                        Responder
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    }
                 </div>
             </div>
         </div>
 
         <div class="col-lg-4">
-            <!-- Quick Actions -->
             <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-card); background: var(--color-surface);">
                 <div class="card-body p-4 text-center">
                     <h5 class="fw-bold mb-3 border-bottom pb-2">Estado de Propiedad</h5>
                     <div class="mb-4">
-                        @if (Model.Status == PropertyState.Available)
+                        @if (Model.Property.Status == PropertyState.Available)
                         {
                             <span class="badge bg-success px-4 py-2 fs-6 shadow-sm">Disponible</span>
                         }
-                        else if (Model.Status == PropertyState.Sold)
+                        else if (Model.Property.Status == PropertyState.Sold)
                         {
                             <span class="badge bg-danger px-4 py-2 fs-6 shadow-sm">Vendida</span>
                         }
@@ -117,21 +242,70 @@
                         }
                     </div>
                     <div class="d-flex flex-column gap-2">
-                        <a asp-action="Edit" asp-route-id="@Model.Id" class="rea-btn rea-btn--primary justify-content-center py-2 fw-semibold">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                            </svg>
-                            Editar Propiedad
-                        </a>
-                        <a asp-action="Delete" asp-route-id="@Model.Id" class="rea-btn rea-btn--secondary justify-content-center py-2 fw-semibold" style="color: #ef4444; border-color: rgba(239,68,68,0.2);">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
-                                <path d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862" />
-                            </svg>
-                            Eliminar Propiedad
-                        </a>
+                        @if (Model.Property.Status == PropertyState.Available)
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Property.Id" class="rea-btn rea-btn--primary justify-content-center py-2 fw-semibold">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                </svg>
+                                Editar Propiedad
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Property.Id" class="rea-btn rea-btn--secondary justify-content-center py-2 fw-semibold" style="color: #ef4444; border-color: rgba(239,68,68,0.2);">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                    <path d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862" />
+                                </svg>
+                                Eliminar Propiedad
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-muted fs-7">Las propiedades vendidas o inactivas no admiten edición o eliminación.</span>
+                        }
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Styles {
+<style>
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 44px;
+        height: 44px;
+        background-color: rgba(15, 23, 42, 0.65) !important;
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 50% !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        opacity: 0.85 !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .carousel-control-prev {
+        left: 15px !important;
+    }
+
+    .carousel-control-next {
+        right: 15px !important;
+    }
+
+    .carousel-control-prev:hover,
+    .carousel-control-next:hover {
+        background-color: var(--color-primary, #0f172a) !important;
+        opacity: 1 !important;
+        transform: translateY(-50%) scale(1.08) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 20px !important;
+        height: 20px !important;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) !important;
+    }
+</style>
+}
