@@ -18,18 +18,18 @@ namespace RealEstateApp.Core.Application.Services.SaleType
     {
         private readonly ISaleTypeRepository _saleTypeRepository;
         private readonly ISaleTypeValidationService _saleTypeValidationService;
-        private readonly IPropertyService _propertyService;
+        private readonly IPropertyCascadeService _propertyCascadeService;
 
         public SaleTypeService(
             ISaleTypeRepository saleTypeRepository, 
             IMapper mapper, 
             ISaleTypeValidationService saleTypeValidationService,
-            IPropertyService propertyService)
+            IPropertyCascadeService propertyCascadeService)
             : base(saleTypeRepository, mapper)
         {
             _saleTypeRepository = saleTypeRepository;
             _saleTypeValidationService = saleTypeValidationService;
-            _propertyService = propertyService;
+            _propertyCascadeService = propertyCascadeService;
         }
 
         public async Task<ValidationResult<IReadOnlyCollection<SaleTypeDto>>> GetAllWithCountAsync()
@@ -44,7 +44,7 @@ namespace RealEstateApp.Core.Application.Services.SaleType
                 // aceptable para catálogos maestros con pocos registros (no es un problema de rendimiento en este contexto).
                 var countTasks = dtos.Select(async dto =>
                 {
-                    var countResult = await _propertyService.CountBySaleTypeAsync(dto.Id);
+                    var countResult = await _propertyCascadeService.CountBySaleTypeAsync(dto.Id);
                     dto.PropertyCount = countResult.IsValid ? countResult.Value : 0;
                 }).ToList();
 
@@ -109,7 +109,7 @@ namespace RealEstateApp.Core.Application.Services.SaleType
 
         public override async Task<ValidationResult> RemoveAsync(int id)
         {
-            var cascadeResult = await _propertyService.DeletePropertiesBySaleTypeAsync(id);
+            var cascadeResult = await _propertyCascadeService.DeletePropertiesBySaleTypeAsync(id);
             if (!cascadeResult.IsValid)
             {
                 return cascadeResult;

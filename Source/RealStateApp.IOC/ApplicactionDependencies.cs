@@ -6,6 +6,8 @@ using RealEstateApp.Core.Application.Contracts.GenericServices;
 using RealEstateApp.Core.Application.Contracts.SaleType;
 using RealEstateApp.Core.Application.Services.SaleType;
 using RealEstateApp.Core.Application.Contracts.GenericServices;
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.SaleType;
+using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.SaleType;
 
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Auth;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Consult;
@@ -68,6 +70,11 @@ namespace RealStateApp.IOC
                 configuration.AddProfile<DashboardDtoToViewModel>();
                 configuration.AddProfile<GetInternalUserDtoToAdministratorViewModel>();
                 configuration.AddProfile<GetInternalUserDtoToDeveloperViewModel>();
+                #endregion
+
+                #region maper SaleType
+                configuration.AddProfile<SaleTypeDtoToViewModelAndReverse>();
+                configuration.AddProfile<SaleTypeEntityToDtoAndReverse>();
                 #endregion
             });
 
