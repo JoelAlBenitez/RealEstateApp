@@ -66,8 +66,10 @@ namespace RealStateApp.IOC
 
 
             #region customer services
-            services.AddScoped<IPropertyService, PropertyService>();
-            services.AddScoped<IPropertyCascadeService, PropertyService>();
+            services.AddScoped<IPropertyQueryService, PropertyQueryService>();
+            services.AddScoped<IAgentPropertyService, AgentPropertyService>();
+            services.AddScoped<IPropertyCascadeService, PropertyCascadeService>();
+            services.AddScoped<IPropertyApiQueryService, PropertyApiQueryService>();
             services.AddScoped<IFavoritePropertyService, FavoritePropertyService>();
             services.AddScoped<IOfferService, OfferService>();
             services.AddScoped<IMessageAtCService, MessageAtCService>();

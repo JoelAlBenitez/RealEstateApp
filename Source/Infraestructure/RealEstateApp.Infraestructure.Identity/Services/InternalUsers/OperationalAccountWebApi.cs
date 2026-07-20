@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.Contracts.Users.Validation;
+using RealEstateApp.Core.Application.DTOs.Api.Agents;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
@@ -136,6 +137,42 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
 
         #endregion
         #region get methods
+
+        public async Task<IReadOnlyCollection<AgentApiDto>> GetAllAgentsForApiAsync()
+        {
+            var users = await _userManager.GetUsersInRoleAsync(Roles.Agente.ToString());
+            if (users == null) return [];
+            var select = users.Select(u => new AgentApiDto
+            {
+                Id = u.Id,
+                Name = u.Name,
+                LastName = u.LastName,
+                Email = u.Email ?? string.Empty,
+                Phone = u.PhoneNumber ?? string.Empty,
+                NumberOfProperties = 0,
+                IsActive = u.IsActive
+            }).ToList();
+            return select;
+        }
+
+        public async Task<AgentApiDto?> GetAgentByIdForApiAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return null;
+            var isAgent = await _userManager.IsInRoleAsync(user, Roles.Agente.ToString());
+            if (!isAgent) return null;
+            return new AgentApiDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                LastName = user.LastName,
+                Email = user.Email ?? string.Empty,
+                Phone = user.PhoneNumber ?? string.Empty,
+                NumberOfProperties = 0,
+                IsActive = user.IsActive
+            };
+        }
+
         public async Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAgentPendientConfirmAccount()
         {
             var result = await _userManager.Users

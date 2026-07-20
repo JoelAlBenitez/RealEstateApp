@@ -14,7 +14,10 @@ namespace RealEstateApp.Presentation.Api.Helpers
 
         public string GetIdCurrentUser()
         {
-            return _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            // El token JWT emite el Id del usuario en el claim "uid";
+            // NameIdentifier se mantiene como respaldo.
+            return _httpContextAccessor.HttpContext?.User?.FindFirstValue("uid")
+                ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)!;
         }
 
         public List<string> GetRolesCurrentUser()
