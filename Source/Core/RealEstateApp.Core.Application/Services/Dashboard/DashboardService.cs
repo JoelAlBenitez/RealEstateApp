@@ -21,7 +21,7 @@ namespace RealEstateApp.Core.Application.Services.Dashboard
             _internalAccountApi = internalAccountApi;
         }
 
-        public async Task<ValidationResult<DashboardDto>> GetDashboardStatsAsync(bool showActive = true)
+        public async Task<ValidationResult<DashboardDto>> GetDashboardStatsAsync()
         {
             var propertyTotals = await _propertyService.GetTotalsByStatusAsync();
             if (!propertyTotals.IsValid || propertyTotals.Value == null)
@@ -32,18 +32,25 @@ namespace RealEstateApp.Core.Application.Services.Dashboard
                         : new[] { new Error("Oops", "No fue posible obtener las estadísticas de propiedades.") });
             }
 
-            var agentsCount = await _internalAccountApi.GetUserAgentActiverOrInactive(showActive);
-            var devsCount = await _internalAccountApi.GetUserDevelopersActiveOrInactive(showActive);
-            var clientsCount = await _internalAccountApi.GetUserClientAciveOrInactive(showActive);
+            var activeAgents = await _internalAccountApi.GetUserAgentActiverOrInactive(true);
+            var inactiveAgents = await _internalAccountApi.GetUserAgentActiverOrInactive(false);
+            
+            var activeDevs = await _internalAccountApi.GetUserDevelopersActiveOrInactive(true);
+            var inactiveDevs = await _internalAccountApi.GetUserDevelopersActiveOrInactive(false);
+            
+            var activeClients = await _internalAccountApi.GetUserClientAciveOrInactive(true);
+            var inactiveClients = await _internalAccountApi.GetUserClientAciveOrInactive(false);
 
             return ValidationResult<DashboardDto>.Success(new DashboardDto
             {
                 AvailableProperties = propertyTotals.Value.AvailableProperties,
                 SoldProperties = propertyTotals.Value.SoldProperties,
-                AgentsCount = agentsCount,
-                ClientsCount = clientsCount,
-                DevelopersCount = devsCount,
-                ShowingActive = showActive
+                ActiveAgentsCount = activeAgents,
+                InactiveAgentsCount = inactiveAgents,
+                ActiveClientsCount = activeClients,
+                InactiveClientsCount = inactiveClients,
+                ActiveDevelopersCount = activeDevs,
+                InactiveDevelopersCount = inactiveDevs
             });
         }
     }

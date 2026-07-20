@@ -16,6 +16,11 @@ namespace RealEstateApp.Infraestructure.Persistence.Configurations
                 .WithMany(p => p.PropertyImprovements)
                 .HasForeignKey(pi => pi.PropertyId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(pi => pi.Improvement)
+                .WithMany()
+                .HasForeignKey(pi => pi.ImprovementId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

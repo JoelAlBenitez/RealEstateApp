@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.Contracts.Users.Validation;
 using RealEstateApp.Core.Application.DTOs.Api.Agents;
@@ -18,7 +18,6 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
     {
 
         private readonly IServicesValidateUsers _servicesValidateUsers;
-
 
         public OperationalAccountWebApi(
             UserManager<AppUsers> userManager,
@@ -129,6 +128,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             var update = await _userManager.UpdateAsync(user);
             if (!update.Succeeded)
             {
+
 
                 response.HasError = true;
                 response.Errors.Add("Ha ocurrido un error inesperado al editar el usuario.");

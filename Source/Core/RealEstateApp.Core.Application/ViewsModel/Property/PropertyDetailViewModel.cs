@@ -22,12 +22,11 @@ namespace RealEstateApp.Core.Application.ViewsModel.Property
         public List<string> ImageUrls { get; set; } = null!;
         public bool IsFavorite { get; set; }
         public bool HasPendingOffer { get; set; }
-
+        
         public List<OfferViewModel> Offers { get; set; } = null!;
 
-        // Catálogos comentados por límites de módulo
-        // public string? PropertyTypeName { get; set; }
-        // public string? SaleTypeName { get; set; }
-        // public List<string> Improvements { get; set; } = new();
+        public string? PropertyTypeName { get; set; }
+        public string? SaleTypeName { get; set; }
+        public List<string> Improvements { get; set; } = new();
     }
 }

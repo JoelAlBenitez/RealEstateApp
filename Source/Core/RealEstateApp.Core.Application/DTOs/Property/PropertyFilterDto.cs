@@ -3,6 +3,7 @@
     public sealed class PropertyFilterDto
     {
         public int? PropertyTypeId { get; set; }
+        
         public decimal ? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
         public int? Bedrooms { get; set; }
