@@ -11,5 +11,6 @@ namespace RealEstateApp.Core.Application.ViewsModel.Users.Consult
         public required int InactiveClients { get; set; }
         public required int ActiveDevelopers { get; set; }
         public required int InactiveDevelopers { get; set; }
+        public bool ShowActive { get; set; } = true;
     }
 }

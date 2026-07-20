@@ -21,8 +21,6 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
         public async Task<IActionResult> Index(bool showActive = true)
         {
             var result = await _dashboardService.GetDashboardStatsAsync(showActive);
-            
-            ViewBag.ShowActive = showActive;
 
             if (!result.IsValid)
             {
@@ -37,13 +35,15 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
                     ActiveClients = 0,
                     InactiveClients = 0,
                     ActiveDevelopers = 0,
-                    InactiveDevelopers = 0
+                    InactiveDevelopers = 0,
+                    ShowActive = showActive
                 };
                 
                 return View(fallbackVm);
             }
 
             var viewModel = _mapper.Map<DashboardViewModel>(result.Value);
+            viewModel.ShowActive = showActive;
             return View(viewModel);
         }
     }
