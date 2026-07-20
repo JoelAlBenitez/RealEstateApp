@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using RealEstateApp.Core.Application.Contracts.GenericServices;
-
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Auth;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Consult;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Operational;
@@ -61,6 +60,7 @@ namespace RealStateApp.IOC
                 #region maper admin
                 configuration.AddProfile<DashboardDtoToViewModel>();
                 configuration.AddProfile<GetInternalUserDtoToAdministratorViewModel>();
+                configuration.AddProfile<GetInternalUserDtoToDeveloperViewModel>();
                 #endregion
             });
 
@@ -83,9 +83,9 @@ namespace RealStateApp.IOC
             #region admin services
             services.AddScoped<IAdministratorService, AdministratorService>();
             services.AddScoped<IAdministratorValidationService, AdministratorValidationService>();
+            services.AddScoped<IDeveloperService, DeveloperService>();
             services.AddScoped<IDashboardService, DashboardService>();
             #endregion
-
             return services;
         }
     }

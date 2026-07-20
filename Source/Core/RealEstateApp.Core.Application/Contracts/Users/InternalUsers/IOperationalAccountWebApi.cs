@@ -19,5 +19,8 @@ namespace RealEstateApp.Core.Application.Contracts.Users.InternalUsers
         Task<int> GetUserClientAciveOrInactive(bool isActive = true);
         Task<IReadOnlyCollection<GetInternalUserDto>> GetAllInternalUsersByRol(Roles roles);
         Task<IReadOnlyCollection<AdminConsultAgentDto>> GetAllAgentesByConsultAdmin();
+
+
+
     }
 }
