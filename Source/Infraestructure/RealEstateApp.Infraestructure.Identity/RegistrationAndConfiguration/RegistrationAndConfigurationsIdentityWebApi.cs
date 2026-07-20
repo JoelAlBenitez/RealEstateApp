@@ -74,7 +74,10 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
             {
                 opt.RequireHttpsMetadata = false;
                 opt.SaveToken = false;
-                
+                // Evita el mapeo automático de claims (p. ej. "roles" -> ClaimTypes.Role).
+                // Así los claims llegan tal cual ("roles", "uid", "sub") y RoleClaimType = "roles" coincide.
+                opt.MapInboundClaims = false;
+
                 opt.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -84,7 +87,8 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
                     ClockSkew = TimeSpan.FromMinutes(2),
                     ValidIssuer = configuration["JwtSettings:Issuer"],
                     ValidAudience = configuration["JwtSettings:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"] ?? ""))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"] ?? "")),
+                    RoleClaimType = "roles"
                 };
                 opt.Events = new JwtBearerEvents()
                 {
