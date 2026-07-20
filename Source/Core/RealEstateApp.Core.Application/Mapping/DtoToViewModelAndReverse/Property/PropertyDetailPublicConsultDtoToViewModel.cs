@@ -21,7 +21,7 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Proper
                 .ForMember(opt => opt.AgentPhone, des => des.MapFrom(src => src.AgentPhone))
                 .ForMember(opt => opt.Description, des => des.MapFrom(src => src.Description))
                 .ForMember(opt => opt.ImgUrls, des => des.MapFrom(src => src.Images.Select(a => a.Url)))
-                .ForMember(opt => opt.Improvents, des => des.MapFrom(src => src.Impro)) 
+                .ForMember(opt => opt.Improvents, des => des.MapFrom(src => src.Improvements));
         }
     }
 }
