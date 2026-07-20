@@ -65,7 +65,6 @@ namespace RealEstateApp.Presentation.Api.Controllers.v1
                     new { message = "Ocurrió un error interno en el servidor." });
             }
         }
-
         [Authorize(Roles = "Administrador")]
         [HttpPost("register-developer")]
         [ProducesResponseType(StatusCodes.Status201Created)]

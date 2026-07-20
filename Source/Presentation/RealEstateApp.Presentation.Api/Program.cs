@@ -24,6 +24,7 @@ builder.Services.AddInfraestructrueShared(builder.Configuration);
 builder.Services.AddWebApiServicesIdentity(builder.Configuration);
 builder.Services.AddDependenciesCommon(builder.Configuration);
 builder.Services.AddDependenciesWebApi();
+builder.Services.AddDependenciesWebApp();
 
 builder.Services.AddScoped<IUserSession, UserSession>();
 builder.Services.AddScoped<IAgentApiService, AgentApiService>();
