@@ -15,13 +15,8 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
 {
     [Authorize(Roles = "Agente")]
     public class AgentPropertyController : Controller
-    {
-        private readonly IAgentPropertyService _agentPropertyService;
+    {        private readonly IAgentPropertyService _agentPropertyService;
         private readonly IPropertyQueryService _propertyQueryService;
-        // private readonly IPropertyTypeService _propertyTypeService;
-        // private readonly ISaleTypeService _saleTypeService;
-        // private readonly IImprovementService _improvementService;
-        private readonly IPropertyService _propertyService;
         private readonly IOfferService _offerService;
         private readonly IMessageAtCService _messageService;
         private readonly IUserSession _userSession;
@@ -30,10 +25,6 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         public AgentPropertyController(
             IAgentPropertyService agentPropertyService,
             IPropertyQueryService propertyQueryService,
-            // IPropertyTypeService propertyTypeService,
-            // ISaleTypeService saleTypeService,
-            // IImprovementService improvementService,
-            IPropertyService propertyService,
             IOfferService offerService,
             IMessageAtCService messageService,
             IUserSession userSession,
@@ -41,30 +32,23 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         {
             _agentPropertyService = agentPropertyService;
             _propertyQueryService = propertyQueryService;
-            // _propertyTypeService = propertyTypeService;
-            // _saleTypeService = saleTypeService;
-            // _improvementService = improvementService;
-            _propertyService = propertyService;
             _offerService = offerService;
             _messageService = messageService;
             _userSession = userSession;
             _mapper = mapper;
         }
-
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
             if (pageNumber < 1) pageNumber = 1;
 
             var agentId = _userSession.GetIdCurrentUser();
-            var countResult = await _propertyQueryService.CountAvailableByAgentAsync(agentId);
-            var countResult = await _propertyService.CountByAgentAsync(agentId);
+            var countResult = await _agentPropertyService.CountByAgentAsync(agentId);
             var totalItems = countResult.IsValid ? countResult.Value : 0;
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
             if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
 
-            var result = await _propertyQueryService.GetAvailableByAgentAsync(agentId, pageNumber, pageSize);
-            var result = await _propertyService.GetPropertiesByAgentAsync(agentId, pageNumber, pageSize);
+            var result = await _agentPropertyService.GetPropertiesByAgentAsync(agentId, pageNumber, pageSize);
             if (!result.IsValid)
             {
                 return View(new AgentPropertiesViewModel { Properties = new List<PropertyCardViewModel>() });

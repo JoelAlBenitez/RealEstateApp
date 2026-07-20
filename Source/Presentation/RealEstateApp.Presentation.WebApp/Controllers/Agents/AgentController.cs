@@ -43,13 +43,10 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var countResult = await _agentPropertyService.CountByAgentAsync(agentId);
             var totalItems = countResult.IsValid ? countResult.Value : 0;
             
-            var totalCountResult = await _propertyService.CountByAgentAsync(agentId);
-            var totalItems = totalCountResult.IsValid ? totalCountResult.Value : 0;
-            
-            var availableCountResult = await _propertyService.CountByAgentAndStatusAsync(agentId, RealEstateApp.Core.Domain.Common.Enums.PropertyStatus.PropertyState.Available);
+            var availableCountResult = await _agentPropertyService.CountByAgentAndStatusAsync(agentId, RealEstateApp.Core.Domain.Common.Enums.PropertyStatus.PropertyState.Available);
             var availableItems = availableCountResult.IsValid ? availableCountResult.Value : 0;
 
-            var soldCountResult = await _propertyService.CountByAgentAndStatusAsync(agentId, RealEstateApp.Core.Domain.Common.Enums.PropertyStatus.PropertyState.Sold);
+            var soldCountResult = await _agentPropertyService.CountByAgentAndStatusAsync(agentId, RealEstateApp.Core.Domain.Common.Enums.PropertyStatus.PropertyState.Sold);
             var soldItems = soldCountResult.IsValid ? soldCountResult.Value : 0;
 
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
