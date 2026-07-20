@@ -14,17 +14,17 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
     {
         private const int PageSize = 12;
 
-        private readonly IPropertyService _propertyService;
+        private readonly IPropertyQueryService _propertyQueryService;
         private readonly IOperationalAccountWebApp _operationalAccountWebApp;
         private readonly IMapper _mapper;
 
         public HomeController(
-            IPropertyService propertyService,
+            IPropertyQueryService propertyQueryService,
             IOperationalAccountWebApp operationalAccountWebApp,
             IMapper mapper
             )
         {
-            _propertyService = propertyService;
+            _propertyQueryService = propertyQueryService;
             _operationalAccountWebApp = operationalAccountWebApp;
             _mapper = mapper;
         }
@@ -46,7 +46,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
 
         public async Task<IActionResult> DetailsProperty(int IdProperty)
         {
-            var result = await _propertyService.GetByIdWithDetailsAsync(IdProperty);
+            var result = await _propertyQueryService.GetByIdWithDetailsAsync(IdProperty);
             if (!result.IsValid)
             {
                 AddErrors(result.Errors);
@@ -102,7 +102,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             {
                 return View("Index", await BuildHomeAsync(null, new PropertyFilterViewModel(), 1, false));
             }
-            var consult = await _propertyService.GetByCodeAsync(vm.Code.Trim());
+            var consult = await _propertyQueryService.GetByCodeAsync(vm.Code.Trim());
             if (!consult.IsValid || consult.Value == null)
             {
                 TempData["Warning"] = "La propiedad indicada no pudo ser encontrada.";
@@ -149,7 +149,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             bool isFiltered)
         {
             var totalPages = 1;
-            var countResult = await _propertyService.CountAvailableAsync(filters);
+            var countResult = await _propertyQueryService.CountAvailableAsync(filters);
             if (!countResult.IsValid)
             {
                 AddErrors(countResult.Errors);
@@ -161,7 +161,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             page = Math.Clamp(page, 1, totalPages);
 
             IReadOnlyCollection<PropertyPublicViewModel> properties = Array.Empty<PropertyPublicViewModel>();
-            var result = await _propertyService.GetAvailableAsync(filters, page, PageSize);
+            var result = await _propertyQueryService.GetAvailableAsync(filters, page, PageSize);
             if (!result.IsValid)
             {
                 AddErrors(result.Errors);

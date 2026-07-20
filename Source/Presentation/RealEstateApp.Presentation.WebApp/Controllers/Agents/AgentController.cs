@@ -14,20 +14,20 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
     [Authorize(Roles = "Agente")]
     public class AgentController : Controller
     {
-        private readonly IPropertyService _propertyService;
+        private readonly IAgentPropertyService _agentPropertyService;
         private readonly IOperationalAccountWebApp _accountService;
         private readonly IUserSession _userSession;
         private readonly IFileManager _fileManager;
         private readonly IMapper _mapper;
 
         public AgentController(
-            IPropertyService propertyService,
+            IAgentPropertyService agentPropertyService,
             IOperationalAccountWebApp accountService,
             IUserSession userSession,
             IFileManager fileManager,
             IMapper mapper)
         {
-            _propertyService = propertyService;
+            _agentPropertyService = agentPropertyService;
             _accountService = accountService;
             _userSession = userSession;
             _fileManager = fileManager;
@@ -39,13 +39,13 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             if (pageNumber < 1) pageNumber = 1;
 
             var agentId = _userSession.GetIdCurrentUser();
-            var countResult = await _propertyService.CountByAgentAsync(agentId);
+            var countResult = await _agentPropertyService.CountByAgentAsync(agentId);
             var totalItems = countResult.IsValid ? countResult.Value : 0;
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
             if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
 
-            var result = await _propertyService.GetPropertiesByAgentAsync(agentId, pageNumber, pageSize);
+            var result = await _agentPropertyService.GetPropertiesByAgentAsync(agentId, pageNumber, pageSize);
             
             if (!result.IsValid)
             {
