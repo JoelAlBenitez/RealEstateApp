@@ -33,10 +33,6 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 var app = builder.Build();
 
 await app.Services.GenerateDataSeedUsers();
-await app.Services.SeedSaleTypesAsync();
-await app.Services.SeedPropertyTypesAsync();
-await app.Services.SeedImprovementsAsync();
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");

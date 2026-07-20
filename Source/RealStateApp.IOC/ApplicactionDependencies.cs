@@ -1,4 +1,3 @@
-
 using Microsoft.Extensions.DependencyInjection;
 using RealEstateApp.Core.Application.Contracts.Agent;
 using RealEstateApp.Core.Application.Services.Agent;
@@ -7,7 +6,6 @@ using RealEstateApp.Core.Application.Contracts.PropertyType;
 using RealEstateApp.Core.Application.Services.PropertyType;
 using RealEstateApp.Core.Application.Contracts.SaleType;
 using RealEstateApp.Core.Application.Services.SaleType;
-using RealEstateApp.Core.Application.Contracts.GenericServices;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.SaleType;
 using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.SaleType;
 
