@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.Properties;
+using RealEstateApp.Core.Application.Contracts.PropertyType;
 using RealEstateApp.Core.Application.Contracts.Users.ExternalUsers;
 using RealEstateApp.Core.Application.DTOs.Property;
 using RealEstateApp.Core.Application.ViewsModel.Common;
@@ -15,16 +16,19 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
         private const int PageSize = 12;
 
         private readonly IPropertyQueryService _propertyQueryService;
+        private readonly IPropertyTypeService _propertyTypeService;
         private readonly IOperationalAccountWebApp _operationalAccountWebApp;
         private readonly IMapper _mapper;
 
         public HomeController(
             IPropertyQueryService propertyQueryService,
+            IPropertyTypeService propertyTypeService,
             IOperationalAccountWebApp operationalAccountWebApp,
             IMapper mapper
             )
         {
             _propertyQueryService = propertyQueryService;
+            _propertyTypeService = propertyTypeService;
             _operationalAccountWebApp = operationalAccountWebApp;
             _mapper = mapper;
         }
@@ -160,6 +164,8 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             }
             page = Math.Clamp(page, 1, totalPages);
 
+            filter.TypePropery = await GetPropertyTypeOptionsAsync();
+
             IReadOnlyCollection<PropertyPublicViewModel> properties = Array.Empty<PropertyPublicViewModel>();
             var result = await _propertyQueryService.GetAvailableAsync(filters, page, PageSize);
             if (!result.IsValid)
@@ -182,6 +188,18 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
                 TotalPages = totalPages,
                 IsFiltered = isFiltered
             };
+        }
+
+        private async Task<List<TypePropertyViewModel>> GetPropertyTypeOptionsAsync()
+        {
+            var result = await _propertyTypeService.GetAllForSelectAsync();
+            if (!result.IsValid || result.Value == null)
+            {
+                return new List<TypePropertyViewModel>();
+            }
+            return result.Value
+                .Select(t => new TypePropertyViewModel { Id = t.Id, Name = t.Name })
+                .ToList();
         }
 
         private async Task LoadAgentContactAsync(PropertyDetailViewModel detail)

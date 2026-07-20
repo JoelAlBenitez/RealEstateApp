@@ -62,6 +62,16 @@
                             <span class="badge bg-dark px-3 py-2 mb-2" style="font-size: 0.8rem; font-weight: 700; border-radius: 6px; letter-spacing: 0.05em; opacity: 0.85;">
                                 CÓDIGO: #@Model.Property.Code
                             </span>
+                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                @if (!string.IsNullOrWhiteSpace(Model.Property.PropertyTypeName))
+                                {
+                                    <span class="badge bg-secondary px-3 py-2" style="font-size: 0.8rem; border-radius: 6px;">@Model.Property.PropertyTypeName</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.Property.SaleTypeName))
+                                {
+                                    <span class="badge bg-primary px-3 py-2" style="font-size: 0.8rem; border-radius: 6px;">@Model.Property.SaleTypeName</span>
+                                }
+                            </div>
                             <h2 class="fw-bold mb-0" style="color: var(--color-text);">Detalles de la Publicación</h2>
                         </div>
                         <h2 class="fw-bold text-success m-0">@string.Format("{0:C}", Model.Property.Price)</h2>
@@ -92,6 +102,19 @@
                         <h5 class="fw-bold mb-2" style="color: var(--color-text);">Descripción de la Propiedad</h5>
                         <p style="color: var(--color-text-secondary); line-height: 1.6; white-space: pre-line;">@Model.Property.Description</p>
                     </div>
+
+                    @if (Model.Property.Improvements != null && Model.Property.Improvements.Any())
+                    {
+                        <div class="mb-2">
+                            <h5 class="fw-bold mb-2" style="color: var(--color-text);">Mejoras</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var improvement in Model.Property.Improvements)
+                                {
+                                    <span class="badge bg-light text-dark border px-3 py-2" style="font-size: 0.8rem; border-radius: 999px; font-weight: 500;">@improvement</span>
+                                }
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
 

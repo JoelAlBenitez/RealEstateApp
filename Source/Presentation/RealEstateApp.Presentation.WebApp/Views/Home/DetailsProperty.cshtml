@@ -85,6 +85,33 @@
 
             <strong class="detail__price">$@Model.Price.ToString("N0")</strong>
 
+            @if (!string.IsNullOrWhiteSpace(Model.PropertyTypeName) || !string.IsNullOrWhiteSpace(Model.SaleTypeName))
+            {
+                <div class="detail__tags">
+                    @if (!string.IsNullOrWhiteSpace(Model.PropertyTypeName))
+                    {
+                        <span class="detail__tag">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3 10.5 12 3l9 7.5" />
+                                <path d="M5 9.5V21h14V9.5" />
+                                <path d="M9.5 21v-6h5v6" />
+                            </svg>
+                            <span>@Model.PropertyTypeName</span>
+                        </span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.SaleTypeName))
+                    {
+                        <span class="detail__tag detail__tag--sale">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                                <line x1="7" y1="7" x2="7" y2="7" />
+                            </svg>
+                            <span>@Model.SaleTypeName</span>
+                        </span>
+                    }
+                </div>
+            }
+
             <ul class="detail__specs">
                 <li title="Tamaño en metros cuadrados">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -124,6 +151,24 @@
                 </h2>
                 <p>@Model.Description</p>
             </div>
+
+            @if (Model.Improvements != null && Model.Improvements.Any())
+            {
+                <div class="detail__improvements">
+                    <h2>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        <span>Mejoras</span>
+                    </h2>
+                    <ul class="detail__improvements-list">
+                        @foreach (var improvement in Model.Improvements)
+                        {
+                            <li>@improvement</li>
+                        }
+                    </ul>
+                </div>
+            }
 
             <div class="detail__agent">
                 <button class="detail__agent-photo" id="agentPhotoBtn" type="button" aria-label="Ver foto del agente en tamaño completo">

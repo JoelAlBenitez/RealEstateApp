@@ -19,7 +19,6 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
 
         private readonly IServicesValidateUsers _servicesValidateUsers;
 
-
         public OperationalAccountWebApi(
             UserManager<AppUsers> userManager,
             SignInManager<AppUsers> signInManager,
@@ -114,9 +113,14 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             user.LastName = edit.LastName;
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
+
             if (!string.IsNullOrWhiteSpace(edit.NewPassword))
             {
                 var changePassword = await _userManager.ResetPasswordAsync(user, token, edit.NewPassword);
+
+            if (!string.IsNullOrWhiteSpace(edit.NewPassword)) {
+                var changePassword = await  _userManager.ResetPasswordAsync(user, token, edit.NewPassword);
+
                 if (!changePassword.Succeeded)
                 {
                     response.HasError = true;

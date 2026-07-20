@@ -8,16 +8,13 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Dashbo
     {
         public DashboardDtoToViewModel()
         {
-            // El DTO trae un único conteo por tipo de usuario (activos u inactivos según ShowingActive),
-            // por eso se enruta ese valor al campo correspondiente y el opuesto queda en 0 (no se muestra).
             CreateMap<DashboardDto, DashboardViewModel>()
-                .ForMember(d => d.ActiveAgents, o => o.MapFrom(s => s.ShowingActive ? s.AgentsCount : 0))
-                .ForMember(d => d.InactiveAgents, o => o.MapFrom(s => s.ShowingActive ? 0 : s.AgentsCount))
-                .ForMember(d => d.ActiveClients, o => o.MapFrom(s => s.ShowingActive ? s.ClientsCount : 0))
-                .ForMember(d => d.InactiveClients, o => o.MapFrom(s => s.ShowingActive ? 0 : s.ClientsCount))
-                .ForMember(d => d.ActiveDevelopers, o => o.MapFrom(s => s.ShowingActive ? s.DevelopersCount : 0))
-                .ForMember(d => d.InactiveDevelopers, o => o.MapFrom(s => s.ShowingActive ? 0 : s.DevelopersCount))
-                .ForMember(d => d.ShowActive, o => o.MapFrom(s => s.ShowingActive));
+                .ForMember(dest => dest.ActiveAgents, opt => opt.MapFrom(src => src.ActiveAgentsCount))
+                .ForMember(dest => dest.InactiveAgents, opt => opt.MapFrom(src => src.InactiveAgentsCount))
+                .ForMember(dest => dest.ActiveClients, opt => opt.MapFrom(src => src.ActiveClientsCount))
+                .ForMember(dest => dest.InactiveClients, opt => opt.MapFrom(src => src.InactiveClientsCount))
+                .ForMember(dest => dest.ActiveDevelopers, opt => opt.MapFrom(src => src.ActiveDevelopersCount))
+                .ForMember(dest => dest.InactiveDevelopers, opt => opt.MapFrom(src => src.InactiveDevelopersCount));
         }
     }
 }
