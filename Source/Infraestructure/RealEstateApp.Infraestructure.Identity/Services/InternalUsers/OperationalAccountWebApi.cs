@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.Contracts.Users.Validation;
 using RealEstateApp.Core.Application.DTOs.Api.Agents;
@@ -94,13 +94,13 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             var response = new EditResponseDto
             {
                 Errors = new List<string>(),
-                HasError = false   
+                HasError = false
             };
             var validate = await _servicesValidateUsers
                 .UpdateInternalValidateUserAsync(edit, response);
             if (validate != null && validate.HasError) return validate;
             var user = await _userManager.FindByIdAsync(edit.Id);
-            if(user == null)
+            if (user == null)
             {
                 response.HasError = true;
                 response.Errors.Add("Ha ocurrido un error al seleccionar el usuario.");
@@ -113,8 +113,11 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             user.LastName = edit.LastName;
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            if (!string.IsNullOrWhiteSpace(edit.NewPassword)) {
-                var changePassword = await  _userManager.ResetPasswordAsync(user, token, edit.NewPassword);
+
+            if (!string.IsNullOrWhiteSpace(edit.NewPassword))
+            {
+                var changePassword = await _userManager.ResetPasswordAsync(user, token, edit.NewPassword);
+
                 if (!changePassword.Succeeded)
                 {
                     response.HasError = true;
@@ -123,11 +126,11 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
                 }
                 return response;
             }
-            
+
             var update = await _userManager.UpdateAsync(user);
             if (!update.Succeeded)
             {
-                
+
                 response.HasError = true;
                 response.Errors.Add("Ha ocurrido un error inesperado al editar el usuario.");
                 return response;

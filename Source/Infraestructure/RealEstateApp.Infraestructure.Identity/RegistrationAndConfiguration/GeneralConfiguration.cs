@@ -11,7 +11,7 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
             IConfiguration configuration)
         {
             services.AddDbContext<DbContextIdentityRealStateApp>(opt =>
-              opt.UseInMemoryDatabase("RealEstateAppIdentityDb"));
+                opt.UseInMemoryDatabase("RealEstateAppIdentityDb"));
 
             //services.AddDbContext<DbContextIdentityRealStateApp>(opt =>
             //opt.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
