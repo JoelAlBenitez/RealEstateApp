@@ -9,7 +9,18 @@ namespace RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Propertie
     {
         public PropertyMappingProfile()
         {
-            CreateMap<Property, PropertyDto>().ReverseMap();
+            CreateMap<Property, PropertyDto>()
+                .ForMember(dest => dest.PropertyTypeName, opt => opt.MapFrom(src => src.PropertyType != null ? src.PropertyType.Name : null))
+                .ForMember(dest => dest.SaleTypeName, opt => opt.MapFrom(src => src.SaleType != null ? src.SaleType.Name : null))
+                .ForMember(dest => dest.Improvements, opt => opt.MapFrom(src => src.PropertyImprovements != null
+                    ? src.PropertyImprovements.Where(pi => pi.Improvement != null).Select(pi => pi.Improvement!.Name).ToList()
+                    : new List<string>()));
+
+            CreateMap<PropertyDto, Property>()
+                .ForMember(dest => dest.PropertyType, opt => opt.Ignore())
+                .ForMember(dest => dest.SaleType, opt => opt.Ignore())
+                .ForMember(dest => dest.PropertyImprovements, opt => opt.Ignore())
+                .ForMember(dest => dest.Offers, opt => opt.Ignore());
             CreateMap<PropertyImage, PropertyImageDto>()
                 .ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.ImageUrl))
                 .ReverseMap()

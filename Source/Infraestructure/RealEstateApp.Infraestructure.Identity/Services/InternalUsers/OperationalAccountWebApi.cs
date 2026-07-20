@@ -19,7 +19,6 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
 
         private readonly IServicesValidateUsers _servicesValidateUsers;
 
-
         public OperationalAccountWebApi(
             UserManager<AppUsers> userManager,
             SignInManager<AppUsers> signInManager,
@@ -112,8 +111,10 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             user.Name = edit.Name;
             user.UserName = edit.UserName;
             user.LastName = edit.LastName;
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
             if (!string.IsNullOrWhiteSpace(edit.NewPassword)) {
-                var changePassword = await _userManager.ChangePasswordAsync(user, user.PasswordHash!,edit.NewPassword);
+                var changePassword = await  _userManager.ResetPasswordAsync(user, token, edit.NewPassword);
                 if (!changePassword.Succeeded)
                 {
                     response.HasError = true;
@@ -126,6 +127,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             var update = await _userManager.UpdateAsync(user);
             if (!update.Succeeded)
             {
+                
                 response.HasError = true;
                 response.Errors.Add("Ha ocurrido un error inesperado al editar el usuario.");
                 return response;

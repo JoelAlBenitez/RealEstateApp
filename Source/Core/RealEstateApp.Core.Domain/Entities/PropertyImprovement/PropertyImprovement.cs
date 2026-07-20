@@ -7,5 +7,6 @@ namespace RealEstateApp.Core.Domain.Entities
 
         // Navigation Properties
         public Property? Property { get; set; }
+        public Improvement? Improvement { get; set; }
     }
 }
