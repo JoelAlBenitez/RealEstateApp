@@ -37,13 +37,13 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
         // GET: /PropertyType/Create
         public IActionResult Create()
         {
-            return View(new CreatePropertyTypeViewModel { Name = string.Empty, Description = string.Empty });
+            return View(new SavePropertyTypeViewModel { Name = string.Empty, Description = string.Empty });
         }
 
         // POST: /PropertyType/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreatePropertyTypeViewModel viewModel)
+        public async Task<IActionResult> Create(SavePropertyTypeViewModel viewModel)
         {
             if (!ModelState.IsValid)
                 return View(viewModel);
@@ -76,7 +76,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             }
 
             // GetByIdAsync returns SavePropertyTypeDto; map it to the edit view model
-            var viewModel = new EditPropertyTypeViewModel
+            var viewModel = new SavePropertyTypeViewModel
             {
                 Id = result.Value.Id ?? 0,
                 Name = result.Value.Name,
@@ -88,7 +88,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
         // POST: /PropertyType/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EditPropertyTypeViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, SavePropertyTypeViewModel viewModel)
         {
             if (id != viewModel.Id)
                 return BadRequest();
