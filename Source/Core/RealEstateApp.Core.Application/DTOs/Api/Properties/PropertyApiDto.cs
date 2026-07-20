@@ -5,8 +5,8 @@ namespace RealEstateApp.Core.Application.DTOs.Api.Properties
         public int Id { get; set; }
         public required string Code { get; set; }
 
-        // Los nombres de catálogos (tipo de propiedad, tipo de venta y mejoras)
-        // se completarán cuando el módulo de catálogos del administrador esté disponible.
+        // Nombres de catálogos (tipo de propiedad, tipo de venta y mejoras),
+        // ya integrados desde los mantenimientos del administrador.
         public string? PropertyType { get; set; }
         public string? SaleType { get; set; }
         public List<string> Improvements { get; set; } = new();
