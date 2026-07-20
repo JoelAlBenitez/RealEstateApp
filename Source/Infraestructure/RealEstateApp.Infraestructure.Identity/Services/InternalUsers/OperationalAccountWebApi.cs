@@ -113,9 +113,14 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             user.LastName = edit.LastName;
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
+
             if (!string.IsNullOrWhiteSpace(edit.NewPassword))
             {
                 var changePassword = await _userManager.ResetPasswordAsync(user, token, edit.NewPassword);
+
+            if (!string.IsNullOrWhiteSpace(edit.NewPassword)) {
+                var changePassword = await  _userManager.ResetPasswordAsync(user, token, edit.NewPassword);
+
                 if (!changePassword.Succeeded)
                 {
                     response.HasError = true;
@@ -128,7 +133,6 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             var update = await _userManager.UpdateAsync(user);
             if (!update.Succeeded)
             {
-
 
                 response.HasError = true;
                 response.Errors.Add("Ha ocurrido un error inesperado al editar el usuario.");
