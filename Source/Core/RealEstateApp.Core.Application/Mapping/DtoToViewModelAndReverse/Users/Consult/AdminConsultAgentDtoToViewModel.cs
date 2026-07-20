@@ -8,7 +8,8 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.
     {
         public AdminConsultAgentDtoToViewModel()
         {
-            CreateMap<AdminConsultAgentDto, AgentListItemViewModel>();
+            CreateMap<AdminConsultAgentDto, AgentListItemViewModel>()
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.State));
         }
     }
 }

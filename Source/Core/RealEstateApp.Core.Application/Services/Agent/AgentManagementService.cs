@@ -5,8 +5,6 @@ using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Common.Errors;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Transactions;
 using RealEstateApp.Core.Domain.Common.Enums;
 
@@ -32,6 +30,20 @@ namespace RealEstateApp.Core.Application.Services.Agent
         public async Task<ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>> GetAgentsAsync()
         {
             var agents = await _internalAccountApi.GetAllAgentesByConsultAdmin();
+            foreach (var agent in agents)
+            {
+                var countResult = await _propertyService.CountByAgentAsync(agent.Id);
+                if (countResult.IsValid)
+                {
+                    agent.Properties = countResult.Value;
+                }
+            }
+            return ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>.Success(agents);
+        }
+
+        public async Task<ValidationResult<IReadOnlyCollection<AdminConsultAgentDto>>> GetPendingConfirmationAgentsAsync()
+        {
+            var agents = await _internalAccountApi.GetAgentPendientConfirmAccount();
             foreach (var agent in agents)
             {
                 var countResult = await _propertyService.CountByAgentAsync(agent.Id);
