@@ -1,0 +1,13 @@
+using RealEstateApp.Core.Domain.Entities;
+using RealEstateApp.Core.Domain.Interfaces.GenericRepository;
+namespace RealEstateApp.Core.Domain.Interfaces.Repositories
+{
+    public interface IPropertyTypeRepository : IGenericRepository<PropertyType, int>
+    {
+        Task<int> CountByPropertyTypeAsync(int propertyTypeId);
+        
+
+
+        Task<bool> ExistNameAsync(string name, int id = 0);
+    }
+}

@@ -9,6 +9,7 @@ namespace RealEstateApp.Core.Application.Contracts.Offers
         Task<ValidationResult<IReadOnlyCollection<OfferDto>>> GetPendingByPropertyAsync(int propertyId);
         Task<ValidationResult<IReadOnlyCollection<OfferDto>>> GetByCustomerAsync();
         Task<ValidationResult<IReadOnlyCollection<OfferDto>>> GetOffersByCustomerAndPropertyAsync(int propertyId);
+        Task<ValidationResult<IReadOnlyCollection<OfferDto>>> GetOffersByPropertyAsync(int propertyId);
         Task<ValidationResult> AcceptOfferAsync(int offerId);
         Task<ValidationResult> RejectOfferAsync(int offerId);
         Task<ValidationResult> CancelOfferAsync(int offerId);

@@ -3,13 +3,9 @@ using RealEstateApp.Core.Domain.Common.Enums;
 using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using RealEstateApp.Core.Domain.Common.Errors;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Application.Contracts.Admin;
-using RealEstateApp.Core.Application.Contracts.Users.Base;
 
 namespace RealEstateApp.Core.Application.Services.Admin
 {

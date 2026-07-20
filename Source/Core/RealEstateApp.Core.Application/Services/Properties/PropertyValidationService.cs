@@ -40,6 +40,18 @@ namespace RealEstateApp.Core.Application.Services.Properties
             if (string.IsNullOrWhiteSpace(dto.Description))
                 errors.Add(new Error("Propiedad.DescripcionInvalida", "La descripción de la propiedad es requerida."));
 
+            if (dto.ImprovementIds == null || dto.ImprovementIds.Count == 0)
+                errors.Add(new Error("Propiedad.MejorasRequeridas", "Debe seleccionar al menos una mejora para la propiedad."));
+
+            if (dto.ImageFiles == null || dto.ImageFiles.Count == 0)
+            {
+                errors.Add(new Error("Propiedad.ImagenesRequeridas", "Debe cargar al menos una imagen de la propiedad."));
+            }
+            else if (dto.ImageFiles.Count > 4)
+            {
+                errors.Add(new Error("Propiedad.ExcesoImagenes", "Solo se permite registrar hasta 4 imágenes por propiedad."));
+            }
+
             await Task.CompletedTask;
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();
@@ -102,6 +114,22 @@ namespace RealEstateApp.Core.Application.Services.Properties
 
             if (string.IsNullOrWhiteSpace(dto.Description))
                 errors.Add(new Error("Propiedad.DescripcionInvalida", "La descripción de la propiedad es requerida."));
+
+            if (dto.ImprovementIds == null || dto.ImprovementIds.Count == 0)
+                errors.Add(new Error("Propiedad.MejorasRequeridas", "Debe seleccionar al menos una mejora para la propiedad."));
+
+            var preExistingCount = dto.ExistingImageUrls?.Count ?? 0;
+            var newCount = dto.ImageFiles?.Count ?? 0;
+            var totalCount = preExistingCount + newCount;
+
+            if (totalCount < 1)
+            {
+                errors.Add(new Error("Propiedad.ImagenesRequeridas", "Debe mantener o subir al menos una imagen para la propiedad."));
+            }
+            else if (totalCount > 4)
+            {
+                errors.Add(new Error("Propiedad.ExcesoImagenes", "Solo se permite un total de 4 imágenes por propiedad."));
+            }
 
             return errors.Count > 0 ? ValidationResult.Failure(errors) : ValidationResult.Success();
         }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.Offers;
 using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.ViewsModel.Offer;
+using RealEstateApp.Core.Application.ViewsModel.Property;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using AutoMapper;
 
@@ -41,12 +42,16 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var offersResult = await _offerService.GetPendingByPropertyAsync(propertyId);
             if (!offersResult.IsValid)
             {
-                ViewBag.CurrentPage = 1;
-                ViewBag.TotalPages = 1;
-                ViewBag.TotalItems = 0;
-                ViewBag.PropertyId = propertyId;
-                ViewBag.PropertyCode = propertyResult.Value.Code;
-                return View(new List<OfferViewModel>());
+                return View(new AgentOffersViewModel 
+                { 
+                    Offers = new List<OfferViewModel>(),
+                    PropertyId = propertyId,
+                    PropertyCode = propertyResult.Value.Code,
+                    Page = 1,
+                    PageSize = pageSize,
+                    TotalPages = 1,
+                    TotalItems = 0
+                });
             }
 
             var viewModels = _mapper.Map<List<OfferViewModel>>(offersResult.Value);
@@ -57,13 +62,18 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
 
             var paginatedViewModels = viewModels.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.TotalItems = totalItems;
-            ViewBag.PropertyId = propertyId;
-            ViewBag.PropertyCode = propertyResult.Value.Code;
+            var viewModel = new AgentOffersViewModel
+            {
+                Offers = paginatedViewModels,
+                PropertyId = propertyId,
+                PropertyCode = propertyResult.Value.Code,
+                Page = pageNumber,
+                PageSize = pageSize,
+                TotalPages = totalPages,
+                TotalItems = totalItems
+            };
 
-            return View(paginatedViewModels);
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -83,7 +93,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al procesar la aceptación de la oferta.";
             }
 
-            return RedirectToAction(nameof(Index), new { propertyId });
+            return RedirectToAction("Details", "AgentProperty", new { id = propertyId });
         }
 
         [HttpPost]
@@ -103,7 +113,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al procesar el rechazo de la oferta.";
             }
 
-            return RedirectToAction(nameof(Index), new { propertyId });
+            return RedirectToAction("Details", "AgentProperty", new { id = propertyId });
         }
     }
 }

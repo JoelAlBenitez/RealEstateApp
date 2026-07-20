@@ -75,7 +75,10 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Offers
 
         public async Task BeginTransactionAsync()
         {
-            _transaction = await _context.Database.BeginTransactionAsync();
+            if (_context.Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+            {
+                _transaction = await _context.Database.BeginTransactionAsync();
+            }
         }
 
         public async Task CommitTransactionAsync()
@@ -96,6 +99,15 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Offers
                 await _transaction.DisposeAsync();
                 _transaction = null;
             }
+        }
+
+        public async Task<IReadOnlyCollection<Offer>> GetOffersByPropertyAsync(int propertyId)
+        {
+            return await _context.Offers
+                .AsNoTracking()
+                .Include(o => o.Property)
+                .Where(o => o.PropertyId == propertyId)
+                .ToListAsync();
         }
     }
 }

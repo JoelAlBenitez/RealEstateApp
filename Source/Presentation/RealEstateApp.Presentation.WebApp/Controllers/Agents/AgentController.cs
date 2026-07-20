@@ -7,6 +7,7 @@ using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 using RealEstateApp.Core.Application.ViewsModel.Property;
 using RealEstateApp.Core.Application.ViewsModel.Users.Operational.ExternalUser;
+using RealEstateApp.Core.Application.ViewsModel.Common;
 using AutoMapper;
 
 namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
@@ -41,6 +42,13 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var agentId = _userSession.GetIdCurrentUser();
             var countResult = await _agentPropertyService.CountByAgentAsync(agentId);
             var totalItems = countResult.IsValid ? countResult.Value : 0;
+            
+            var availableCountResult = await _agentPropertyService.CountByAgentAndStatusAsync(agentId, RealEstateApp.Core.Domain.Common.Enums.PropertyStatus.PropertyState.Available);
+            var availableItems = availableCountResult.IsValid ? availableCountResult.Value : 0;
+
+            var soldCountResult = await _agentPropertyService.CountByAgentAndStatusAsync(agentId, RealEstateApp.Core.Domain.Common.Enums.PropertyStatus.PropertyState.Sold);
+            var soldItems = soldCountResult.IsValid ? soldCountResult.Value : 0;
+
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
             if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
@@ -49,19 +57,23 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             
             if (!result.IsValid)
             {
-                ViewBag.CurrentPage = 1;
-                ViewBag.TotalPages = 1;
-                ViewBag.TotalItems = 0;
-                return View(new List<PropertyCardViewModel>());
+                return View(new AgentDashboardViewModel { Properties = new List<PropertyCardViewModel>() });
             }
 
             var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
 
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.TotalItems = totalItems;
+            var dashboardVm = new AgentDashboardViewModel
+            {
+                Properties = viewModels,
+                TotalProperties = totalItems,
+                AvailableProperties = availableItems,
+                SoldProperties = soldItems,
+                Page = pageNumber,
+                PageSize = pageSize,
+                TotalPages = totalPages
+            };
 
-            return View(viewModels);
+            return View(dashboardVm);
         }
 
         public async Task<IActionResult> Profile()
@@ -73,14 +85,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
                 return RedirectToAction(nameof(Index));
             }
 
-            var viewModel = new EditExternalUserViewModel
-            {
-                Id = result.Id,
-                Name = result.Name,
-                LastName = result.LastName,
-                PhoneNumber = result.PhoneNumber,
-                ProfileImgCurrent = result.ProfileImgAgent
-            };
+            var viewModel = _mapper.Map<EditExternalUserViewModel>(result);
 
             return View(viewModel);
         }
@@ -94,19 +99,12 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
                 return View(model);
             }
 
-            var editDto = new EditAgentUserDto
-            {
-                Id = model.Id,
-                Name = model.Name,
-                LastName = model.LastName,
-                PhoneNumber = model.PhoneNumber,
-                ProfileImg = model.ProfileImgCurrent,
-                ChangePorfileImg = false
-            };
+            var editDto = _mapper.Map<EditAgentUserDto>(model);
 
             if (model.NewProfileImage != null)
             {
-                var newImgPath = await _fileManager.SaveAsync(model.NewProfileImage, "Users", model.Id);
+                var guidFolder = Guid.NewGuid().ToString();
+                var newImgPath = await _fileManager.SaveAsync(model.NewProfileImage, "Users", guidFolder);
                 if (!string.IsNullOrEmpty(newImgPath))
                 {
                     editDto.ProfileImg = newImgPath;

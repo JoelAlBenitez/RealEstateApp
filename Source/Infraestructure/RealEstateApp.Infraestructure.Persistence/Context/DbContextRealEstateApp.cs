@@ -15,6 +15,8 @@ namespace RealEstateApp.Infraestructure.Persistence.Context
         public DbSet<FavoriteProperty> FavoriteProperties { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<PropertyImprovement> PropertyImprovements { get; set; }
+        public DbSet<SaleType> SaleTypes { get; set; }
+        public DbSet<PropertyType> PropertyTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

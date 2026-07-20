@@ -44,6 +44,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return View(viewModels);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpGet]
         public IActionResult Create()
         {
@@ -61,8 +62,9 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return View(viewModel);
         }
 
-        [HttpPost]
         [ValidateAntiForgeryToken]
+        [HttpPost]
+        
         public async Task<IActionResult> Create(CreateInternalUserViewModel vm)
         {
             if (!ModelState.IsValid)
@@ -87,6 +89,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return RedirectToAction(nameof(Index));
         }
 
+        [ValidateAntiForgeryToken]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
@@ -133,8 +136,8 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
         [ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> ToggleStatus(string id, bool active)
         {
             var currentAdminId = _userSession.GetIdCurrentUser();

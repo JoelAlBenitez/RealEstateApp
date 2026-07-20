@@ -1,6 +1,6 @@
 @using RealEstateApp.Core.Application.ViewsModel.Offer
 @using RealEstateApp.Core.Domain.Common.Enums.OfferStatus
-@model List<OfferViewModel>
+@model RealEstateApp.Core.Application.ViewsModel.Property.CustomerOffersViewModel
 @{
     ViewData["Title"] = "Mis Ofertas Adquiridas";
 }
@@ -8,10 +8,10 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
         <h2 class="fw-bold mb-0" style="color: var(--color-text);">Mis Ofertas Realizadas</h2>
-        <span class="badge bg-primary">@ViewBag.TotalItems ofertas</span>
+        <span class="badge bg-primary">@Model.TotalItems ofertas</span>
     </div>
 
-    @if (!Model.Any())
+    @if (!Model.Offers.Any())
     {
         <div class="alert alert-info border-0 shadow-sm text-center py-5">
             <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 text-muted">
@@ -25,7 +25,7 @@
     else
     {
         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-            @foreach (var offer in Model)
+            @foreach (var offer in Model.Offers)
             {
                 var statusColor = offer.Status == OfferState.Accepted ? "#22c55e" : offer.Status == OfferState.Rejected ? "#ef4444" : "#f59e0b";
                 var statusText = offer.Status == OfferState.Accepted ? "Aceptada" : offer.Status == OfferState.Rejected ? "Rechazada" : "Pendiente";
@@ -63,17 +63,6 @@
                                 <small style="color: var(--color-text-secondary);">@offer.CreateAt.ToString("dd/MM/yyyy hh:mm tt")</small>
                             </div>
 
-                            @if (offer.Status == OfferState.Pending)
-                            {
-                                <button type="button"
-                                        class="btn w-100 fw-semibold"
-                                        style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px;"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalCancelOffer"
-                                        data-offer-id="@offer.Id">
-                                    Cancelar Oferta
-                                </button>
-                            }
                         </div>
                     </div>
                 </div>
@@ -82,39 +71,3 @@
         <partial name="_Pagination" />
     }
 </div>
-
-<div class="modal fade" id="modalCancelOffer" tabindex="-1" aria-labelledby="modalCancelOfferLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
-            <div class="modal-header border-0 pb-0">
-                <div class="d-flex align-items-center gap-2">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#f59e0b" stroke-width="2">
-                        <path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    </svg>
-                    <h5 class="modal-title fw-bold mb-0" id="modalCancelOfferLabel" style="color: var(--color-text);">Cancelar Oferta</h5>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" style="filter: invert(1);"></button>
-            </div>
-            <div class="modal-body pt-3" style="color: var(--color-text-secondary);">
-                <p class="mb-0">¿Está seguro de que desea <strong style="color: var(--color-text);">cancelar</strong> esta oferta? Esta acción no se puede deshacer.</p>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Volver</button>
-                <form id="formCancelOffer" asp-controller="Offer" asp-action="Cancel" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" id="cancelOfferId" name="offerId" value="" />
-                    <button type="submit" class="btn btn-danger fw-semibold px-4">Sí, Cancelar</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-<script>
-    document.getElementById('modalCancelOffer').addEventListener('show.bs.modal', function (event) {
-        var btn = event.relatedTarget;
-        document.getElementById('cancelOfferId').value = btn.getAttribute('data-offer-id');
-    });
-</script>
-}
