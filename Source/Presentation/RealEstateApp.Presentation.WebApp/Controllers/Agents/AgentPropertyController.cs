@@ -3,7 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.Properties;
 using RealEstateApp.Core.Application.Contracts.Offers;
 using RealEstateApp.Core.Application.Contracts.Messages;
+using RealEstateApp.Core.Application.Contracts.PropertyType;
+using RealEstateApp.Core.Application.Contracts.SaleType;
+using RealEstateApp.Core.Application.Contracts.Improvement;
 using RealEstateApp.Core.Application.DTOs.Property;
+using RealEstateApp.Core.Application.DTOs.PropertyType;
+using RealEstateApp.Core.Application.DTOs.SaleType;
+using RealEstateApp.Core.Application.DTOs.Improvement;
 using RealEstateApp.Core.Application.ViewsModel.Property;
 using RealEstateApp.Core.Application.ViewsModel.Common;
 using RealEstateApp.Core.Application.ViewsModel.Offer;
@@ -15,12 +21,16 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
 {
     [Authorize(Roles = "Agente")]
     public class AgentPropertyController : Controller
-    {        private readonly IAgentPropertyService _agentPropertyService;
+    {
+        private readonly IAgentPropertyService _agentPropertyService;
         private readonly IPropertyQueryService _propertyQueryService;
         private readonly IOfferService _offerService;
         private readonly IMessageAtCService _messageService;
         private readonly IUserSession _userSession;
         private readonly IMapper _mapper;
+        private readonly IPropertyTypeService _propertyTypeService;
+        private readonly ISaleTypeService _saleTypeService;
+        private readonly IImprovementService _improvementService;
 
         public AgentPropertyController(
             IAgentPropertyService agentPropertyService,
@@ -28,7 +38,10 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             IOfferService offerService,
             IMessageAtCService messageService,
             IUserSession userSession,
-            IMapper mapper)
+            IMapper mapper,
+            IPropertyTypeService propertyTypeService,
+            ISaleTypeService saleTypeService,
+            IImprovementService improvementService)
         {
             _agentPropertyService = agentPropertyService;
             _propertyQueryService = propertyQueryService;
@@ -36,6 +49,9 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             _messageService = messageService;
             _userSession = userSession;
             _mapper = mapper;
+            _propertyTypeService = propertyTypeService;
+            _saleTypeService = saleTypeService;
+            _improvementService = improvementService;
         }
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
@@ -68,9 +84,10 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             return View(viewModel);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var viewModel = new SavePropertyViewModel { Description = string.Empty };
+            await PopulateMasterDataAsync();
             return View(viewModel);
         }
 
@@ -86,7 +103,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
 
             if (!ModelState.IsValid)
             {
-                // await PopulateDropdownsAsync(model);
+                await PopulateMasterDataAsync();
                 return View(model);
             }
 
@@ -98,7 +115,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             if (!result.IsValid)
             {
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al crear la propiedad.";
-                // await PopulateDropdownsAsync(model);
+                await PopulateMasterDataAsync();
                 return View(model);
             }
 
@@ -121,7 +138,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             }
 
             var viewModel = _mapper.Map<SavePropertyViewModel>(property);
-            // await PopulateDropdownsAsync(viewModel);
+            await PopulateMasterDataAsync();
             return View(viewModel);
         }
 
@@ -137,7 +154,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
 
             if (!ModelState.IsValid)
             {
-                // await PopulateDropdownsAsync(model);
+                await PopulateMasterDataAsync();
                 return View(model);
             }
 
@@ -155,11 +172,23 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             if (result != null && !result.IsValid)
             {
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al actualizar la propiedad.";
-                // await PopulateDropdownsAsync(model);
+                await PopulateMasterDataAsync();
                 return View(model);
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task PopulateMasterDataAsync()
+        {
+            var propertyTypesResult = await _propertyTypeService.GetAllWithCountAsync();
+            ViewBag.PropertyTypes = propertyTypesResult.IsValid ? propertyTypesResult.Value : new List<PropertyTypeDto>();
+
+            var saleTypesResult = await _saleTypeService.GetAllWithCountAsync();
+            ViewBag.SaleTypes = saleTypesResult.IsValid ? saleTypesResult.Value : new List<SaleTypeDto>();
+
+            var improvementsResult = await _improvementService.GetAllWithCountAsync();
+            ViewBag.Improvements = improvementsResult.IsValid ? improvementsResult.Value : new List<ImprovementDto>();
         }
 
         public async Task<IActionResult> Details(int id)

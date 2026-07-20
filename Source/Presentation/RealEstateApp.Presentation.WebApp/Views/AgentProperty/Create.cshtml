@@ -30,10 +30,13 @@
                                 <label class="form-label fw-bold" asp-for="PropertyTypeId">Tipo de Propiedad</label>
                                 <select class="form-select" asp-for="PropertyTypeId">
                                     <option value="">Seleccione un tipo...</option>
-                                    <option value="1">Casa</option>
-                                    <option value="2">Apartamento</option>
-                                    <option value="3">Villa</option>
-                                    <option value="4">Solar</option>
+                                    @if (ViewBag.PropertyTypes != null)
+                                    {
+                                        foreach (var type in (List<RealEstateApp.Core.Application.DTOs.PropertyType.PropertyTypeDto>)ViewBag.PropertyTypes)
+                                        {
+                                            <option value="@type.Id">@type.Name</option>
+                                        }
+                                    }
                                 </select>
                                 <span class="field-validation-error text-danger" asp-validation-for="PropertyTypeId"></span>
                             </div>
@@ -42,8 +45,13 @@
                                 <label class="form-label fw-bold" asp-for="SaleTypeId">Tipo de Venta</label>
                                 <select class="form-select" asp-for="SaleTypeId">
                                     <option value="">Seleccione un tipo...</option>
-                                    <option value="1">Venta</option>
-                                    <option value="2">Alquiler</option>
+                                    @if (ViewBag.SaleTypes != null)
+                                    {
+                                        foreach (var sale in (List<RealEstateApp.Core.Application.DTOs.SaleType.SaleTypeDto>)ViewBag.SaleTypes)
+                                        {
+                                            <option value="@sale.Id">@sale.Name</option>
+                                        }
+                                    }
                                 </select>
                                 <span class="field-validation-error text-danger" asp-validation-for="SaleTypeId"></span>
                             </div>
@@ -100,42 +108,18 @@
                         <div class="mb-4 border-top pt-3">
                             <label class="form-label fw-bold mb-2 d-block">Mejoras de la Propiedad</label>
                             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-2">
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp1" value="1" @(Model.ImprovementIds.Contains(1) ? "checked" : "") />
-                                        <label class="form-check-label" for="imp1">Piscina</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp2" value="2" @(Model.ImprovementIds.Contains(2) ? "checked" : "") />
-                                        <label class="form-check-label" for="imp2">Gimnasio</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp3" value="3" @(Model.ImprovementIds.Contains(3) ? "checked" : "") />
-                                        <label class="form-check-label" for="imp3">Parqueo</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp4" value="4" @(Model.ImprovementIds.Contains(4) ? "checked" : "") />
-                                        <label class="form-check-label" for="imp4">Jardín</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp5" value="5" @(Model.ImprovementIds.Contains(5) ? "checked" : "") />
-                                        <label class="form-check-label" for="imp5">Terraza</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp6" value="6" @(Model.ImprovementIds.Contains(6) ? "checked" : "") />
-                                        <label class="form-check-label" for="imp6">Seguridad 24/7</label>
-                                    </div>
-                                </div>
+                                @if (ViewBag.Improvements != null)
+                                {
+                                    foreach (var imp in (List<RealEstateApp.Core.Application.DTOs.Improvement.ImprovementDto>)ViewBag.Improvements)
+                                    {
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp-@imp.Id" value="@imp.Id" @(Model.ImprovementIds != null && Model.ImprovementIds.Contains(imp.Id) ? "checked" : "") />
+                                                <label class="form-check-label" for="imp-@imp.Id">@imp.Name</label>
+                                            </div>
+                                        </div>
+                                    }
+                                }
                             </div>
                             <span class="field-validation-error text-danger" asp-validation-for="ImprovementIds"></span>
                         </div>
