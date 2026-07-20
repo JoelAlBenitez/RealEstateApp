@@ -75,7 +75,7 @@ namespace RealEstateApp.Core.Application.Services.Agent
 
             var agent = await _internalAccountApi.GetUserBaseById(agentId);
             var rolesConfirm = await _internalAccountApi.GetRolesConfirmRol(agentId);
-            if (agent == null && rolesConfirm.Contains(Roles.Agente.ToString()))
+            if (agent == null || !rolesConfirm.Contains(Roles.Agente.ToString()))
             {
                 return ValidationResult.Failure(ErrorAgent.NotFound);
             }
