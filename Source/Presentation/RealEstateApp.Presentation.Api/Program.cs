@@ -28,12 +28,15 @@ builder.Services.AddDependenciesWebApi();
 builder.Services.AddScoped<IUserSession, UserSession>();
 builder.Services.AddScoped<IAgentApiService, AgentApiService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-#endregion
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHealthChecks();
 builder.Services.AddApiVersioningExtension();
 builder.Services.AddSwaggerExtension();
+#endregion
+
+
 
 var app = builder.Build();
 
