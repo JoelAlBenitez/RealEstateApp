@@ -12,16 +12,16 @@ namespace RealEstateApp.Core.Application.Services.Api
     public sealed class AgentApiService : IAgentApiService
     {
         private readonly IOperationalAccountWebApi _operationalAccountWebApi;
-        private readonly IPropertyService _propertyService;
+        private readonly IAgentPropertyService _agentPropertyService;
         private readonly ILogger<AgentApiService> _logger;
 
         public AgentApiService(
             IOperationalAccountWebApi operationalAccountWebApi,
-            IPropertyService propertyService,
+            IAgentPropertyService agentPropertyService,
             ILogger<AgentApiService> logger)
         {
             _operationalAccountWebApi = operationalAccountWebApi;
-            _propertyService = propertyService;
+            _agentPropertyService = agentPropertyService;
             _logger = logger;
         }
 
@@ -47,7 +47,7 @@ namespace RealEstateApp.Core.Application.Services.Api
         {
             var agent = await _operationalAccountWebApi.GetAgentByIdForApiAsync(agentId);
             if (agent == null) return null;
-            return await _propertyService.GetPropertiesByAgentAsync(agentId, 1, int.MaxValue);
+            return await _agentPropertyService.GetPropertiesByAgentAsync(agentId, 1, int.MaxValue);
         }
 
         public async Task<ChangeAgentStatusResult> ChangeStatusAsync(string agentId, bool status)
@@ -73,7 +73,7 @@ namespace RealEstateApp.Core.Application.Services.Api
 
         private async Task<int> CountPropertiesAsync(string agentId)
         {
-            var count = await _propertyService.CountByAgentAsync(agentId);
+            var count = await _agentPropertyService.CountByAgentAsync(agentId);
             return count.IsValid ? count.Value : 0;
         }
     }

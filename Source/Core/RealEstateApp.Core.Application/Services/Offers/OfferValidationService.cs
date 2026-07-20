@@ -15,16 +15,19 @@ namespace RealEstateApp.Core.Application.Services.Offers
     public sealed class OfferValidationService : IOfferValidationService
     {
         private readonly IOfferRepository _offerRepository;
-        private readonly IPropertyService _propertyService;
+        private readonly IPropertyQueryService _propertyQueryService;
+        private readonly IAgentPropertyService _agentPropertyService;
         private readonly IUserSession _userSession;
 
         public OfferValidationService(
-            IOfferRepository offerRepository, 
-            IPropertyService propertyService,
+            IOfferRepository offerRepository,
+            IPropertyQueryService propertyQueryService,
+            IAgentPropertyService agentPropertyService,
             IUserSession userSession)
         {
             _offerRepository = offerRepository;
-            _propertyService = propertyService;
+            _propertyQueryService = propertyQueryService;
+            _agentPropertyService = agentPropertyService;
             _userSession = userSession;
         }
 
@@ -45,7 +48,7 @@ namespace RealEstateApp.Core.Application.Services.Offers
                 return ValidationResult.Failure(errors);
             }
 
-            var isAvailable = await _propertyService.IsAvailableAsync(dto.PropertyId);
+            var isAvailable = await _propertyQueryService.IsAvailableAsync(dto.PropertyId);
             if (!isAvailable)
             {
                 errors.Add(new Error("Oferta.PropiedadNoEncontrada", "La propiedad especificada no existe o no está disponible."));
@@ -97,7 +100,7 @@ namespace RealEstateApp.Core.Application.Services.Offers
                 return ValidationResult.Failure(errors);
             }
 
-            var propertyResult = await _propertyService.GetByIdAsync(offer.PropertyId);
+            var propertyResult = await _agentPropertyService.GetByIdAsync(offer.PropertyId);
             if (!propertyResult.IsValid || propertyResult.Value == null)
             {
                 errors.Add(new Error("Oferta.PropiedadNoEncontrada", "La propiedad asociada a la oferta no existe."));
@@ -144,7 +147,7 @@ namespace RealEstateApp.Core.Application.Services.Offers
                 return ValidationResult.Failure(errors);
             }
 
-            var propertyResult = await _propertyService.GetByIdAsync(offer.PropertyId);
+            var propertyResult = await _agentPropertyService.GetByIdAsync(offer.PropertyId);
             if (!propertyResult.IsValid || propertyResult.Value == null || propertyResult.Value.AgentId != agentId)
             {
                 errors.Add(new Error("Oferta.AgenteNoAutorizado", "No tiene permisos para gestionar ofertas en esta propiedad."));

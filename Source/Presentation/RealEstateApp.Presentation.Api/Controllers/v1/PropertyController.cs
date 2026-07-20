@@ -13,12 +13,17 @@ namespace RealEstateApp.Presentation.Api.Controllers.v1
     [Authorize(Roles = "Administrador,Desarrollador")]
     public class PropertyController : BaseApiController
     {
-        private readonly IPropertyService _propertyService;
+        private readonly IPropertyApiQueryService _propertyApiQueryService;
+        private readonly IPropertyQueryService _propertyQueryService;
         private readonly IMapper _mapper;
 
-        public PropertyController(IPropertyService propertyService, IMapper mapper)
+        public PropertyController(
+            IPropertyApiQueryService propertyApiQueryService,
+            IPropertyQueryService propertyQueryService,
+            IMapper mapper)
         {
-            _propertyService = propertyService;
+            _propertyApiQueryService = propertyApiQueryService;
+            _propertyQueryService = propertyQueryService;
             _mapper = mapper;
         }
 
@@ -32,7 +37,7 @@ namespace RealEstateApp.Presentation.Api.Controllers.v1
         {
             try
             {
-                var result = await _propertyService.GetAllForApiAsync();
+                var result = await _propertyApiQueryService.GetAllForApiAsync();
 
                 if (!result.IsValid)
                 {
@@ -72,7 +77,7 @@ namespace RealEstateApp.Presentation.Api.Controllers.v1
                     return BadRequest(new { message = "El Id enviado no tiene un formato válido." });
                 }
 
-                var result = await _propertyService.GetByIdWithDetailsAsync(id);
+                var result = await _propertyQueryService.GetByIdWithDetailsAsync(id);
 
                 if (!result.IsValid)
                 {
@@ -112,7 +117,7 @@ namespace RealEstateApp.Presentation.Api.Controllers.v1
                     return BadRequest(new { message = "El código enviado no tiene un formato válido." });
                 }
 
-                var result = await _propertyService.GetByCodeForApiAsync(code.Trim());
+                var result = await _propertyApiQueryService.GetByCodeForApiAsync(code.Trim());
 
                 if (!result.IsValid)
                 {
