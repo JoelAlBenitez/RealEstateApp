@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,7 +67,10 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
                     return Task.CompletedTask;
                 };
                 opt.Events.OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync;
-            });
+            })
+            .AddCookie(IdentityConstants.TwoFactorRememberMeScheme)
+            .AddCookie(IdentityConstants.TwoFactorUserIdScheme)
+            .AddCookie(IdentityConstants.ExternalScheme);
             #endregion
 
             services.Configure<SecurityStampValidatorOptions>(opt =>
