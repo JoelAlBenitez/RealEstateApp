@@ -13,7 +13,8 @@ namespace RealEstateApp.Infraestructure.Persistence.Configurations
             builder.HasKey(fp => fp.Id);
 
             builder.Property(fp => fp.CustomerId)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(450);
 
             builder.HasIndex(fp => new { fp.CustomerId, fp.PropertyId })
                 .IsUnique();

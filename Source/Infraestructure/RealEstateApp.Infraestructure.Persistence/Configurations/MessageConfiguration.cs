@@ -13,10 +13,12 @@ namespace RealEstateApp.Infraestructure.Persistence.Configurations
             builder.HasKey(m => m.Id);
 
             builder.Property(m => m.CustomerId)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(450);
 
             builder.Property(m => m.AgentId)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(450);
 
             builder.Property(m => m.Content)
                 .IsRequired()
