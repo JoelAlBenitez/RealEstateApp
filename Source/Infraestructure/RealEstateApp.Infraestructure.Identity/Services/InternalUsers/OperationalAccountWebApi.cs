@@ -243,9 +243,17 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             return users.Count(u => u.IsActive == isActive);
         }
 
-       
+        public async Task<List<string>> GetRolesConfirmRol(string IdUser)
+        {
+            var user = await _userManager.FindByIdAsync(IdUser);
+            if(user == null) { return new List<string>(); }
+            var roles = await _userManager.GetRolesAsync(user);
+            return (List<string>)roles;
+        }
+
+
 
         #endregion
-        
+
     }
 }
