@@ -118,9 +118,6 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
             {
                 var changePassword = await _userManager.ResetPasswordAsync(user, token, edit.NewPassword);
 
-            if (!string.IsNullOrWhiteSpace(edit.NewPassword)) {
-                var changePassword = await  _userManager.ResetPasswordAsync(user, token, edit.NewPassword);
-
                 if (!changePassword.Succeeded)
                 {
                     response.HasError = true;
