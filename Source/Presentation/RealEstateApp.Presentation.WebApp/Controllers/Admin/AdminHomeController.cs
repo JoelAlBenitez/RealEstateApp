@@ -18,9 +18,9 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index(bool showActive = true)
+        public async Task<IActionResult> Index()
         {
-            var result = await _dashboardService.GetDashboardStatsAsync(showActive);
+            var result = await _dashboardService.GetDashboardStatsAsync();
 
             if (!result.IsValid)
             {
@@ -35,15 +35,13 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
                     ActiveClients = 0,
                     InactiveClients = 0,
                     ActiveDevelopers = 0,
-                    InactiveDevelopers = 0,
-                    ShowActive = showActive
+                    InactiveDevelopers = 0
                 };
                 
                 return View(fallbackVm);
             }
 
             var viewModel = _mapper.Map<DashboardViewModel>(result.Value);
-            viewModel.ShowActive = showActive;
             return View(viewModel);
         }
     }
