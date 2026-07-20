@@ -103,16 +103,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
                 return NotFound();
             }
 
-            // Mapeo manual para evitar problemas de capitalización (IDCard vs IdCard)
-            var vm = new EditInternalUserViewModel
-            {
-                Id = admin.Id,
-                Name = admin.Name,
-                LastName = admin.LastName,
-                Email = admin.Email,
-                UserName = admin.UserName,
-                IdCard = admin.IDCard
-            };
+            var vm = _mapper.Map<EditInternalUserViewModel>(admin);
 
             return View(vm);
         }
