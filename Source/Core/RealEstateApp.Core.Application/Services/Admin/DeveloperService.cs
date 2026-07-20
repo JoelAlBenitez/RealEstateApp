@@ -3,11 +3,14 @@ using RealEstateApp.Core.Application.Contracts.Users.InternalUsers;
 using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 using RealEstateApp.Core.Domain.Common.Enums;
+
 using RealEstateApp.Core.Domain.Common.Errors;
+
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 
 namespace RealEstateApp.Core.Application.Services.Admin
 {
+
     public sealed class DeveloperService : IDeveloperService
     {
         private readonly IOperationalAccountWebApi _internalAccountApi;

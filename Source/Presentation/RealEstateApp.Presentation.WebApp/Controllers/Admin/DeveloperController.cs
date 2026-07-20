@@ -40,7 +40,6 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return View(viewModels);
         }
 
-        [ValidateAntiForgeryToken]
         [HttpGet]
         public IActionResult Create()
         {
@@ -84,18 +83,17 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return RedirectToAction(nameof(Index));
         }
 
-        [ValidateAntiForgeryToken]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
             var devsResult = await _developerService.GetDevelopersAsync();
-            if (!devsResult.IsValid)
+            if (!devsResult.IsValid || devsResult.Value == null)
             {
                 TempData["ErrorMessage"] = "No se pudo obtener la información del desarrollador.";
                 return RedirectToAction(nameof(Index));
             }
 
-            var devDto = devsResult.Value!.FirstOrDefault(d => d.Id == id);
+            var devDto = devsResult.Value.FirstOrDefault(d => d.Id == id);
             if (devDto == null)
             {
                 TempData["ErrorMessage"] = "El desarrollador solicitado no existe.";
