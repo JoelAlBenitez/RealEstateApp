@@ -7,7 +7,8 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
 {
     public static  class GeneralConfiguration
     {
-        public static void AddGeneralConfiguration(this IServiceCollection services, IConfiguration configuration)
+        public static void AddGeneralConfiguration(this IServiceCollection services,
+            IConfiguration configuration)
         {
             //services.AddDbContext<DbContextIdentityRealStateApp>(opt =>
             //    opt.UseInMemoryDatabase("RealEstateAppIdentityDb"));

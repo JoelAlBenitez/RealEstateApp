@@ -1,0 +1,39 @@
+/* Estilos específicos para la sección de Administración */
+
+.admin-dashboard__card {
+    transition: transform var(--duration-hover) var(--ease-spring), box-shadow var(--duration-hover) var(--ease-spring);
+}
+
+.admin-dashboard__card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-2) !important;
+}
+
+.admin-table {
+    border-collapse: separate;
+    border-spacing: 0 var(--space-2);
+}
+
+.admin-table tr {
+    background-color: var(--color-surface);
+    transition: background-color var(--duration-hover) ease;
+}
+
+.admin-table td, .admin-table th {
+    padding: var(--space-4);
+    border: none;
+}
+
+.admin-table tbody tr {
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-1);
+}
+
+/* Soporte de scroll horizontal para menús grandes */
+.site-menu::-webkit-scrollbar {
+    height: 4px;
+}
+.site-menu::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 2px;
+}

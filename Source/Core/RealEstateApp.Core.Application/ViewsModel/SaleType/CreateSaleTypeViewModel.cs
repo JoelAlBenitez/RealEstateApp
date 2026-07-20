@@ -1,0 +1,18 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace RealEstateApp.Core.Application.ViewsModel.SaleType
+{
+    // Supuesto de Diseño: El documento funcional no especifica límites de longitud para estos campos.
+    public sealed class CreateSaleTypeViewModel
+    {
+        [Required(ErrorMessage = "Debe completar todos los campos requeridos.")]
+        [StringLength(100, ErrorMessage = "El nombre no debe superar los 100 caracteres.")]
+        [Display(Name = "Nombre del tipo de venta")]
+        public required string Name { get; set; }
+
+        [Required(ErrorMessage = "Debe completar todos los campos requeridos.")]
+        [StringLength(500, ErrorMessage = "La descripción no debe superar los 500 caracteres.")]
+        [Display(Name = "Descripción")]
+        public required string Description { get; set; }
+    }
+}
