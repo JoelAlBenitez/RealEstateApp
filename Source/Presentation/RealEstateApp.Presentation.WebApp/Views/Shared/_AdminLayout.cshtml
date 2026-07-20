@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin - Real Estate App</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/layout/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/notifications/notifications.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Admin/admin-styles.css" asp-append-version="true" />
+
+    <script src="~/js/layout/theme-init.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <header class="site-header" id="siteHeader">
+        <a class="site-header__brand" asp-controller="AdminHome" asp-action="Index" aria-label="Real Estate App - Panel Admin">
+            <span class="site-header__logo" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M21 9H3M21 15H3M12 3v18" />
+                </svg>
+            </span>
+            <span class="site-header__name">Real Estate App (Admin)</span>
+        </a>
+
+        <div class="site-header__actions">
+            <button class="theme-toggle" id="themeToggle" type="button" aria-label="Cambiar tema claro u oscuro">
+                <svg class="theme-toggle__icon theme-toggle__icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4" />
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                </svg>
+                <svg class="theme-toggle__icon theme-toggle__icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+            </button>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="rea-btn rea-btn--secondary py-2 px-3" style="font-size: 0.8rem; border-radius: 10px;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+                    </svg>
+                    Salir
+                </button>
+            </form>
+        </div>
+    </header>
+
+    <nav class="site-menu" id="siteMenu" aria-label="Menú principal de administrador" style="overflow-x: auto;">
+        <a class="site-menu__brand" asp-controller="AdminHome" asp-action="Index" aria-hidden="true" tabindex="-1">Panel Admin</a>
+
+        <ul class="site-menu__list" style="justify-content: flex-start; gap: var(--space-4); padding-left: var(--space-2); min-width: max-content;">
+            <li class="site-menu__item">
+                <a class="site-menu__link" asp-controller="AdminHome" asp-action="Index">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="3" width="7" height="9" />
+                        <rect x="14" y="3" width="7" height="5" />
+                        <rect x="14" y="12" width="7" height="9" />
+                        <rect x="3" y="16" width="7" height="5" />
+                    </svg>
+                    <span>Home</span>
+                </a>
+            </li>
+
+            <li class="site-menu__item">
+                <a class="site-menu__link" asp-controller="AgentManagement" asp-action="Index">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    <span>Agentes</span>
+                </a>
+            </li>
+
+            <li class="site-menu__item">
+                <a class="site-menu__link" asp-controller="Administrator" asp-action="Index">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        <path d="m9 11 2 2 4-4" />
+                    </svg>
+                    <span>Admins</span>
+                </a>
+            </li>
+
+            <li class="site-menu__item">
+                <a class="site-menu__link" asp-controller="Developer" asp-action="Index">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="16 18 22 12 16 6" />
+                        <polyline points="8 6 2 12 8 18" />
+                        <line x1="12" y1="4" x2="12" y2="20" />
+                    </svg>
+                    <span>Desarrolladores</span>
+                </a>
+            </li>
+
+            <li class="site-menu__item">
+                <a class="site-menu__link" asp-controller="PropertyType" asp-action="Index">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                    <span>T. Propiedades</span>
+                </a>
+            </li>
+
+            <li class="site-menu__item">
+                <a class="site-menu__link" asp-controller="SaleType" asp-action="Index">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                        <line x1="7" y1="7" x2="7.01" y2="7" />
+                    </svg>
+                    <span>T. Ventas</span>
+                </a>
+            </li>
+
+            <li class="site-menu__item">
+                <a class="site-menu__link" asp-controller="Improvement" asp-action="Index">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                        <path d="M12 8v8M8 12h8" />
+                    </svg>
+                    <span>Mejoras</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <partial name="_Notifications" />
+
+    <main class="site-main" role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer__bottom">
+            <p>&copy; 2026 Real Estate App — Panel de Control Administrativo.</p>
+            <p>Mantenimientos y estadísticas integradas para administración.</p>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/layout/layout.js" asp-append-version="true"></script>
+    <script src="~/js/notifications/notifications.js" asp-append-version="true"></script>
+    <script src="~/js/Admin/admin-actions.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

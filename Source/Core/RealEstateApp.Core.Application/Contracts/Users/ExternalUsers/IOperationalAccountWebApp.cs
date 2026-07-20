@@ -17,3 +17,4 @@ namespace RealEstateApp.Core.Application.Contracts.Users.ExternalUsers
         
     }
 }
+

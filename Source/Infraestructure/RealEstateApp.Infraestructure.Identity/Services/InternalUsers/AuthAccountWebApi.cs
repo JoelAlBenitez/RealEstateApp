@@ -48,6 +48,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
                 response.Token  = new JwtSecurityTokenHandler().WriteToken(jwt);
                 response.UserName = existUserByUserName.UserName!;
                 response.Roles = roles.ToList();
+                response.Expiration = jwt.ValidTo;
                 return response;
             }
             var existUserByEmail = await _userManager.FindByEmailAsync(loginDto.EmailOrNameUser);
@@ -59,6 +60,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
                 response.Token = new JwtSecurityTokenHandler().WriteToken(jwt);
                 response.UserName = existUserByEmail.Email!;
                 response.Roles = roles.ToList();
+                response.Expiration = jwt.ValidTo;
                 return response;
 
             }
@@ -90,6 +92,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.InternalUsers
                 )
             {
                 response.HasError = true;
+                response.Forbidden = true;
                 response.Errors.Add("El usuario no tiene permisos para acceder a esta API.");
                 return response;
             }

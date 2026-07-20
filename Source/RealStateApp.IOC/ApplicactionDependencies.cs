@@ -1,5 +1,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
+using RealEstateApp.Core.Application.Contracts.Agent;
+using RealEstateApp.Core.Application.Services.Agent;
+using RealEstateApp.Core.Application.Contracts.GenericServices;
 using RealEstateApp.Core.Application.Contracts.SaleType;
 using RealEstateApp.Core.Application.Services.SaleType;
 using RealEstateApp.Core.Application.Contracts.GenericServices;
@@ -23,6 +26,11 @@ using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Offer;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Offer;
 using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Message;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Message;
+using RealEstateApp.Core.Application.Contracts.Admin;
+using RealEstateApp.Core.Application.Services.Admin;
+using RealEstateApp.Core.Application.Contracts.Dashboard;
+using RealEstateApp.Core.Application.Services.Dashboard;
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Dashboard;
 
 namespace RealStateApp.IOC
 {
@@ -45,13 +53,6 @@ namespace RealStateApp.IOC
                 configuration.AddMaps(typeof(ResendEmailConfirmDtoToViewModelAndReverse).Assembly);
                 #endregion
 
-                #region propertys public
-                configuration.AddMaps(typeof(PropertyFilterDtoToViewModel).Assembly);
-                configuration.AddMaps(typeof(PropertyPublicDtoToViewModel).Assembly);
-                configuration.AddMaps(typeof(PropertyDetailPublicConsultDtoToViewModel).Assembly);
-                configuration.AddMaps(typeof(ConsultAgentByNameOrLastNameDtoToViewModel).Assembly);
-                #endregion
-
                 #region maper customer
                 configuration.AddProfile<PropertyMappingProfile>();
                 configuration.AddProfile<PropertyDtoToViewModelAndReverse>();
@@ -62,7 +63,14 @@ namespace RealStateApp.IOC
                 configuration.AddProfile<MessageMappingProfile>();
                 configuration.AddProfile<MessageDtoToViewModelAndReverse>();
                 #endregion
+
+                #region maper admin
+                configuration.AddProfile<DashboardDtoToViewModel>();
+                configuration.AddProfile<GetInternalUserDtoToAdministratorViewModel>();
+                configuration.AddProfile<GetInternalUserDtoToDeveloperViewModel>();
+                #endregion
             });
+
 
 
             #region Sale Type Services
@@ -72,7 +80,10 @@ namespace RealStateApp.IOC
 
 
             #region customer services
-            services.AddScoped<IPropertyService, PropertyService>();
+            services.AddScoped<IPropertyQueryService, PropertyQueryService>();
+            services.AddScoped<IAgentPropertyService, AgentPropertyService>();
+            services.AddScoped<IPropertyCascadeService, PropertyCascadeService>();
+            services.AddScoped<IPropertyApiQueryService, PropertyApiQueryService>();
             services.AddScoped<IFavoritePropertyService, FavoritePropertyService>();
             services.AddScoped<IOfferService, OfferService>();
             services.AddScoped<IMessageAtCService, MessageAtCService>();
@@ -83,8 +94,19 @@ namespace RealStateApp.IOC
             services.AddScoped<IMessageAtCValidationService, MessageAtCValidationService>();
             #endregion
 
+            #region Agent Management Services
+            services.AddScoped<IAgentManagementService, AgentManagementService>();
+            #endregion
+
+            #region admin services
+            services.AddScoped<IAdministratorService, AdministratorService>();
+            services.AddScoped<IAdministratorValidationService, AdministratorValidationService>();
+            services.AddScoped<IDeveloperService, DeveloperService>();
+            services.AddScoped<IDashboardService, DashboardService>();
+            #endregion
+
+
             return services;
         }
     }
 }
-
