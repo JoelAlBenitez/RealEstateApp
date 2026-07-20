@@ -1,6 +1,9 @@
 ﻿namespace RealEstateApp.Core.Domain.Common.Enums
 {
+
+
     public  enum Roles
+
     {
         Cliente = 1,
         Agente = 2,
