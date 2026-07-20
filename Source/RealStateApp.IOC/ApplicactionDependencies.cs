@@ -37,6 +37,11 @@ using RealEstateApp.Core.Application.Contracts.Dashboard;
 using RealEstateApp.Core.Application.Services.Dashboard;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.PropertyType;
 using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.PropertyType;
+using RealEstateApp.Core.Application.Contracts.Improvement;
+using RealEstateApp.Core.Application.Services.Improvement;
+
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Improvement;
+using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.Improvement;
 
 namespace RealStateApp.IOC
 {
@@ -85,6 +90,11 @@ namespace RealStateApp.IOC
                 configuration.AddProfile<SaleTypeDtoToViewModelAndReverse>();
                 configuration.AddProfile<SaleTypeEntityToDtoAndReverse>();
                 #endregion
+
+                #region maper Improvement
+                configuration.AddProfile<ImprovementDtoToViewModelAndReverse>();
+                configuration.AddProfile<ImprovementEntityToDtoAndReverse>();
+                #endregion
             });
 
             #region Property Type Services
@@ -126,6 +136,12 @@ namespace RealStateApp.IOC
             services.AddScoped<IDashboardService, DashboardService>();
             #endregion
 
+
+
+            #region Improvement Services
+            services.AddScoped<IImprovementService, ImprovementService>();
+            services.AddScoped<IImprovementValidationService, ImprovementValidationService>();
+            #endregion
 
             return services;
         }

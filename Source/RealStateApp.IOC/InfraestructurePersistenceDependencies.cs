@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RealEstateApp.Core.Domain.Interfaces.Repositories;
 using RealEstateApp.Infraestructure.Persistence.Context;
+using RealEstateApp.Infraestructure.Persistence.Repositories.ImprovementRepo;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Properties;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Offers;
 using RealEstateApp.Infraestructure.Persistence.Repositories.FavoriteProperties;
@@ -16,7 +17,7 @@ namespace RealStateApp.IOC
     public static class InfraestructurePersistenceDependencies
     {
         public static IServiceCollection AddInfraestructurePersistence(
-            this IServiceCollection services, IConfiguration configuration)
+     this IServiceCollection services, IConfiguration configuration)
         {
             //services.AddDbContext<DbContextRealEstateApp>(options =>
             //    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
@@ -37,6 +38,10 @@ namespace RealStateApp.IOC
 
             #region Property Type Repositories
             services.AddScoped<IPropertyTypeRepository, PropertyTypeRepository>();
+            #endregion
+
+            #region Improvement Repositories
+            services.AddScoped<IImprovementRepository, ImprovementRepository>();
             #endregion
 
             return services;
