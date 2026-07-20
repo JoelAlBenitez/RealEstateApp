@@ -8,10 +8,10 @@ namespace RealEstateApp.Core.Application.ViewsModel.PropertyType
 
         [Required(ErrorMessage = "El nombre del tipo de propiedad es obligatorio")]
         [StringLength(100, ErrorMessage = "El nombre no puede exceder los 100 caracteres")]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Required(ErrorMessage = "La descripción es obligatoria")]
         [StringLength(250, ErrorMessage = "La descripción no puede exceder los 250 caracteres")]
-        public string Description { get; set; }
+        public  required string Description { get; set; }
     }
 }

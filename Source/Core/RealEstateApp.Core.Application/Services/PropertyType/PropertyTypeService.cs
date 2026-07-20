@@ -1,4 +1,3 @@
-
 using AutoMapper;
 using RealEstateApp.Core.Application.Contracts.PropertyType;
 using RealEstateApp.Core.Application.Contracts.Properties;
@@ -11,7 +10,10 @@ using RealEstateApp.Core.Domain.Interfaces.Repositories;
 
 namespace RealEstateApp.Core.Application.Services.PropertyType
 {
-    public sealed class PropertyTypeService : GenericServices<SavePropertyTypeDto, RealEstateApp.Core.Domain.Entities.PropertyType, int>, IPropertyTypeService
+    public sealed class PropertyTypeService :
+        GenericServices<SavePropertyTypeDto, 
+            RealEstateApp.Core.Domain.Entities.PropertyType, int>, 
+        IPropertyTypeService
     {
         private readonly IPropertyTypeRepository _propertyTypeRepository;
         private readonly IPropertyTypeValidationService _propertyTypeValidationService;
@@ -36,9 +38,6 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
                 var entities = await _propertyTypeRepository.GetAllAsync();
                 var dtos = _mapper.Map<List<PropertyTypeDto>>(entities);
                 
-                // Nota: se usa un conteo individual por elemento ejecutado en paralelo con Task.WhenAll
-                // en vez de una consulta agrupada. Confirmado con el líder técnico (Joel) que esto es
-                // aceptable para catálogos maestros con pocos registros (no es un problema de rendimiento en este contexto).
                 var countTasks = dtos.Select(async dto =>
                 {
                     var countResult = await _propertyService.CountByPropertyTypeAsync(dto.Id);
