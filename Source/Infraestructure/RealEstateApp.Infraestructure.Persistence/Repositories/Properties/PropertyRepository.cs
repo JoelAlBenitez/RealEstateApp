@@ -46,6 +46,25 @@ namespace RealEstateApp.Infraestructure.Persistence.Repositories.Properties
                 .FirstOrDefaultAsync(p => p.Code == code && p.Status == PropertyState.Available);
         }
 
+        public async Task<Property?> GetByCodeAsync(string code)
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .Include(p => p.Images.OrderByDescending(img => img.CreateAt))
+                .Include(p => p.PropertyImprovements)
+                .FirstOrDefaultAsync(p => p.Code == code);
+        }
+
+        public async Task<IReadOnlyCollection<Property>> GetAllWithImagesAsync()
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .Include(p => p.Images.OrderByDescending(img => img.CreateAt))
+                .Include(p => p.PropertyImprovements)
+                .OrderByDescending(p => p.CreateAt)
+                .ToListAsync();
+        }
+
         public async Task<bool> ExistsCodeAsync(string code)
         {
             return await _context.Properties.AnyAsync(p => p.Code == code);

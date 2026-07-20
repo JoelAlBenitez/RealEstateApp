@@ -16,6 +16,11 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
     [Authorize(Roles = "Agente")]
     public class AgentPropertyController : Controller
     {
+        private readonly IAgentPropertyService _agentPropertyService;
+        private readonly IPropertyQueryService _propertyQueryService;
+        // private readonly IPropertyTypeService _propertyTypeService;
+        // private readonly ISaleTypeService _saleTypeService;
+        // private readonly IImprovementService _improvementService;
         private readonly IPropertyService _propertyService;
         private readonly IOfferService _offerService;
         private readonly IMessageAtCService _messageService;
@@ -23,12 +28,22 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         private readonly IMapper _mapper;
 
         public AgentPropertyController(
+            IAgentPropertyService agentPropertyService,
+            IPropertyQueryService propertyQueryService,
+            // IPropertyTypeService propertyTypeService,
+            // ISaleTypeService saleTypeService,
+            // IImprovementService improvementService,
             IPropertyService propertyService,
             IOfferService offerService,
             IMessageAtCService messageService,
             IUserSession userSession,
             IMapper mapper)
         {
+            _agentPropertyService = agentPropertyService;
+            _propertyQueryService = propertyQueryService;
+            // _propertyTypeService = propertyTypeService;
+            // _saleTypeService = saleTypeService;
+            // _improvementService = improvementService;
             _propertyService = propertyService;
             _offerService = offerService;
             _messageService = messageService;
@@ -41,12 +56,14 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             if (pageNumber < 1) pageNumber = 1;
 
             var agentId = _userSession.GetIdCurrentUser();
+            var countResult = await _propertyQueryService.CountAvailableByAgentAsync(agentId);
             var countResult = await _propertyService.CountByAgentAsync(agentId);
             var totalItems = countResult.IsValid ? countResult.Value : 0;
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
             if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
 
+            var result = await _propertyQueryService.GetAvailableByAgentAsync(agentId, pageNumber, pageSize);
             var result = await _propertyService.GetPropertiesByAgentAsync(agentId, pageNumber, pageSize);
             if (!result.IsValid)
             {
@@ -93,7 +110,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var dto = _mapper.Map<SavePropertyDto>(model);
             dto.AgentId = agentId;
 
-            var result = await _propertyService.AddAsync(dto);
+            var result = await _agentPropertyService.AddAsync(dto);
             if (!result.IsValid)
             {
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al crear la propiedad.";
@@ -107,7 +124,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         public async Task<IActionResult> Edit(int id)
         {
             var agentId = _userSession.GetIdCurrentUser();
-            var result = await _propertyService.GetByIdAsync(id);
+            var result = await _agentPropertyService.GetByIdAsync(id);
             if (!result.IsValid || result.Value == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -141,7 +158,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             }
 
             var agentId = _userSession.GetIdCurrentUser();
-            var currentResult = await _propertyService.GetByIdWithDetailsAsync(model.Id);
+            var currentResult = await _propertyQueryService.GetByIdWithDetailsAsync(model.Id);
             if (!currentResult.IsValid || currentResult.Value == null || currentResult.Value.AgentId != agentId)
             {
                 return RedirectToAction(nameof(Index));
@@ -150,7 +167,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             var dto = _mapper.Map<SavePropertyDto>(model);
             dto.AgentId = agentId;
 
-            var result = await _propertyService.UpdateAsync(dto);
+            var result = await _agentPropertyService.UpdateAsync(dto);
             if (result != null && !result.IsValid)
             {
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al actualizar la propiedad.";
@@ -164,7 +181,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         public async Task<IActionResult> Details(int id)
         {
             var agentId = _userSession.GetIdCurrentUser();
-            var result = await _propertyService.GetByIdWithDetailsAsync(id);
+            var result = await _propertyQueryService.GetByIdWithDetailsAsync(id);
             if (!result.IsValid || result.Value == null || result.Value.AgentId != agentId)
             {
                 return RedirectToAction(nameof(Index));
@@ -195,7 +212,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         public async Task<IActionResult> Delete(int id)
         {
             var agentId = _userSession.GetIdCurrentUser();
-            var result = await _propertyService.GetByIdWithDetailsAsync(id);
+            var result = await _propertyQueryService.GetByIdWithDetailsAsync(id);
             if (!result.IsValid || result.Value == null || result.Value.AgentId != agentId)
             {
                 return RedirectToAction(nameof(Index));
@@ -211,13 +228,13 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         public async Task<IActionResult> DeletePost(int id)
         {
             var agentId = _userSession.GetIdCurrentUser();
-            var result = await _propertyService.GetByIdWithDetailsAsync(id);
+            var result = await _propertyQueryService.GetByIdWithDetailsAsync(id);
             if (!result.IsValid || result.Value == null || result.Value.AgentId != agentId)
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            var deleteResult = await _propertyService.RemoveAsync(id);
+            var deleteResult = await _agentPropertyService.RemoveAsync(id);
             if (!deleteResult.IsValid)
             {
                 TempData["ErrorMessage"] = deleteResult.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al eliminar la propiedad.";

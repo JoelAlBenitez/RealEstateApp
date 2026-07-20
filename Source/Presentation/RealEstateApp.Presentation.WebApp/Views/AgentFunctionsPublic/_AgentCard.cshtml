@@ -5,7 +5,14 @@
 
 <article class="agent-card">
     <div class="agent-card__media">
-        <img src="~/@Model.ProfileImgAgent" alt="Agente @Model.Name @Model.LastName" loading="lazy" />
+        @if (!string.IsNullOrWhiteSpace(Model.ProfileImgAgent))
+        {
+            <img src="~/@Model.ProfileImgAgent" alt="Agente @Model.Name @Model.LastName" loading="lazy" />
+        }
+        else
+        {
+            <span class="agent-card__initials" aria-label="Agente @Model.Name @Model.LastName sin foto de perfil">@Model.Name.Substring(0, 1)</span>
+        }
     </div>
     <div class="agent-card__body">
         <span class="agent-card__role">

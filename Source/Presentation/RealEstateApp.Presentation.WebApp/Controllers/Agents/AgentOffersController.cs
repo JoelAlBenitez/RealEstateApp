@@ -13,18 +13,18 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
     public class AgentOffersController : Controller
     {
         private readonly IOfferService _offerService;
-        private readonly IPropertyService _propertyService;
+        private readonly IPropertyQueryService _propertyQueryService;
         private readonly IUserSession _userSession;
         private readonly IMapper _mapper;
 
         public AgentOffersController(
             IOfferService offerService,
-            IPropertyService propertyService,
+            IPropertyQueryService propertyQueryService,
             IUserSession userSession,
             IMapper mapper)
         {
             _offerService = offerService;
-            _propertyService = propertyService;
+            _propertyQueryService = propertyQueryService;
             _userSession = userSession;
             _mapper = mapper;
         }
@@ -33,7 +33,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         {
             if (pageNumber < 1) pageNumber = 1;
             var agentId = _userSession.GetIdCurrentUser();
-            var propertyResult = await _propertyService.GetByIdWithDetailsAsync(propertyId);
+            var propertyResult = await _propertyQueryService.GetByIdWithDetailsAsync(propertyId);
             if (!propertyResult.IsValid || propertyResult.Value == null || propertyResult.Value.AgentId != agentId)
             {
                 return RedirectToAction("Index", "Agent");
@@ -81,7 +81,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         public async Task<IActionResult> Accept(int offerId, int propertyId)
         {
             var agentId = _userSession.GetIdCurrentUser();
-            var propertyResult = await _propertyService.GetByIdWithDetailsAsync(propertyId);
+            var propertyResult = await _propertyQueryService.GetByIdWithDetailsAsync(propertyId);
             if (!propertyResult.IsValid || propertyResult.Value == null || propertyResult.Value.AgentId != agentId)
             {
                 return RedirectToAction("Index", "Agent");
@@ -101,7 +101,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         public async Task<IActionResult> Reject(int offerId, int propertyId)
         {
             var agentId = _userSession.GetIdCurrentUser();
-            var propertyResult = await _propertyService.GetByIdWithDetailsAsync(propertyId);
+            var propertyResult = await _propertyQueryService.GetByIdWithDetailsAsync(propertyId);
             if (!propertyResult.IsValid || propertyResult.Value == null || propertyResult.Value.AgentId != agentId)
             {
                 return RedirectToAction("Index", "Agent");

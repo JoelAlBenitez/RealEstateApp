@@ -18,20 +18,20 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
     [Authorize(Roles = "Cliente")]
     public class CustomerController : Controller
     {
-        private readonly IPropertyService _propertyService;
+        private readonly IPropertyQueryService _propertyQueryService;
         private readonly IFavoritePropertyService _favoritePropertyService;
         private readonly IOfferService _offerService;
         private readonly IMapper _mapper;
         private readonly IOperationalAccountWebApp _accountWebApp;
 
         public CustomerController(
-            IPropertyService propertyService,
+            IPropertyQueryService propertyQueryService,
             IFavoritePropertyService favoritePropertyService,
             IOfferService offerService,
             IMapper mapper,
             IOperationalAccountWebApp accountWebApp)
         {
-            _propertyService = propertyService;
+            _propertyQueryService = propertyQueryService;
             _favoritePropertyService = favoritePropertyService;
             _offerService = offerService;
             _mapper = mapper;
@@ -42,13 +42,13 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
         {
             if (pageNumber < 1) pageNumber = 1;
 
-            var countResult = await _propertyService.GetAvailableCountAsync(filters);
+            var countResult = await _propertyQueryService.GetAvailableCountAsync(filters);
             var totalItems = countResult.IsValid ? countResult.Value : 0;
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
             if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
 
-            var result = await _propertyService.GetAvailableAsync(filters, pageNumber, pageSize);
+            var result = await _propertyQueryService.GetAvailableAsync(filters, pageNumber, pageSize);
             if (!result.IsValid)
             {
                 return View(new CustomerPropertiesViewModel { Properties = new List<PropertyCardViewModel>() });
@@ -82,7 +82,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var result = await _propertyService.GetByIdWithDetailsAsync(id);
+            var result = await _propertyQueryService.GetByIdWithDetailsAsync(id);
             if (!result.IsValid || result.Value == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -158,13 +158,13 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
                 return RedirectToAction(nameof(Agents));
             }
 
-            var countResult = await _propertyService.CountAvailableByAgentAsync(AgentId);
+            var countResult = await _propertyQueryService.CountAvailableByAgentAsync(AgentId);
             var totalItems = countResult.IsValid ? countResult.Value : 0;
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
             if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
 
-            var result = await _propertyService.GetAvailableByAgentAsync(AgentId, pageNumber, pageSize);
+            var result = await _propertyQueryService.GetAvailableByAgentAsync(AgentId, pageNumber, pageSize);
             if (!result.IsValid)
             {
                 ViewBag.AgentName = $"{agentResult.Name} {agentResult.LastName}";
