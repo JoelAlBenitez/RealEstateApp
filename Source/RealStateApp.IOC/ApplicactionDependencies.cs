@@ -1,6 +1,16 @@
+
 using Microsoft.Extensions.DependencyInjection;
+using RealEstateApp.Core.Application.Contracts.Agent;
+using RealEstateApp.Core.Application.Services.Agent;
+using RealEstateApp.Core.Application.Contracts.GenericServices;
 using RealEstateApp.Core.Application.Contracts.PropertyType;
 using RealEstateApp.Core.Application.Services.PropertyType;
+using RealEstateApp.Core.Application.Contracts.SaleType;
+using RealEstateApp.Core.Application.Services.SaleType;
+using RealEstateApp.Core.Application.Contracts.GenericServices;
+using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.SaleType;
+using RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.SaleType;
+
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Auth;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Consult;
 using RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.Operational;
@@ -70,12 +80,24 @@ namespace RealStateApp.IOC
                 configuration.AddProfile<PropertyTypeDtoToViewModelAndReverse>();
                 configuration.AddProfile<PropertyTypeEntityToDtoAndReverse>();
                 #endregion
+
+                #region maper SaleType
+                configuration.AddProfile<SaleTypeDtoToViewModelAndReverse>();
+                configuration.AddProfile<SaleTypeEntityToDtoAndReverse>();
+                #endregion
             });
 
             #region Property Type Services
             services.AddScoped<IPropertyTypeService, PropertyTypeService>();
             services.AddScoped<IPropertyTypeValidationService, PropertyTypeValidationService>();
             #endregion
+
+
+            #region Sale Type Services
+            services.AddScoped<ISaleTypeService, SaleTypeService>();
+            services.AddScoped<ISaleTypeValidationService, SaleTypeValidationService>();
+            #endregion
+
 
             #region customer services
             services.AddScoped<IPropertyQueryService, PropertyQueryService>();
@@ -92,6 +114,10 @@ namespace RealStateApp.IOC
             services.AddScoped<IMessageAtCValidationService, MessageAtCValidationService>();
             #endregion
 
+            #region Agent Management Services
+            services.AddScoped<IAgentManagementService, AgentManagementService>();
+            #endregion
+
 
             #region admin services
             services.AddScoped<IAdministratorService, AdministratorService>();
@@ -99,6 +125,8 @@ namespace RealStateApp.IOC
             services.AddScoped<IDeveloperService, DeveloperService>();
             services.AddScoped<IDashboardService, DashboardService>();
             #endregion
+
+
             return services;
         }
     }

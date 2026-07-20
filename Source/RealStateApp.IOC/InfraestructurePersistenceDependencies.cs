@@ -8,6 +8,7 @@ using RealEstateApp.Infraestructure.Persistence.Repositories.Offers;
 using RealEstateApp.Infraestructure.Persistence.Repositories.FavoriteProperties;
 using RealEstateApp.Infraestructure.Persistence.Repositories.Messages;
 using RealEstateApp.Infraestructure.Persistence.Repositories.PropertyImprovements;
+using RealEstateApp.Infraestructure.Persistence.Repositories.SaleTypeRepo;
 using RealEstateApp.Infraestructure.Persistence.Repositories.PropertyTypeRepo;
 
 namespace RealStateApp.IOC
@@ -19,7 +20,6 @@ namespace RealStateApp.IOC
         {
             //services.AddDbContext<DbContextRealEstateApp>(options =>
             //    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-
             services.AddDbContext<DbContextRealEstateApp>(options =>
                 options.UseInMemoryDatabase("RealEstateAppDb"));   // -> pruebas uso de memory
 
@@ -30,6 +30,10 @@ namespace RealStateApp.IOC
             services.AddScoped<IMessageRepository, MessageRepository>();
             #endregion
             services.AddScoped<IPropertyImprovementRepository, PropertyImprovementRepository>();
+
+            #region Sale Type Repositories
+            services.AddScoped<ISaleTypeRepository, SaleTypeRepository>();
+            #endregion
 
             #region Property Type Repositories
             services.AddScoped<IPropertyTypeRepository, PropertyTypeRepository>();
