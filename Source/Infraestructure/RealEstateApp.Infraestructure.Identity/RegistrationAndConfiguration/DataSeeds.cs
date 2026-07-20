@@ -19,6 +19,7 @@ namespace RealEstateApp.Infraestructure.Identity.RegistrationAndConfiguration
             await DefaultUserAdmin.AddDefaultUserAdmin(users);
             await DefaultUserAgent.AddDefaultUserAgent(users);
             await DefaultUserCustomer.AddDefaultUserCustomer(users);
+            await DefaultUserDeveloper.AddDefaultUserDeveloper(users);
 
         }
 
