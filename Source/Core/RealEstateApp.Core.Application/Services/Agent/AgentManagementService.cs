@@ -5,7 +5,6 @@ using RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 using RealEstateApp.Core.Domain.Common.ValidationResult;
 using RealEstateApp.Core.Domain.Common.Errors;
-using System.Transactions;
 using RealEstateApp.Core.Domain.Common.Enums;
 
 namespace RealEstateApp.Core.Application.Services.Agent
@@ -67,12 +66,6 @@ namespace RealEstateApp.Core.Application.Services.Agent
 
         public async Task<ValidationResult> DeleteAgentAsync(string agentId)
         {
-           
-            using var scope = new TransactionScope(
-                TransactionScopeOption.Required,
-                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
-                TransactionScopeAsyncFlowOption.Enabled);
-
             var agent = await _internalAccountApi.GetUserBaseById(agentId);
             var rolesConfirm = await _internalAccountApi.GetRolesConfirmRol(agentId);
             if (agent == null || !rolesConfirm.Contains(Roles.Agente.ToString()))
@@ -92,7 +85,6 @@ namespace RealEstateApp.Core.Application.Services.Agent
                 return ValidationResult.Failure(new Error("Error", string.Join(", ", result.Errors ?? new List<string>())));
             }
 
-            scope.Complete(); 
             return ValidationResult.Success();
         }
     }

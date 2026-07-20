@@ -44,7 +44,6 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return View(viewModels);
         }
 
-        [ValidateAntiForgeryToken]
         [HttpGet]
         public IActionResult Create()
         {
@@ -89,7 +88,6 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             return RedirectToAction(nameof(Index));
         }
 
-        [ValidateAntiForgeryToken]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {

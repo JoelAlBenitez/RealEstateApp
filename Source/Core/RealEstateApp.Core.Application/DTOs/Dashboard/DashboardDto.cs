@@ -4,9 +4,11 @@ namespace RealEstateApp.Core.Application.DTOs.Dashboard
     {
         public required int AvailableProperties { get; set; }
         public required int SoldProperties { get; set; }
-        public required int AgentsCount { get; set; }
-        public required int ClientsCount { get; set; }
-        public required int DevelopersCount { get; set; }
-        public required bool ShowingActive { get; set; }
+        public required int ActiveAgentsCount { get; set; }
+        public required int InactiveAgentsCount { get; set; }
+        public required int ActiveClientsCount { get; set; }
+        public required int InactiveClientsCount { get; set; }
+        public required int ActiveDevelopersCount { get; set; }
+        public required int InactiveDevelopersCount { get; set; }
     }
 }
