@@ -8,7 +8,9 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.
     {
         public GetInternalUserDtoToAdministratorViewModel()
         {
-            CreateMap<GetInternalUserDto, AdministratorListItemViewModel>();
+            CreateMap<GetInternalUserDto, AdministratorListItemViewModel>()
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.State))
+                .ForMember(dest => dest.IdCard, opt => opt.MapFrom(src => src.IDCard));
         }
     }
 }
