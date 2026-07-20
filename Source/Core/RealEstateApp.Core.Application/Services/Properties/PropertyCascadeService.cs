@@ -29,11 +29,13 @@ namespace RealEstateApp.Core.Application.Services.Properties
         {
             try
             {
-                var properties = await _propertyRepository.GetAllAsync();
+                var availableCount = await _propertyRepository.GetPropertiesCountByStatusGlobalAsync(PropertyState.Available);
+                var soldCount = await _propertyRepository.GetPropertiesCountByStatusGlobalAsync(PropertyState.Sold);
+
                 var totals = new PropertyTotalsDto
                 {
-                    AvailableProperties = properties.Count(p => p.Status == PropertyState.Available),
-                    SoldProperties = properties.Count(p => p.Status == PropertyState.Sold)
+                    AvailableProperties = availableCount,
+                    SoldProperties = soldCount
                 };
                 return ValidationResult<PropertyTotalsDto>.Success(totals);
             }

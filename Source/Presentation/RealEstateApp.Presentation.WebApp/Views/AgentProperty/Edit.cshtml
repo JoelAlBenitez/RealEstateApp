@@ -33,10 +33,13 @@
                                 <label class="form-label fw-bold" asp-for="PropertyTypeId">Tipo de Propiedad</label>
                                 <select class="form-select" asp-for="PropertyTypeId">
                                     <option value="">Seleccione un tipo...</option>
-                                    <option value="1">Casa</option>
-                                    <option value="2">Apartamento</option>
-                                    <option value="3">Villa</option>
-                                    <option value="4">Solar</option>
+                                    @if (ViewBag.PropertyTypes != null)
+                                    {
+                                        foreach (var type in (List<RealEstateApp.Core.Application.DTOs.PropertyType.PropertyTypeDto>)ViewBag.PropertyTypes)
+                                        {
+                                            <option value="@type.Id">@type.Name</option>
+                                        }
+                                    }
                                 </select>
                                 <span class="field-validation-error text-danger" asp-validation-for="PropertyTypeId"></span>
                             </div>
@@ -45,8 +48,13 @@
                                 <label class="form-label fw-bold" asp-for="SaleTypeId">Tipo de Venta</label>
                                 <select class="form-select" asp-for="SaleTypeId">
                                     <option value="">Seleccione un tipo...</option>
-                                    <option value="1">Venta</option>
-                                    <option value="2">Alquiler</option>
+                                    @if (ViewBag.SaleTypes != null)
+                                    {
+                                        foreach (var sale in (List<RealEstateApp.Core.Application.DTOs.SaleType.SaleTypeDto>)ViewBag.SaleTypes)
+                                        {
+                                            <option value="@sale.Id">@sale.Name</option>
+                                        }
+                                    }
                                 </select>
                                 <span class="field-validation-error text-danger" asp-validation-for="SaleTypeId"></span>
                             </div>
@@ -103,42 +111,18 @@
                         <div class="mb-4 border-top pt-3">
                             <label class="form-label fw-bold mb-2 d-block">Mejoras de la Propiedad</label>
                             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-2">
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp1" value="1" @(Model.ImprovementIds != null && Model.ImprovementIds.Contains(1) ? "checked" : "") />
-                                        <label class="form-check-label" for="imp1">Piscina</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp2" value="2" @(Model.ImprovementIds != null && Model.ImprovementIds.Contains(2) ? "checked" : "") />
-                                        <label class="form-check-label" for="imp2">Gimnasio</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp3" value="3" @(Model.ImprovementIds != null && Model.ImprovementIds.Contains(3) ? "checked" : "") />
-                                        <label class="form-check-label" for="imp3">Parqueo</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp4" value="4" @(Model.ImprovementIds != null && Model.ImprovementIds.Contains(4) ? "checked" : "") />
-                                        <label class="form-check-label" for="imp4">Jardín</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp5" value="5" @(Model.ImprovementIds != null && Model.ImprovementIds.Contains(5) ? "checked" : "") />
-                                        <label class="form-check-label" for="imp5">Terraza</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp6" value="6" @(Model.ImprovementIds != null && Model.ImprovementIds.Contains(6) ? "checked" : "") />
-                                        <label class="form-check-label" for="imp6">Seguridad 24/7</label>
-                                    </div>
-                                </div>
+                                @if (ViewBag.Improvements != null)
+                                {
+                                    foreach (var imp in (List<RealEstateApp.Core.Application.DTOs.Improvement.ImprovementDto>)ViewBag.Improvements)
+                                    {
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp-@imp.Id" value="@imp.Id" @(Model.ImprovementIds != null && Model.ImprovementIds.Contains(imp.Id) ? "checked" : "") />
+                                                <label class="form-check-label" for="imp-@imp.Id">@imp.Name</label>
+                                            </div>
+                                        </div>
+                                    }
+                                }
                             </div>
                             <span class="field-validation-error text-danger" asp-validation-for="ImprovementIds"></span>
                         </div>
@@ -186,49 +170,133 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        let selectedFiles = [];
+
+        function showToast(message, type = 'warning') {
+            let container = document.querySelector('.rea-toasts');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'rea-toasts';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `rea-toast rea-toast--${type}`;
+            toast.setAttribute('role', 'status');
+
+            toast.innerHTML = `
+                <span class="rea-toast__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12" y2="17" />
+                    </svg>
+                </span>
+                <div class="rea-toast__content">
+                    <strong class="rea-toast__title">${type === 'success' ? 'Éxito' : 'Alerta'}</strong>
+                    <p class="rea-toast__text">${message}</p>
+                </div>
+                <button class="rea-toast__close" type="button" aria-label="Cerrar notificación">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            const closeBtn = toast.querySelector('.rea-toast__close');
+            closeBtn.addEventListener('click', () => {
+                toast.classList.add('is-leaving');
+                setTimeout(() => toast.remove(), 240);
+            });
+
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('is-leaving');
+                    setTimeout(() => toast.remove(), 240);
+                }
+            }, 6000);
+        }
+
+        function getPreExistingCount() {
+            return document.querySelectorAll('input[name="ExistingImageUrls"]:checked').length;
+        }
+
         document.getElementById('imageFilesInput').addEventListener('change', function (e) {
+            const files = e.target.files;
+            if (!files.length) return;
+
+            const preExistingCount = getPreExistingCount();
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (!file.type.startsWith('image/')) continue;
+
+                if (selectedFiles.length + preExistingCount >= 4) {
+                    showToast('Solo se permite un total de 4 imágenes por propiedad.');
+                    break;
+                }
+
+                const isDuplicate = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+                if (!isDuplicate) {
+                    selectedFiles.push(file);
+                }
+            }
+
+            e.target.value = '';
+
+            renderPreviews();
+            updateInputFiles();
+        });
+
+        function renderPreviews() {
             const container = document.getElementById('imagePreviewGrid');
             container.innerHTML = '';
-            const files = e.target.files;
-            
-            // Contar imágenes preexistentes marcadas para mantener
-            const preExistingChecked = document.querySelectorAll('input[name="ExistingImageUrls"]:checked').length;
-            const totalImages = preExistingChecked + files.length;
-            
-            if (totalImages > 4) {
-                alert(`Solo se permite un total de 4 imágenes por propiedad. Tienes ${preExistingChecked} imágenes actuales seleccionadas para mantener, por lo que solo puedes subir un máximo de ${4 - preExistingChecked} imágenes adicionales.`);
-                e.target.value = '';
-                return;
-            }
-            
-            Array.from(files).forEach((file) => {
-                if (!file.type.startsWith('image/')) return;
-                
+
+            selectedFiles.forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = function (event) {
                     const col = document.createElement('div');
-                    col.className = 'col-3';
+                    col.className = 'col-3 position-relative';
                     col.innerHTML = `
                         <div class="position-relative border rounded overflow-hidden shadow-sm" style="height: 60px; background: var(--color-surface);">
                             <img src="${event.target.result}" class="w-100 h-100" style="object-fit: cover;" alt="Preview" />
+                            <button type="button" class="btn btn-danger btn-xs position-absolute top-0 end-0 m-1 px-1 py-0" style="font-size: 10px; line-height: 1; border-radius: 50%; padding: 0px 4px; opacity: 0.85; border: none; color: white;" onclick="removeNewFile(${index})">
+                                &times;
+                            </button>
                         </div>
                     `;
                     container.appendChild(col);
                 };
                 reader.readAsDataURL(file);
             });
-        });
+        }
 
-        // Escuchar cambios en los checks de imágenes existentes para recalcular el límite si el usuario cambia la selección
+        window.removeNewFile = function(index) {
+            selectedFiles.splice(index, 1);
+            renderPreviews();
+            updateInputFiles();
+        };
+
+        function updateInputFiles() {
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            document.getElementById('imageFilesInput').files = dataTransfer.files;
+        }
+
+        // Escuchar cambios en los checks de imágenes existentes para asegurar que no se supere el límite de 4 en total
         document.querySelectorAll('input[name="ExistingImageUrls"]').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
-                const input = document.getElementById('imageFilesInput');
-                if (input.files.length > 0) {
-                    // Si ya hay archivos cargados y el usuario cambia las existentes, forzar nueva selección para evitar superar el límite de 4.
-                    alert('Has modificado las imágenes actuales. Por favor, vuelve a seleccionar las nuevas fotos para asegurar que no se exceda el límite de 4 en total.');
-                    input.value = '';
-                    document.getElementById('imagePreviewGrid').innerHTML = '';
+                const preExistingCount = getPreExistingCount();
+                
+                // Si la suma supera 4, alertar y deseleccionar las últimas fotos agregadas para ajustar al límite
+                while (selectedFiles.length + preExistingCount > 4) {
+                    selectedFiles.pop();
                 }
+                
+                renderPreviews();
+                updateInputFiles();
             });
         });
     </script>

@@ -1,0 +1,237 @@
+@using RealEstateApp.Core.Application.ViewsModel.Users.Consult
+@model AgentManagementIndexViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Listado de los agentes";
+
+    string EmptyMessage(AgentListFilter f) => f switch
+    {
+        AgentListFilter.Activos => "No hay agentes activos en este momento.",
+        AgentListFilter.Inactivos => "No hay agentes inactivos en este momento.",
+        AgentListFilter.Pendientes => "No hay agentes pendientes de confirmar cuenta.",
+        _ => "No hay agentes registrados en el sistema."
+    };
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/AgentManagement/agent-management.css" asp-append-version="true" />
+}
+
+<div class="container py-4">
+    <!-- Encabezado -->
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4 border-bottom pb-4">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: var(--color-text);">Agentes inmobiliarios</h2>
+            <p class="text-muted mb-0">Consulta, activa, inactiva o elimina las cuentas de agentes registradas.</p>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="agent-filters mb-4" role="tablist" aria-label="Filtros de agentes">
+        <a asp-action="Index" asp-route-filter="@AgentListFilter.Todos"
+           class="agent-filter @(Model.Filter == AgentListFilter.Todos ? "is-active" : "")">
+            Todos <span class="agent-filter__count">@Model.CountAll</span>
+        </a>
+        <a asp-action="Index" asp-route-filter="@AgentListFilter.Activos"
+           class="agent-filter @(Model.Filter == AgentListFilter.Activos ? "is-active" : "")">
+            Activos <span class="agent-filter__count">@Model.CountActive</span>
+        </a>
+        <a asp-action="Index" asp-route-filter="@AgentListFilter.Inactivos"
+           class="agent-filter @(Model.Filter == AgentListFilter.Inactivos ? "is-active" : "")">
+            Inactivos <span class="agent-filter__count">@Model.CountInactive</span>
+        </a>
+        <a asp-action="Index" asp-route-filter="@AgentListFilter.Pendientes"
+           class="agent-filter @(Model.Filter == AgentListFilter.Pendientes ? "is-active" : "")">
+            Pendientes de confirmar <span class="agent-filter__count">@Model.CountPending</span>
+        </a>
+    </div>
+
+    @if (Model.Agents == null || !Model.Agents.Any())
+    {
+        <div class="agent-empty">
+            <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <h4 class="fw-bold mb-1">Sin resultados</h4>
+            <p class="text-muted mb-0">@EmptyMessage(Model.Filter)</p>
+        </div>
+    }
+    else
+    {
+        @if (Model.CanUseCards)
+        {
+            <div class="d-flex justify-content-end mb-3">
+                <div class="agent-view-toggle" role="group" aria-label="Cambiar vista">
+                    <button type="button" class="agent-view-toggle__btn is-active" data-view="table" aria-pressed="true">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+                        </svg>
+                        Tabla
+                    </button>
+                    <button type="button" class="agent-view-toggle__btn" data-view="cards" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
+                            <rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
+                        </svg>
+                        Tarjetas
+                    </button>
+                </div>
+            </div>
+        }
+
+        <!-- Vista de tabla -->
+        <div id="agentsTableView" class="table-responsive">
+            <table class="table align-middle admin-table">
+                <thead>
+                    <tr style="color: var(--color-text-secondary); font-size: 0.85rem; font-weight: 700; border-bottom: 2px solid var(--color-border);">
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Correo electrónico</th>
+                        <th class="text-center">Propiedades</th>
+                        <th>Estado</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var agent in Model.Agents)
+                    {
+                        <tr style="border-bottom: 1px solid var(--color-border);">
+                            <td class="fw-semibold">@agent.Name</td>
+                            <td>@agent.LastName</td>
+                            <td>@agent.Email</td>
+                            <td class="text-center">
+                                <span class="agent-count-badge">@agent.Properties</span>
+                            </td>
+                            <td>
+                                @if (agent.IsActive)
+                                {
+                                    <span class="agent-state agent-state--active">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="agent-state agent-state--inactive">Inactivo</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-action="ToggleStatusConfirm" asp-route-id="@agent.Id"
+                                       class="agent-action @(agent.IsActive ? "agent-action--danger" : "agent-action--success")">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                                            @if (agent.IsActive)
+                                            {
+                                                <circle cx="12" cy="12" r="10" />
+                                                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                                            }
+                                            else
+                                            {
+                                                <path d="M20 6L9 17l-5-5" />
+                                            }
+                                        </svg>
+                                        @(agent.IsActive ? "Inactivar" : "Activar")
+                                    </a>
+
+                                    <a asp-action="DeleteConfirm" asp-route-id="@agent.Id"
+                                       class="agent-action agent-action--delete">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6" />
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                        </svg>
+                                        Eliminar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.CanUseCards)
+        {
+            <!-- Vista de tarjetas (solo disponible con 10 o menos agentes) -->
+            <div id="agentsCardsView" class="agent-cards" hidden>
+                @foreach (var agent in Model.Agents)
+                {
+                    <article class="agent-card">
+                        <header class="agent-card__head">
+                            <div class="agent-card__avatar" aria-hidden="true">
+                                @{
+                                    var initials = $"{(agent.Name.Length > 0 ? agent.Name[0].ToString() : "")}{(agent.LastName.Length > 0 ? agent.LastName[0].ToString() : "")}".ToUpperInvariant();
+                                }
+                                @initials
+                            </div>
+                            <div class="agent-card__identity">
+                                <h3 class="agent-card__name">@agent.Name @agent.LastName</h3>
+                                @if (agent.IsActive)
+                                {
+                                    <span class="agent-state agent-state--active">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="agent-state agent-state--inactive">Inactivo</span>
+                                }
+                            </div>
+                        </header>
+
+                        <ul class="agent-card__meta">
+                            <li>
+                                <span class="agent-card__label">Correo</span>
+                                <span class="agent-card__value">@agent.Email</span>
+                            </li>
+                            <li>
+                                <span class="agent-card__label">Propiedades</span>
+                                <span class="agent-count-badge">@agent.Properties</span>
+                            </li>
+                        </ul>
+
+                        <footer class="agent-card__actions">
+                            <a asp-action="ToggleStatusConfirm" asp-route-id="@agent.Id"
+                               class="agent-action @(agent.IsActive ? "agent-action--danger" : "agent-action--success")">
+                                @(agent.IsActive ? "Inactivar" : "Activar")
+                            </a>
+                            <a asp-action="DeleteConfirm" asp-route-id="@agent.Id"
+                               class="agent-action agent-action--delete">
+                                Eliminar
+                            </a>
+                        </footer>
+                    </article>
+                }
+            </div>
+        }
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="agent-pagination" aria-label="Paginación de agentes">
+                @{
+                    int maxVisible = 5;
+                    int half = maxVisible / 2;
+                    int startPage = Math.Max(1, Model.Page - half);
+                    int endPage = Math.Min(Model.TotalPages, startPage + maxVisible - 1);
+                    if (endPage - startPage + 1 < maxVisible)
+                    {
+                        startPage = Math.Max(1, endPage - maxVisible + 1);
+                    }
+                }
+
+                <a asp-action="Index" asp-route-filter="@Model.Filter" asp-route-page="@(Model.Page - 1)"
+                   class="agent-pagination__link @(Model.Page == 1 ? "is-disabled" : "")" aria-label="Anterior">&#8249;</a>
+
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <a asp-action="Index" asp-route-filter="@Model.Filter" asp-route-page="@i"
+                       class="agent-pagination__link @(i == Model.Page ? "is-active" : "")">@i</a>
+                }
+
+                <a asp-action="Index" asp-route-filter="@Model.Filter" asp-route-page="@(Model.Page + 1)"
+                   class="agent-pagination__link @(Model.Page == Model.TotalPages ? "is-disabled" : "")" aria-label="Siguiente">&#8250;</a>
+            </nav>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/AgentManagement/agent-management.js" asp-append-version="true"></script>
+}

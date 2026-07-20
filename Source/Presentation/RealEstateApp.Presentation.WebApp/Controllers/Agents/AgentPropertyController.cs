@@ -1,14 +1,19 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RealEstateApp.Core.Application.Contracts.Properties;
-// using RealEstateApp.Core.Application.Contracts.PropertyType;
-// using RealEstateApp.Core.Application.Contracts.SaleType;
-// using RealEstateApp.Core.Application.Contracts.Improvement;
+using RealEstateApp.Core.Application.Contracts.Offers;
+using RealEstateApp.Core.Application.Contracts.Messages;
+using RealEstateApp.Core.Application.Contracts.PropertyType;
+using RealEstateApp.Core.Application.Contracts.SaleType;
+using RealEstateApp.Core.Application.Contracts.Improvement;
 using RealEstateApp.Core.Application.DTOs.Property;
-// using RealEstateApp.Core.Application.DTOs.PropertyType;
-// using RealEstateApp.Core.Application.DTOs.SaleType;
-// using RealEstateApp.Core.Application.DTOs.Improvement;
+using RealEstateApp.Core.Application.DTOs.PropertyType;
+using RealEstateApp.Core.Application.DTOs.SaleType;
+using RealEstateApp.Core.Application.DTOs.Improvement;
 using RealEstateApp.Core.Application.ViewsModel.Property;
+using RealEstateApp.Core.Application.ViewsModel.Common;
+using RealEstateApp.Core.Application.ViewsModel.Offer;
+using RealEstateApp.Core.Application.ViewsModel.MessageAtC;
 using RealEstateApp.Core.Application.DTOs.Users.Auth.Session;
 using AutoMapper;
 
@@ -19,62 +24,70 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
     {
         private readonly IAgentPropertyService _agentPropertyService;
         private readonly IPropertyQueryService _propertyQueryService;
-        // private readonly IPropertyTypeService _propertyTypeService;
-        // private readonly ISaleTypeService _saleTypeService;
-        // private readonly IImprovementService _improvementService;
+        private readonly IOfferService _offerService;
+        private readonly IMessageAtCService _messageService;
         private readonly IUserSession _userSession;
         private readonly IMapper _mapper;
+        private readonly IPropertyTypeService _propertyTypeService;
+        private readonly ISaleTypeService _saleTypeService;
+        private readonly IImprovementService _improvementService;
 
         public AgentPropertyController(
             IAgentPropertyService agentPropertyService,
             IPropertyQueryService propertyQueryService,
-            // IPropertyTypeService propertyTypeService,
-            // ISaleTypeService saleTypeService,
-            // IImprovementService improvementService,
+            IOfferService offerService,
+            IMessageAtCService messageService,
             IUserSession userSession,
-            IMapper mapper)
+            IMapper mapper,
+            IPropertyTypeService propertyTypeService,
+            ISaleTypeService saleTypeService,
+            IImprovementService improvementService)
         {
             _agentPropertyService = agentPropertyService;
             _propertyQueryService = propertyQueryService;
-            // _propertyTypeService = propertyTypeService;
-            // _saleTypeService = saleTypeService;
-            // _improvementService = improvementService;
+            _offerService = offerService;
+            _messageService = messageService;
             _userSession = userSession;
             _mapper = mapper;
+            _propertyTypeService = propertyTypeService;
+            _saleTypeService = saleTypeService;
+            _improvementService = improvementService;
         }
-
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
             if (pageNumber < 1) pageNumber = 1;
 
             var agentId = _userSession.GetIdCurrentUser();
-            var countResult = await _propertyQueryService.CountAvailableByAgentAsync(agentId);
+            var countResult = await _agentPropertyService.CountByAgentAsync(agentId);
             var totalItems = countResult.IsValid ? countResult.Value : 0;
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
             if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
 
-            var result = await _propertyQueryService.GetAvailableByAgentAsync(agentId, pageNumber, pageSize);
+            var result = await _agentPropertyService.GetPropertiesByAgentAsync(agentId, pageNumber, pageSize);
             if (!result.IsValid)
             {
-                ViewBag.CurrentPage = 1;
-                ViewBag.TotalPages = 1;
-                ViewBag.TotalItems = 0;
-                return View(new List<PropertyCardViewModel>());
+                return View(new AgentPropertiesViewModel { Properties = new List<PropertyCardViewModel>() });
             }
 
             var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
 
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.TotalItems = totalItems;
+            var viewModel = new AgentPropertiesViewModel
+            {
+                Properties = viewModels,
+                Page = pageNumber,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+                PageSize = pageSize
+            };
 
-            return View(viewModels);
+            return View(viewModel);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var viewModel = new SavePropertyViewModel { Description = string.Empty };
+            await PopulateMasterDataAsync();
             return View(viewModel);
         }
 
@@ -82,9 +95,15 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SavePropertyViewModel model)
         {
+            var filesCount = model.ImageFiles?.Count ?? 0;
+            if (filesCount < 1 || filesCount > 4)
+            {
+                ModelState.AddModelError("ImageFiles", "Debe seleccionar entre 1 y 4 imágenes para crear la propiedad.");
+            }
+
             if (!ModelState.IsValid)
             {
-                // await PopulateDropdownsAsync(model);
+                await PopulateMasterDataAsync();
                 return View(model);
             }
 
@@ -96,7 +115,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             if (!result.IsValid)
             {
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al crear la propiedad.";
-                // await PopulateDropdownsAsync(model);
+                await PopulateMasterDataAsync();
                 return View(model);
             }
 
@@ -119,7 +138,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             }
 
             var viewModel = _mapper.Map<SavePropertyViewModel>(property);
-            // await PopulateDropdownsAsync(viewModel);
+            await PopulateMasterDataAsync();
             return View(viewModel);
         }
 
@@ -127,9 +146,15 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(SavePropertyViewModel model)
         {
+            var currentCount = (model.ExistingImageUrls?.Count ?? 0) + (model.ImageFiles?.Count ?? 0);
+            if (currentCount < 1 || currentCount > 4)
+            {
+                ModelState.AddModelError("ImageFiles", "El total de imágenes de la propiedad (existentes conservadas + nuevas agregadas) debe ser de al menos 1 y no exceder las 4 unidades.");
+            }
+
             if (!ModelState.IsValid)
             {
-                // await PopulateDropdownsAsync(model);
+                await PopulateMasterDataAsync();
                 return View(model);
             }
 
@@ -147,11 +172,23 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
             if (result != null && !result.IsValid)
             {
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault()?.Description ?? "Ocurrió un error al actualizar la propiedad.";
-                // await PopulateDropdownsAsync(model);
+                await PopulateMasterDataAsync();
                 return View(model);
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task PopulateMasterDataAsync()
+        {
+            var propertyTypesResult = await _propertyTypeService.GetAllWithCountAsync();
+            ViewBag.PropertyTypes = propertyTypesResult.IsValid ? propertyTypesResult.Value : new List<PropertyTypeDto>();
+
+            var saleTypesResult = await _saleTypeService.GetAllWithCountAsync();
+            ViewBag.SaleTypes = saleTypesResult.IsValid ? saleTypesResult.Value : new List<SaleTypeDto>();
+
+            var improvementsResult = await _improvementService.GetAllWithCountAsync();
+            ViewBag.Improvements = improvementsResult.IsValid ? improvementsResult.Value : new List<ImprovementDto>();
         }
 
         public async Task<IActionResult> Details(int id)
@@ -163,7 +200,25 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Agents
                 return RedirectToAction(nameof(Index));
             }
 
-            var viewModel = _mapper.Map<PropertyDetailViewModel>(result.Value);
+            var propertyVm = _mapper.Map<PropertyDetailViewModel>(result.Value);
+
+            var offersResult = await _offerService.GetOffersByPropertyAsync(id);
+            var offers = offersResult.IsValid && offersResult.Value != null
+                ? _mapper.Map<List<OfferViewModel>>(offersResult.Value)
+                : new List<OfferViewModel>();
+
+            var chatsResult = await _messageService.GetChatsByAgentAsync();
+            var conversations = chatsResult.IsValid && chatsResult.Value != null
+                ? _mapper.Map<List<MessageAtCViewModel>>(chatsResult.Value.Where(m => m.PropertyId == id))
+                : new List<MessageAtCViewModel>();
+
+            var viewModel = new AgentPropertyDetailsViewModel
+            {
+                Property = propertyVm,
+                Offers = offers,
+                Conversations = conversations
+            };
+
             return View(viewModel);
         }
 

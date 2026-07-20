@@ -140,16 +140,26 @@ namespace RealEstateApp.Core.Application.Services.Offers
                     return validation;
                 }
 
+                await _offerRepository.BeginTransactionAsync();
+
                 var offer = await _offerRepository.GetByIdAsync(offerId);
                 if (offer == null)
                 {
+                    await _offerRepository.RollbackTransactionAsync();
                     return ValidationResult.Failure(new Error("Offer.NotFound", "La oferta especificada no existe."));
                 }
 
                 var property = await _propertyRepository.GetByIdAsync(offer.PropertyId);
                 if (property == null)
                 {
+                    await _offerRepository.RollbackTransactionAsync();
                     return ValidationResult.Failure(new Error("Property.NotFound", "La propiedad asociada a la oferta no existe."));
+                }
+
+                if (property.Status == PropertyState.Sold)
+                {
+                    await _offerRepository.RollbackTransactionAsync();
+                    return ValidationResult.Failure(new Error("Property.AlreadySold", "Esta propiedad ya ha sido vendida."));
                 }
 
                 offer.Status = OfferState.Accepted;
@@ -160,10 +170,13 @@ namespace RealEstateApp.Core.Application.Services.Offers
                 property.Status = PropertyState.Sold;
                 await _propertyRepository.UpdateAsync(property);
 
+                await _offerRepository.CommitTransactionAsync();
+
                 return ValidationResult.Success();
             }
             catch (Exception ex)
             {
+                await _offerRepository.RollbackTransactionAsync();
                 _logger.LogError(ex, "Ocurrió un error en OfferService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
             }
@@ -227,6 +240,21 @@ namespace RealEstateApp.Core.Application.Services.Offers
             {
                 _logger.LogError(ex, "Ocurrió un error en OfferService");
                 return ValidationResult.Failure(new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde."));
+            }
+        }
+
+        public async Task<ValidationResult<IReadOnlyCollection<OfferDto>>> GetOffersByPropertyAsync(int propertyId)
+        {
+            try
+            {
+                var offers = await _offerRepository.GetOffersByPropertyAsync(propertyId);
+                var dtos = _mapper.Map<IReadOnlyCollection<OfferDto>>(offers);
+                return ValidationResult<IReadOnlyCollection<OfferDto>>.Success(dtos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocurrió un error en OfferService");
+                return ValidationResult<IReadOnlyCollection<OfferDto>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento. Favor intente más tarde.") });
             }
         }
     }

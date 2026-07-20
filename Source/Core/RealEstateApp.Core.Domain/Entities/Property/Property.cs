@@ -19,8 +19,8 @@ namespace RealEstateApp.Core.Domain.Entities
         public required int SaleTypeId { get; set; }
 
         // Navigation Properties
-       // public PropertyType? PropertyType { get; set; } = null!;
-       // public SaleType? SaleType { get; set; } = null!;
+        public PropertyType? PropertyType { get; set; }
+        public SaleType? SaleType { get; set; }
         public IReadOnlyCollection<PropertyImage> Images { get; set; } = null!;
         public IReadOnlyCollection<PropertyImprovement> PropertyImprovements { get; set; } = null!;
         public IReadOnlyCollection<Offer> Offers { get; set; } = null!;

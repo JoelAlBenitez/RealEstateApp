@@ -1,5 +1,6 @@
 namespace RealEstateApp.Core.Application.ViewsModel.Users.Consult
 {
+
     // ViewModel base para consulta de usuarios, unificando los listados
     public class UserConsultViewModel
     {

@@ -650,3 +650,31 @@ body.is-scrolled .site-menu__brand {
         gap: var(--space-10);
     }
 }
+
+/* Form control e inputs globales para adaptación de tema claro/oscuro */
+.form-control, .form-select {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+    border-radius: var(--radius-input) !important;
+    font-family: var(--font-family-base) !important;
+    transition: border-color var(--duration-hover) ease-out, box-shadow var(--duration-hover) ease-out !important;
+}
+
+.form-control::placeholder {
+    color: var(--color-text-disabled) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 3px rgba(232, 93, 79, 0.25) !important; /* Sombra usando --color-primary */
+    outline: none !important;
+}
+
+/* Estilos especiales para el color del texto al escribir */
+input, select, textarea {
+    color: var(--color-text) !important;
+}
+

@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/layout/layout.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/notifications/notifications.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/Admin/admin-styles.css" asp-append-version="true" />
 
     <script src="~/js/layout/theme-init.js" asp-append-version="true"></script>
 
@@ -40,12 +39,15 @@
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
             </button>
-            <a class="rea-btn rea-btn--secondary py-2 px-3" style="font-size: 0.8rem; border-radius: 10px;" asp-controller="Account" asp-action="LogOut">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-                </svg>
-                Salir
-            </a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="rea-btn rea-btn--secondary py-2 px-3" style="font-size: 0.8rem; border-radius: 10px;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+                    </svg>
+                    Salir
+                </button>
+            </form>
         </div>
     </header>
 
@@ -104,7 +106,7 @@
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                         <polyline points="9 22 9 12 15 12 15 22" />
                     </svg>
-                    <span>T. Propiedades</span>
+                    <span>Tipos de Propiedad</span>
                 </a>
             </li>
 
@@ -114,7 +116,7 @@
                         <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
                         <line x1="7" y1="7" x2="7.01" y2="7" />
                     </svg>
-                    <span>T. Ventas</span>
+                    <span>Tipos de Venta</span>
                 </a>
             </li>
 
@@ -139,7 +141,6 @@
     <footer class="site-footer">
         <div class="site-footer__bottom">
             <p>&copy; 2026 Real Estate App — Panel de Control Administrativo.</p>
-            <p>Mantenimientos y estadísticas integradas para administración.</p>
         </div>
     </footer>
 
@@ -147,7 +148,6 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/layout/layout.js" asp-append-version="true"></script>
     <script src="~/js/notifications/notifications.js" asp-append-version="true"></script>
-    <script src="~/js/Admin/admin-actions.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

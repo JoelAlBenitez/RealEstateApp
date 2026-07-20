@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using RealEstateApp.Core.Application.DTOs.Users.Operational;
 using RealEstateApp.Core.Application.ViewsModel.Users.Operational.ExternalUser;
 
@@ -14,6 +14,8 @@ namespace RealEstateApp.Core.Application.Mapping.DtoToViewModelAndReverse.Users.
                .ForMember(opt => opt.ProfileImgUrl, des => des.Ignore());
                
 
+            CreateMap<RealEstateApp.Core.Application.DTOs.Users.DtoQueryUser.ConsultAgentDto, EditExternalUserViewModel>()
+               .ForMember(dest => dest.ProfileImgCurrent, opt => opt.MapFrom(src => src.ProfileImgAgent));
         }
     }
 }
