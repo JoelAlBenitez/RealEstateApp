@@ -1,0 +1,10 @@
+namespace RealEstateApp.Core.Application.ViewsModel.PropertyType
+{
+    public sealed class PropertyTypeListViewModel
+    {
+        public required int Id { get; set; }
+        public required string Name { get; set; }
+        public required string Description { get; set; }
+        public required int PropertyCount { get; set; }
+    }
+}
