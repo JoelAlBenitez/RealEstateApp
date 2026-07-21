@@ -11,7 +11,7 @@ namespace RealEstateApp.Core.Application.DTOs.Api.Properties
         public List<string> Improvements { get; set; } = new();
 
         public decimal Price { get; set; }
-        public double Size { get; set; }
+        public decimal Size { get; set; }
         public int Bedrooms { get; set; }
         public int Bathrooms { get; set; }
         public required string Description { get; set; }

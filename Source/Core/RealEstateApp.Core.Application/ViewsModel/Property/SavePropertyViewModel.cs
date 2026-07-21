@@ -19,7 +19,7 @@ namespace RealEstateApp.Core.Application.ViewsModel.Property
 
         [Required(ErrorMessage = "El tamaño de la propiedad es requerido.")]
         [Range(1, double.MaxValue, ErrorMessage = "El tamaño debe ser un valor mayor a cero.")]
-        public double Size { get; set; }
+        public decimal Size { get; set; }
 
         [Required(ErrorMessage = "La cantidad de habitaciones es requerida.")]
         [Range(0, 100, ErrorMessage = "Ingrese una cantidad de habitaciones válida (0-100).")]

@@ -89,7 +89,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Admin
             var dto = _mapper.Map<SaveImprovementDto>(model);
             var result = await _improvementService.UpdateAsync(dto);
 
-            if (!result.IsValid)
+            if (!result!.IsValid)
             {
                 foreach (var error in result.Errors)
                 {

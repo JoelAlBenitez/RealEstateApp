@@ -8,7 +8,7 @@ namespace RealEstateApp.Core.Application.ViewsModel.Property
         public required string Code { get; set; }
         public decimal Price { get; set; }
         public required string Description { get; set; }
-        public double Size { get; set; }
+        public decimal Size { get; set; }
         public int Bedrooms { get; set; }
         public int Bathrooms { get; set; }
         public required string AgentId { get; set; }

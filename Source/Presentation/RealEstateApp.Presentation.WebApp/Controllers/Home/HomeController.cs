@@ -153,7 +153,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
             bool isFiltered)
         {
             var totalPages = 1;
-            var countResult = await _propertyQueryService.CountAvailableAsync(filters);
+            var countResult = await _propertyQueryService.GetAvailableCountAsync(filters);
             if (!countResult.IsValid)
             {
                 AddErrors(countResult.Errors);

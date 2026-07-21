@@ -10,6 +10,6 @@
         public required decimal Price { get; set; }
         public required int NumberOfBedrooms { get; set; }
         public required int NumberOfBathrooms { get; set; }
-        public required double Size { get; set; }
+        public required decimal Size { get; set; }
     }
 }

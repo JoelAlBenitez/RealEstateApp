@@ -32,7 +32,8 @@ namespace RealEstateApp.Infraestructure.Persistence.Configurations
                 .HasMaxLength(1000);
 
             builder.Property(p => p.Size)
-                .IsRequired();
+                .IsRequired()
+                .HasPrecision(18, 2);
 
             builder.Property(p => p.Bedrooms)
                 .IsRequired();
