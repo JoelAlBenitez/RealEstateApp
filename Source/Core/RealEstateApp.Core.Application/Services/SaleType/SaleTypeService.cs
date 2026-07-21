@@ -83,12 +83,19 @@ namespace RealEstateApp.Core.Application.Services.SaleType
                 return validationResult;
             }
 
-            dto = dto with { 
-                Name = dto.Name.Trim(), 
-                Description = dto.Description.Trim() 
+            var entity = new RealEstateApp.Core.Domain.Entities.SaleType
+            {
+                Name = dto.Name.Trim(),
+                Description = dto.Description.Trim(),
+                CreateAt = DateTimeOffset.UtcNow,
+                UpdateAt = DateTimeOffset.UtcNow
             };
-            
-            return await base.AddAsync(dto);
+
+            await _saleTypeRepository.AddAsync(entity);
+            var result = await _saleTypeRepository.SaveAsync();
+            return result > 0
+                ? ValidationResult.Success()
+                : ValidationResult.Failure(new Error("Oops", "Ocurrió un error al procesar la solicitud. Intente nuevamente más tarde."));
         }
 
         public override async Task<ValidationResult?> UpdateAsync(SaveSaleTypeDto dto)
@@ -99,12 +106,21 @@ namespace RealEstateApp.Core.Application.Services.SaleType
                 return validationResult;
             }
 
-            dto = dto with { 
-                Name = dto.Name.Trim(), 
-                Description = dto.Description.Trim() 
-            };
-            
-            return await base.UpdateAsync(dto);
+            var entity = await _saleTypeRepository.GetByIdAsync(dto.Id!.Value);
+            if (entity == null)
+            {
+                return ValidationResult.Failure(new Error("SaleType.NotFound", "El tipo de venta a actualizar no existe."));
+            }
+
+            // Se conserva CreateAt original; solo se actualiza UpdateAt.
+            entity.Name = dto.Name.Trim();
+            entity.Description = dto.Description.Trim();
+            entity.UpdateAt = DateTimeOffset.UtcNow;
+
+            var result = await _saleTypeRepository.SaveAsync();
+            return result > 0
+                ? ValidationResult.Success()
+                : ValidationResult.Failure(new Error("Oops", "Ocurrió un error al actualizar el elemento. Intente nuevamente más tarde."));
         }
 
         public override async Task<ValidationResult> RemoveAsync(int id)
