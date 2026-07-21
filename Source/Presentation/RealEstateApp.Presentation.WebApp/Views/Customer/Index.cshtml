@@ -7,55 +7,7 @@
 <div class="row g-4">
     <div class="col-xl-3 col-lg-4">
         <div class="sticky-top" style="top: 80px;">
-            <div class="card shadow-sm border-0" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4" style="color: var(--color-primary);">Filtrar Propiedades</h5>
-                    <form asp-controller="Customer" asp-action="Index" method="get">
-                        <div class="mb-3">
-                            <label for="PropertyTypeId" class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Tipo de Propiedad</label>
-                            @{
-                                var selectedTypeId = ViewBag.PropertyTypeId as int?;
-                                var propertyTypeOptions = ViewBag.PropertyTypes as IEnumerable<RealEstateApp.Core.Application.DTOs.Property.TypeProperty>
-                                    ?? Enumerable.Empty<RealEstateApp.Core.Application.DTOs.Property.TypeProperty>();
-                            }
-                            <select class="form-select" id="PropertyTypeId" name="PropertyTypeId" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);">
-                                <option value="">Todos los tipos</option>
-                                @foreach (var type in propertyTypeOptions)
-                                {
-                                    <option value="@type.Id" selected="@(selectedTypeId == type.Id)">@type.Name</option>
-                                }
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Rango de Precio</label>
-                            <div class="input-group mb-2">
-                                <span class="input-group-text" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text-secondary);">$</span>
-                                <input type="number" class="form-control" name="MinPrice" placeholder="Mínimo" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
-                            </div>
-                            <div class="input-group">
-                                <span class="input-group-text" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text-secondary);">$</span>
-                                <input type="number" class="form-control" name="MaxPrice" placeholder="Máximo" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="Bedrooms" class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Habitaciones</label>
-                            <input type="number" class="form-control" id="Bedrooms" name="Bedrooms" placeholder="Ej: 3" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="Bathrooms" class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Baños</label>
-                            <input type="number" class="form-control" id="Bathrooms" name="Bathrooms" placeholder="Ej: 2" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="rea-btn rea-btn--primary w-100">Buscar</button>
-                            <a asp-controller="Customer" asp-action="Index" class="rea-btn rea-btn--secondary w-100">Limpiar Filtros</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <partial name="_CustomerPropertyFilter" model="Model.Filter" />
         </div>
     </div>
 

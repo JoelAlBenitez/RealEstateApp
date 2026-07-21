@@ -10,13 +10,10 @@ namespace RealEstateApp.Core.Domain.Common.Errors
         public static readonly Error NotExists = new("Improvement.NotExists", "No existen mejoras registradas.");
         public static readonly Error Forbidden = new("Improvement.Forbidden", "No tiene permisos para realizar esta acción.");
 
-        // Supuesto de Diseño — no citado literalmente en esta sección, reutilizado por consistencia
         public static readonly Error NotFound = new("Improvement.NotFound", "La mejora seleccionada no existe.");
         
-        // Supuesto de Diseño — mismo supuesto
         public static readonly Error DeleteFailed = new("Improvement.DeleteFailed", "No fue posible eliminar la mejora. Intente nuevamente más tarde.");
         
-        // Supuesto de Diseño — consistente con el patrón de éxito
         public static readonly Error Deleted = new("Improvement.Deleted", "La mejora fue eliminada correctamente.");
     }
 }

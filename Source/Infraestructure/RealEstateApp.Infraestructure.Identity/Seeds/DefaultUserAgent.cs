@@ -15,7 +15,7 @@ namespace RealEstateApp.Infraestructure.Identity.Seeds
                 PhoneNumber = "8290000000",
                 Name = "Sebastian",
                 LastName = "Peguero",
-                ProfileImg = "Img/Users/3c9a74c8-8e4f-4d19-9d8e-5f6b2a17e3af/3c9a74c8-8e4f-4d19-9d8e-5f6b2a17e3af.jpg",
+                ProfileImg = "Img/Users/667d9056-dee5-4c6a-8723-13eed6440374/667d9056-dee5-4c6a-8723-13eed6440374.jpg",
                 UserName = "SPeguero",
                 EmailConfirmed = true,
                 IsActive = true,

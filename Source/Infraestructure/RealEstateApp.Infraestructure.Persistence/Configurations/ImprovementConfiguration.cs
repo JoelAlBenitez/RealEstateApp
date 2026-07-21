@@ -8,6 +8,8 @@ namespace RealEstateApp.Infraestructure.Persistence.Context.Configurations
     {
         public void Configure(EntityTypeBuilder<Improvement> builder)
         {
+            builder.ToTable("Improvements");
+
             builder.HasKey(e => e.Id);
             
             builder.Property(e => e.Name)

@@ -32,7 +32,8 @@ namespace RealEstateApp.Infraestructure.Persistence.Configurations
                 .HasMaxLength(1000);
 
             builder.Property(p => p.Size)
-                .IsRequired();
+                .IsRequired()
+                .HasPrecision(18, 2);
 
             builder.Property(p => p.Bedrooms)
                 .IsRequired();
@@ -41,7 +42,8 @@ namespace RealEstateApp.Infraestructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(p => p.AgentId)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(450);
 
             builder.Property(p => p.Status)
                 .IsRequired();
@@ -56,6 +58,16 @@ namespace RealEstateApp.Infraestructure.Persistence.Configurations
                 .WithOne(i => i.Property)
                 .HasForeignKey(i => i.PropertyId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(p => p.PropertyType)
+                .WithMany()
+                .HasForeignKey(p => p.PropertyTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(p => p.SaleType)
+                .WithMany()
+                .HasForeignKey(p => p.SaleTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

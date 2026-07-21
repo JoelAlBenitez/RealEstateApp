@@ -37,17 +37,21 @@ namespace RealEstateApp.Core.Application.Services.Improvement
             {
                 var entities = await _improvementRepository.GetAllAsync();
                 var dtos = _mapper.Map<List<ImprovementDto>>(entities);
-                
-                // Nota: se usa un conteo individual por elemento ejecutado en paralelo con Task.WhenAll
-                // en vez de una consulta agrupada. Confirmado con el líder técnico (Joel) que esto es
-                // aceptable para catálogos maestros con pocos registros (no es un problema de rendimiento en este contexto).
-                var countTasks = dtos.Select(async dto =>
+
+                // Una sola consulta de asociaciones y conteo agrupado en memoria.
+                // Evita el N+1 (una consulta por mejora) y, sobre todo, evita paralelizar
+                // consultas sobre el mismo DbContext (Scoped), que lanza
+                // "A second operation was started on this context instance...".
+                var allAssociations = await _propertyImprovementRepository.GetAllAsync();
+                var counts = allAssociations
+                    .GroupBy(pi => pi.ImprovementId)
+                    .ToDictionary(g => g.Key, g => g.Count());
+
+                foreach (var dto in dtos)
                 {
-                    dto.PropertyCount = await _improvementRepository.CountByImprovementAsync(dto.Id);
-                }).ToList();
-                
-                await Task.WhenAll(countTasks);
-                
+                    dto.PropertyCount = counts.TryGetValue(dto.Id, out var count) ? count : 0;
+                }
+
                 return ValidationResult<IReadOnlyCollection<ImprovementDto>>.Success(dtos);
             }
             catch (Exception)
@@ -81,12 +85,19 @@ namespace RealEstateApp.Core.Application.Services.Improvement
                 return validationResult;
             }
 
-            dto = dto with { 
-                Name = dto.Name.Trim(), 
-                Description = dto.Description.Trim() 
+            var entity = new RealEstateApp.Core.Domain.Entities.Improvement
+            {
+                Name = dto.Name.Trim(),
+                Description = dto.Description.Trim(),
+                CreateAt = DateTimeOffset.UtcNow,
+                UpdateAt = DateTimeOffset.UtcNow
             };
-            
-            return await base.AddAsync(dto);
+
+            await _improvementRepository.AddAsync(entity);
+            var result = await _improvementRepository.SaveAsync();
+            return result > 0
+                ? ValidationResult.Success()
+                : ValidationResult.Failure(new Error("Oops", "Ocurrió un error al procesar la solicitud. Intente nuevamente más tarde."));
         }
 
         public override async Task<ValidationResult?> UpdateAsync(SaveImprovementDto dto)
@@ -97,12 +108,21 @@ namespace RealEstateApp.Core.Application.Services.Improvement
                 return validationResult;
             }
 
-            dto = dto with { 
-                Name = dto.Name.Trim(), 
-                Description = dto.Description.Trim() 
-            };
-            
-            return await base.UpdateAsync(dto);
+            var entity = await _improvementRepository.GetByIdAsync(dto.Id!.Value);
+            if (entity == null)
+            {
+                return ValidationResult.Failure(new Error("Improvement.NotFound", "La mejora a actualizar no existe."));
+            }
+
+            // Se conserva CreateAt original; solo se actualiza UpdateAt.
+            entity.Name = dto.Name.Trim();
+            entity.Description = dto.Description.Trim();
+            entity.UpdateAt = DateTimeOffset.UtcNow;
+
+            var result = await _improvementRepository.SaveAsync();
+            return result > 0
+                ? ValidationResult.Success()
+                : ValidationResult.Failure(new Error("Oops", "Ocurrió un error al actualizar el elemento. Intente nuevamente más tarde."));
         }
 
         public override async Task<ValidationResult> RemoveAsync(int id)

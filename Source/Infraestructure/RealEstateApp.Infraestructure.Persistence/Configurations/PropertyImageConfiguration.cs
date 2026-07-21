@@ -13,7 +13,8 @@ namespace RealEstateApp.Infraestructure.Persistence.Configurations
             builder.HasKey(pi => pi.Id);
 
             builder.Property(pi => pi.ImageUrl)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(2048);
 
             builder.HasOne(pi => pi.Property)
                 .WithMany(p => p.Images)

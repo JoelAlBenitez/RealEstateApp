@@ -20,7 +20,8 @@ namespace RealEstateApp.Infraestructure.Persistence.Configurations
                 .IsUnique();
 
             builder.Property(o => o.CustomerId)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(450);
 
             builder.Property(o => o.Amount)
                 .IsRequired()

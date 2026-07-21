@@ -26,6 +26,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers.Home
         {
             _propertyQueryService = propertyQueryService;
             _mapper = mapper;
+
             _operationalAccountWebApp = operationalAccountWebApp;
         }
 
