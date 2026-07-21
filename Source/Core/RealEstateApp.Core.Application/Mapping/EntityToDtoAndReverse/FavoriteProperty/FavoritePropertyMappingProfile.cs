@@ -1,5 +1,4 @@
 using AutoMapper;
-using RealEstateApp.Core.Domain.Entities;
 using RealEstateApp.Core.Application.DTOs.FavoriteProperty;
 
 namespace RealEstateApp.Core.Application.Mapping.EntityToDtoAndReverse.FavoriteProperty

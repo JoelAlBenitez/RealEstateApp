@@ -74,7 +74,7 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
                 Name = dto.Name.Trim(), 
                 Description = dto.Description.Trim() 
             };
-            
+           
             return await base.AddAsync(dto);
         }
 

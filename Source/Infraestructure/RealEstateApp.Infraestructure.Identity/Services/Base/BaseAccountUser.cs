@@ -51,6 +51,7 @@ namespace RealEstateApp.Infraestructure.Identity.Services.Base
                 response.Errors.Add("El usuario especificado no pudo ser encontrado. Intente de nuevo más tarde.");
             }
             userChange!.IsActive = alterStateUserDto.State;
+            userChange!.EmailConfirmed = alterStateUserDto.State;
             var changeResult = await _userManager.UpdateAsync(userChange);
             if (!changeResult.Succeeded)
             {
