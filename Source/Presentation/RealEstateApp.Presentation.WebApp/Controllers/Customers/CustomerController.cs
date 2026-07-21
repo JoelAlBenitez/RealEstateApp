@@ -42,9 +42,47 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
             _accountWebApp = accountWebApp;
         }
 
-        public async Task<IActionResult> Index(PropertyFilterDto filters, int pageNumber = 1, int pageSize = 6)
+        public async Task<IActionResult> Index(PropertyFilterViewModel filter, int pageNumber = 1, int pageSize = 6)
+        {
+            if (!ModelState.IsValid)
+            {
+                filter.TypePropery = await GetPropertyTypeOptionsAsync();
+                return View(new CustomerPropertiesViewModel
+                {
+                    Properties = new List<PropertyCardViewModel>(),
+                    Filter = filter
+                });
+            }
+
+            return View(await BuildAvailablePropertiesAsync(filter, pageNumber, pageSize));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> FilterProperty(PropertyFilterViewModel filter)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["Warning"] = "La búsqueda no pudo ser realizada. Favor revise los valores ingresados.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index), new
+            {
+                filter.IdTypeProperty,
+                filter.MinPrice,
+                filter.MaxPrice,
+                filter.Bedrooms,
+                filter.Bathrooms
+            });
+        }
+
+        private async Task<CustomerPropertiesViewModel> BuildAvailablePropertiesAsync(
+            PropertyFilterViewModel filter, int pageNumber, int pageSize)
         {
             if (pageNumber < 1) pageNumber = 1;
+
+            var filters = _mapper.Map<PropertyFilterDto>(filter);
 
             var countResult = await _propertyQueryService.GetAvailableCountAsync(filters);
             var totalItems = countResult.IsValid ? countResult.Value : 0;
@@ -52,45 +90,52 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
 
             if (pageNumber > totalPages && totalPages > 0) pageNumber = totalPages;
 
+            filter.TypePropery = await GetPropertyTypeOptionsAsync();
+
             var result = await _propertyQueryService.GetAvailableAsync(filters, pageNumber, pageSize);
             if (!result.IsValid)
             {
-                return View(new CustomerPropertiesViewModel { Properties = new List<PropertyCardViewModel>() });
+                return new CustomerPropertiesViewModel
+                {
+                    Properties = new List<PropertyCardViewModel>(),
+                    Filter = filter
+                };
             }
 
-            var favoritesResult = await _favoritePropertyService.GetByCustomerAsync();
-            var favoriteIds = favoritesResult.IsValid && favoritesResult.Value != null
-                ? favoritesResult.Value.Select(f => f.PropertyId).ToHashSet()
-                : new HashSet<int>();
+            var favoriteIds = await GetFavoritePropertyIdsAsync();
 
             var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
             viewModels.ForEach(vm => vm.IsFavorite = favoriteIds.Contains(vm.Id));
 
-            var viewModel = new CustomerPropertiesViewModel
+            return new CustomerPropertiesViewModel
             {
                 Properties = viewModels,
+                Filter = filter,
                 Page = pageNumber,
                 TotalPages = totalPages,
                 TotalItems = totalItems,
                 PageSize = pageSize
             };
-
-            ViewBag.PropertyTypes = await GetPropertyTypeOptionsAsync();
-            ViewBag.PropertyTypeId = filters.PropertyTypeId;
-            ViewBag.MinPrice = filters.MinPrice;
-            ViewBag.MaxPrice = filters.MaxPrice;
-            ViewBag.Bedrooms = filters.Bedrooms;
-            ViewBag.Bathrooms = filters.Bathrooms;
-
-            return View(viewModel);
         }
 
-        private async Task<IReadOnlyCollection<RealEstateApp.Core.Application.DTOs.Property.TypeProperty>> GetPropertyTypeOptionsAsync()
+        private async Task<HashSet<int>> GetFavoritePropertyIdsAsync()
+        {
+            var favoritesResult = await _favoritePropertyService.GetByCustomerAsync();
+            return favoritesResult.IsValid && favoritesResult.Value != null
+                ? favoritesResult.Value.Select(f => f.PropertyId).ToHashSet()
+                : new HashSet<int>();
+        }
+
+        private async Task<List<TypePropertyViewModel>> GetPropertyTypeOptionsAsync()
         {
             var result = await _propertyTypeService.GetAllForSelectAsync();
-            return result.IsValid && result.Value != null
-                ? result.Value
-                : new List<RealEstateApp.Core.Application.DTOs.Property.TypeProperty>();
+            if (!result.IsValid || result.Value == null)
+            {
+                return new List<TypePropertyViewModel>();
+            }
+            return result.Value
+                .Select(t => new TypePropertyViewModel { Id = t.Id, Name = t.Name })
+                .ToList();
         }
 
         public async Task<IActionResult> Details(int id)
@@ -185,10 +230,7 @@ namespace RealEstateApp.Presentation.WebApp.Controllers
                 return View(new CustomerPropertiesViewModel { Properties = new List<PropertyCardViewModel>() });
             }
 
-            var favoritesResult = await _favoritePropertyService.GetByCustomerAsync();
-            var favoriteIds = favoritesResult.IsValid && favoritesResult.Value != null
-                ? favoritesResult.Value.Select(f => f.PropertyId).ToHashSet()
-                : new HashSet<int>();
+            var favoriteIds = await GetFavoritePropertyIdsAsync();
 
             var viewModels = _mapper.Map<List<PropertyCardViewModel>>(result.Value);
             viewModels.ForEach(vm => vm.IsFavorite = favoriteIds.Contains(vm.Id));
