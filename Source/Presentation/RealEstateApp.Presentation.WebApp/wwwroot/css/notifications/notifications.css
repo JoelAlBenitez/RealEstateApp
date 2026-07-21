@@ -1,0 +1,266 @@
+:root {
+    --state-success-bg: #ECFDF3;
+    --state-success-icon: #16A34A;
+    --state-error-bg: #FEF2F2;
+    --state-error-icon: #DC2626;
+    --state-warning-bg: #FFF7ED;
+    --state-warning-icon: #EA580C;
+    --state-info-bg: #EFF6FF;
+    --state-info-icon: #2563EB;
+}
+
+[data-theme="dark"] {
+    --state-success-bg: rgba(84, 200, 120, .14);
+    --state-success-icon: #54C878;
+    --state-error-bg: rgba(255, 107, 107, .14);
+    --state-error-icon: #FF6B6B;
+    --state-warning-bg: rgba(244, 183, 64, .14);
+    --state-warning-icon: #F4B740;
+    --state-info-bg: rgba(96, 165, 250, .14);
+    --state-info-icon: #60A5FA;
+}
+
+.rea-toasts {
+    position: fixed;
+    top: calc(var(--header-height, 64px) + var(--menu-height, 60px) + 12px);
+    left: 12px;
+    right: 12px;
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.rea-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: var(--radius-input, 14px);
+    background-color: var(--color-surface, #FFFFFF);
+    border: 1px solid var(--color-border, #E5E7EB);
+    box-shadow: var(--shadow-2, 0 8px 20px rgba(0, 0, 0, .08));
+    pointer-events: auto;
+    animation: rea-toast-in 350ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.rea-toast.is-leaving {
+    transition: opacity 220ms ease-out, transform 220ms ease-out;
+    opacity: 0;
+    transform: translateY(-8px) scale(.97);
+}
+
+@keyframes rea-toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(-16px) scale(.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.rea-toast__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.rea-toast__icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.rea-toast--success .rea-toast__icon {
+    background-color: var(--state-success-bg);
+    color: var(--state-success-icon);
+}
+
+.rea-toast--warning .rea-toast__icon {
+    background-color: var(--state-warning-bg);
+    color: var(--state-warning-icon);
+}
+
+.rea-toast--info .rea-toast__icon {
+    background-color: var(--state-info-bg);
+    color: var(--state-info-icon);
+}
+
+.rea-toast__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.rea-toast__title {
+    display: block;
+    font-size: .9rem;
+    font-weight: 700;
+    color: var(--color-text, #1F2937);
+}
+
+.rea-toast__text {
+    margin: 2px 0 0;
+    font-size: .85rem;
+    color: var(--color-text-secondary, #6B7280);
+    overflow-wrap: break-word;
+}
+
+.rea-toast__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-text-disabled, #9CA3AF);
+    cursor: pointer;
+    transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+.rea-toast__close:hover {
+    background-color: var(--color-surface-variant, #F3F4F6);
+    color: var(--color-text, #1F2937);
+}
+
+.rea-toast__close svg {
+    width: 15px;
+    height: 15px;
+}
+
+
+.rea-error-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background-color: rgba(0, 0, 0, .55);
+    backdrop-filter: blur(3px);
+    animation: rea-overlay-in 350ms ease-out both;
+}
+
+.rea-error-overlay.is-leaving {
+    transition: opacity 220ms ease-out;
+    opacity: 0;
+}
+
+@keyframes rea-overlay-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.rea-error-dialog {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 420px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 32px 24px 24px;
+    border-radius: var(--radius-modal, 28px);
+    background-color: var(--color-surface, #FFFFFF);
+    box-shadow: var(--shadow-3, 0 20px 40px rgba(0, 0, 0, .12));
+    text-align: center;
+    animation: rea-dialog-in 350ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@keyframes rea-dialog-in {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(.94);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.rea-error-dialog__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--state-error-bg);
+    color: var(--state-error-icon);
+}
+
+.rea-error-dialog__icon svg {
+    width: 30px;
+    height: 30px;
+}
+
+.rea-error-dialog__title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-text, #1F2937);
+}
+
+.rea-error-dialog__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.rea-error-dialog__list li {
+    padding: 10px 14px;
+    border-radius: var(--radius-input, 14px);
+    background-color: var(--state-error-bg);
+    color: var(--color-text, #1F2937);
+    font-size: .88rem;
+    text-align: left;
+}
+
+.rea-error-dialog__close {
+    margin-top: 8px;
+    padding: 12px 32px;
+    border: none;
+    border-radius: var(--radius-button, 14px);
+    background-color: #E85D4F;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 150ms ease-out, transform 120ms ease-out;
+}
+
+.rea-error-dialog__close:hover {
+    background-color: #D94C3F;
+}
+
+.rea-error-dialog__close:active {
+    background-color: #C54035;
+    transform: scale(.97);
+}
+
+@media (min-width: 576px) {
+    .rea-toasts {
+        left: auto;
+        right: 24px;
+        width: 360px;
+    }
+}

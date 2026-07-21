@@ -1,0 +1,134 @@
+@model object
+@{
+    int currentPage = 1;
+    int totalPages = 1;
+    bool isHomeModel = Model is RealEstateApp.Core.Application.ViewsModel.Property.HomePropertiesViewModel;
+
+    if (Model is RealEstateApp.Core.Application.ViewsModel.Common.IPaginatedViewModel paginatedModel)
+    {
+        currentPage = paginatedModel.CurrentPage;
+        totalPages = paginatedModel.TotalPages;
+    }
+    else if (Model is RealEstateApp.Core.Application.ViewsModel.Property.HomePropertiesViewModel homeModelSetup)
+    {
+        currentPage = homeModelSetup.Page;
+        totalPages = homeModelSetup.TotalPages;
+    }
+    else
+    {
+        currentPage = ViewBag.CurrentPage ?? 1;
+        totalPages = ViewBag.TotalPages ?? 1;
+    }
+
+    string BuildUrl(int page)
+    {
+        if (Model is RealEstateApp.Core.Application.ViewsModel.Property.HomePropertiesViewModel homeModel)
+        {
+            if (homeModel.IsAgentContext)
+            {
+                return $"/AgentFunctionsPublic/PropertyByAgent?AgentId={homeModel.AgentId}&page={page}";
+            }
+            else if (homeModel.IsFiltered)
+            {
+                var query = $"?page={page}";
+                if (homeModel.Filter.MinPrice.HasValue) query += $"&MinPrice={homeModel.Filter.MinPrice}";
+                if (homeModel.Filter.MaxPrice.HasValue) query += $"&MaxPrice={homeModel.Filter.MaxPrice}";
+                if (homeModel.Filter.Bedrooms.HasValue) query += $"&Bedrooms={homeModel.Filter.Bedrooms}";
+                if (homeModel.Filter.Bathrooms.HasValue) query += $"&Bathrooms={homeModel.Filter.Bathrooms}";
+                if (homeModel.Filter.IdTypeProperty.HasValue) query += $"&IdTypeProperty={homeModel.Filter.IdTypeProperty}";
+                return query;
+            }
+            else
+            {
+                return $"/Home/Index?page={page}";
+            }
+        }
+        else
+        {
+            var queryParams = new Dictionary<string, string>();
+            var httpContext = ViewContext.HttpContext;
+            foreach (var q in httpContext.Request.Query)
+            {
+                if (!string.Equals(q.Key, "pageNumber", StringComparison.OrdinalIgnoreCase))
+                {
+                    queryParams[q.Key] = q.Value.ToString();
+                }
+            }
+            var parts = new List<string>();
+            foreach (var kv in queryParams)
+            {
+                parts.Add($"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value)}");
+            }
+            parts.Add($"pageNumber={page}");
+            return $"?{string.Join("&", parts)}";
+        }
+    }
+
+    int maxVisible = 5;
+    int half = maxVisible / 2;
+    int startPage = Math.Max(1, currentPage - half);
+    int endPage = Math.Min(totalPages, startPage + maxVisible - 1);
+    if (endPage - startPage + 1 < maxVisible)
+    {
+        startPage = Math.Max(1, endPage - maxVisible + 1);
+    }
+}
+
+@if (totalPages > 1)
+{
+    <style>
+        .rea-pagination {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .rea-pagination a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 38px;
+            padding: 0 12px;
+            border-radius: 50px;
+            background: var(--color-surface-variant);
+            color: var(--color-text);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s;
+            border: 1px solid var(--color-border);
+        }
+        .rea-pagination a:hover {
+            background: var(--color-primary);
+            color: #fff;
+            border-color: var(--color-primary);
+        }
+        .rea-pagination a.active {
+            background: var(--color-primary);
+            color: #fff;
+            border-color: var(--color-primary);
+            pointer-events: none;
+        }
+        .rea-pagination a.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+    </style>
+
+    <div class="d-flex justify-content-center mt-4 mb-2">
+        <nav class="rea-pagination">
+            <a href="@BuildUrl(1)" class="@(currentPage == 1 ? "disabled" : "")">&#171; Primera</a>
+            <a href="@BuildUrl(Math.Max(1, currentPage - 1))" class="@(currentPage == 1 ? "disabled" : "")">&#8249; Ant</a>
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <a href="@BuildUrl(i)" class="@(i == currentPage ? "active" : "")">@i</a>
+            }
+
+            <a href="@BuildUrl(Math.Min(totalPages, currentPage + 1))" class="@(currentPage == totalPages ? "disabled" : "")">Sig &#8250;</a>
+            <a href="@BuildUrl(totalPages)" class="@(currentPage == totalPages ? "disabled" : "")">Última &#187;</a>
+        </nav>
+    </div>
+}

@@ -1,0 +1,39 @@
+@using RealEstateApp.Core.Application.ViewsModel.Users.Consult
+@model AgentActionConfirmViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Eliminar agente";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/AgentManagement/agent-management.css" asp-append-version="true" />
+}
+
+<div class="container py-5">
+    <div class="agent-confirm agent-confirm--danger">
+        <span class="agent-confirm__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                <line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" />
+            </svg>
+        </span>
+
+        <h2 class="agent-confirm__title">¿Está seguro que desea eliminar este agente y todas sus propiedades?</h2>
+        <p class="agent-confirm__subject">@Model.FullName</p>
+
+        <p class="agent-confirm__note">
+            Esta acción es irreversible. Se eliminarán el agente y sus @Model.Properties propiedad(es) registradas,
+            junto con sus imágenes, ofertas, conversaciones y favoritos asociados.
+        </p>
+
+        <div class="agent-confirm__actions">
+            <a asp-action="Index" class="rea-btn rea-btn--secondary">Cancelar</a>
+            <form asp-action="Delete" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="rea-btn rea-btn--danger">Aceptar</button>
+            </form>
+        </div>
+    </div>
+</div>

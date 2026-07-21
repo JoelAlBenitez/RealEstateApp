@@ -1,0 +1,178 @@
+@using RealEstateApp.Core.Application.ViewsModel.Offer
+@model RealEstateApp.Core.Application.ViewsModel.Property.AgentOffersViewModel
+@{
+    ViewData["Title"] = $"Ofertas de Propiedad {Model.PropertyCode}";
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <a asp-controller="AgentProperty" asp-action="Index" class="text-decoration-none d-inline-flex align-items-center" style="color: var(--color-primary); font-weight: 600;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Volver a mis propiedades
+        </a>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: var(--color-text);">Ofertas Recibidas</h2>
+            <p class="mb-0" style="color: var(--color-text-secondary);">Propiedad Código: <strong style="color: var(--color-text);">@Model.PropertyCode</strong></p>
+        </div>
+        <span class="badge bg-primary">@Model.TotalItems ofertas pendientes</span>
+    </div>
+
+    @if (!Model.Offers.Any())
+    {
+        <div class="alert alert-info border-0 shadow-sm text-center py-5">
+            <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 text-muted">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+            <h4 class="fw-bold">No hay ofertas pendientes</h4>
+            <p class="text-muted m-0">No se han registrado ofertas pendientes de respuesta para esta propiedad en este momento.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 g-4">
+            @foreach (var offer in Model.Offers)
+            {
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: var(--radius-card); background: var(--color-surface); overflow: hidden;">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center gap-3 mb-3 pb-3" style="border-bottom: 1px solid var(--color-border);">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; background: var(--color-primary); color: #fff;">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                                    </svg>
+                                </div>
+                                <div style="min-width: 0;">
+                                    <h6 class="fw-bold mb-0" style="color: var(--color-text);">@offer.CustomerName</h6>
+                                    <small class="d-block text-truncate" style="color: var(--color-text-secondary); max-width: 200px;">@offer.CustomerEmail</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="d-block mb-1" style="color: var(--color-text-secondary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Monto Ofertado</small>
+                                <h3 class="fw-bold mb-0" style="color: #22c55e;">@string.Format("{0:C}", offer.Amount)</h3>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2 mb-4 py-2" style="border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--color-text-secondary); flex-shrink: 0;">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                                <small style="color: var(--color-text-secondary);">@offer.CreateAt.ToString("dd/MM/yyyy hh:mm tt")</small>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button"
+                                        class="btn flex-fill fw-semibold"
+                                        style="background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); border-radius: 8px;"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalAccept"
+                                        data-offer-id="@offer.Id"
+                                        data-property-id="@ViewBag.PropertyId">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                                        <path d="M9 12l2 2 4-4"/>
+                                    </svg>
+                                    Aceptar
+                                </button>
+                                <button type="button"
+                                        class="btn flex-fill fw-semibold"
+                                        style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px;"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalReject"
+                                        data-offer-id="@offer.Id"
+                                        data-property-id="@ViewBag.PropertyId">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                                        <path d="M18 6 6 18M6 6l12 12"/>
+                                    </svg>
+                                    Rechazar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <partial name="_Pagination" />
+    }
+</div>
+
+<div class="modal fade" id="modalAccept" tabindex="-1" aria-labelledby="modalAcceptLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22c55e" stroke-width="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+                    </svg>
+                    <h5 class="modal-title fw-bold mb-0" id="modalAcceptLabel" style="color: var(--color-text);">Confirmar Aceptación</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" style="filter: invert(1);"></button>
+            </div>
+            <div class="modal-body pt-3" style="color: var(--color-text-secondary);">
+                <p class="mb-0">¿Está seguro de que desea <strong style="color: var(--color-text);">aceptar</strong> esta oferta?</p>
+                <p class="mt-2 mb-0 text-warning fw-semibold">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                        <path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    </svg>
+                    La propiedad se marcará como <strong>VENDIDA</strong> y las demás ofertas serán rechazadas automáticamente.
+                </p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formAccept" asp-controller="AgentOffers" asp-action="Accept" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="acceptOfferId" name="offerId" value="" />
+                    <input type="hidden" id="acceptPropertyId" name="propertyId" value="" />
+                    <button type="submit" class="btn btn-success fw-semibold px-4">Sí, Aceptar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalReject" tabindex="-1" aria-labelledby="modalRejectLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ef4444" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6m0-6 6 6"/>
+                    </svg>
+                    <h5 class="modal-title fw-bold mb-0" id="modalRejectLabel" style="color: var(--color-text);">Confirmar Rechazo</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" style="filter: invert(1);"></button>
+            </div>
+            <div class="modal-body pt-3" style="color: var(--color-text-secondary);">
+                <p class="mb-0">¿Está seguro de que desea <strong style="color: var(--color-text);">rechazar</strong> esta oferta? Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formReject" asp-controller="AgentOffers" asp-action="Reject" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="rejectOfferId" name="offerId" value="" />
+                    <input type="hidden" id="rejectPropertyId" name="propertyId" value="" />
+                    <button type="submit" class="btn btn-danger fw-semibold px-4">Sí, Rechazar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('modalAccept').addEventListener('show.bs.modal', function (event) {
+        var btn = event.relatedTarget;
+        document.getElementById('acceptOfferId').value = btn.getAttribute('data-offer-id');
+        document.getElementById('acceptPropertyId').value = btn.getAttribute('data-property-id');
+    });
+
+    document.getElementById('modalReject').addEventListener('show.bs.modal', function (event) {
+        var btn = event.relatedTarget;
+        document.getElementById('rejectOfferId').value = btn.getAttribute('data-offer-id');
+        document.getElementById('rejectPropertyId').value = btn.getAttribute('data-property-id');
+    });
+</script>
+}

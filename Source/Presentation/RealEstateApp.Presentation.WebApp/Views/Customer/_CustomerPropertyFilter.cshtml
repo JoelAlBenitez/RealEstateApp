@@ -1,0 +1,56 @@
+@model RealEstateApp.Core.Application.ViewsModel.Property.PropertyFilterViewModel
+
+<div class="card shadow-sm border-0" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);">
+    <div class="card-body p-4">
+        <h5 class="fw-bold mb-4" style="color: var(--color-primary);">Filtrar Propiedades</h5>
+        <form asp-controller="Customer" asp-action="FilterProperty" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="IdTypeProperty" class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Tipo de Propiedad</label>
+                <select asp-for="IdTypeProperty" class="form-select" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);">
+                    <option value="">Todos los tipos</option>
+                    @if (Model.TypePropery != null)
+                    {
+                        foreach (var type in Model.TypePropery)
+                        {
+                            <option value="@type.Id">@type.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Rango de Precio</label>
+                <div class="input-group mb-2">
+                    <span class="input-group-text" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text-secondary);">$</span>
+                    <input asp-for="MinPrice" type="number" class="form-control" placeholder="Mínimo" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
+                </div>
+                <div class="input-group">
+                    <span class="input-group-text" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text-secondary);">$</span>
+                    <input asp-for="MaxPrice" type="number" class="form-control" placeholder="Máximo" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
+                </div>
+                <span asp-validation-for="MinPrice" class="text-danger small"></span>
+                <span asp-validation-for="MaxPrice" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Bedrooms" class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Habitaciones</label>
+                <input asp-for="Bedrooms" type="number" class="form-control" placeholder="Ej: 3" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
+                <span asp-validation-for="Bedrooms" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Bathrooms" class="form-label fw-semibold" style="color: var(--color-text); font-size: 0.85rem;">Baños</label>
+                <input asp-for="Bathrooms" type="number" class="form-control" placeholder="Ej: 2" min="0" style="background: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-text);" />
+                <span asp-validation-for="Bathrooms" class="text-danger small"></span>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="rea-btn rea-btn--primary w-100">Buscar</button>
+                <a asp-controller="Customer" asp-action="Index" class="rea-btn rea-btn--secondary w-100">Limpiar Filtros</a>
+            </div>
+        </form>
+    </div>
+</div>

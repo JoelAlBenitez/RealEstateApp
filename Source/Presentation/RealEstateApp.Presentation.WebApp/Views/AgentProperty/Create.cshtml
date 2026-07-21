@@ -1,0 +1,251 @@
+@using RealEstateApp.Core.Application.ViewsModel.Property
+@model SavePropertyViewModel
+@{
+    ViewData["Title"] = "Registrar Propiedad";
+}
+
+<div class="container-fluid py-4 px-md-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-11">
+            <div class="card shadow-sm border-0" style="border-radius: var(--radius-card);">
+                <div class="card-body p-4 p-md-5">
+                    <div class="mb-4">
+                        <a asp-action="Index" class="text-decoration-none d-inline-flex align-items-center" style="color: var(--color-primary); font-weight: 600;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                            </svg>
+                            Volver al listado
+                        </a>
+                    </div>
+
+                    <h2 class="fw-bold mb-1" style="color: var(--color-primary);">Registrar Nueva Propiedad</h2>
+                    <p class="text-muted mb-4">Completa todos los datos requeridos para publicar la propiedad.</p>
+
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Row 1: Tipo Propiedad, Tipo Venta, Precio -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold" asp-for="PropertyTypeId">Tipo de Propiedad</label>
+                                <select class="form-select" asp-for="PropertyTypeId">
+                                    <option value="">Seleccione un tipo...</option>
+                                    @if (ViewBag.PropertyTypes != null)
+                                    {
+                                        foreach (var type in (List<RealEstateApp.Core.Application.DTOs.PropertyType.PropertyTypeDto>)ViewBag.PropertyTypes)
+                                        {
+                                            <option value="@type.Id">@type.Name</option>
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error text-danger" asp-validation-for="PropertyTypeId"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold" asp-for="SaleTypeId">Tipo de Venta</label>
+                                <select class="form-select" asp-for="SaleTypeId">
+                                    <option value="">Seleccione un tipo...</option>
+                                    @if (ViewBag.SaleTypes != null)
+                                    {
+                                        foreach (var sale in (List<RealEstateApp.Core.Application.DTOs.SaleType.SaleTypeDto>)ViewBag.SaleTypes)
+                                        {
+                                            <option value="@sale.Id">@sale.Name</option>
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error text-danger" asp-validation-for="SaleTypeId"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold" asp-for="Price">Precio</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" asp-for="Price" step="0.01" min="0.01" placeholder="Monto" />
+                                </div>
+                                <span class="field-validation-error text-danger" asp-validation-for="Price"></span>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Tamaño, Habitaciones, Baños -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold" asp-for="Size">Tamaño (m²)</label>
+                                <input type="number" class="form-control" asp-for="Size" step="0.01" min="1" placeholder="Metraje" />
+                                <span class="field-validation-error text-danger" asp-validation-for="Size"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold" asp-for="Bedrooms">Habitaciones</label>
+                                <input type="number" class="form-control" asp-for="Bedrooms" min="0" placeholder="Ej: 3" />
+                                <span class="field-validation-error text-danger" asp-validation-for="Bedrooms"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold" asp-for="Bathrooms">Baños</label>
+                                <input type="number" class="form-control" asp-for="Bathrooms" min="0" placeholder="Ej: 2" />
+                                <span class="field-validation-error text-danger" asp-validation-for="Bathrooms"></span>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Description & Image Upload Side-by-Side -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold" asp-for="Description">Descripción</label>
+                                <textarea class="form-control" asp-for="Description" rows="4" placeholder="Describe los detalles de la propiedad, ubicación, comodidades, etc." maxlength="1000"></textarea>
+                                <span class="field-validation-error text-danger" asp-validation-for="Description"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold" asp-for="ImageFiles">Imágenes de la Propiedad</label>
+                                <input class="form-control" type="file" asp-for="ImageFiles" id="imageFilesInput" accept="image/*" multiple />
+                                <span class="text-muted font-sm d-block mt-1">Sube de 1 a 4 fotos claras (puedes seleccionar varias).</span>
+                                <span class="field-validation-error text-danger" asp-validation-for="ImageFiles"></span>
+                                <div id="imagePreviewGrid" class="row g-2 mt-2"></div>
+                            </div>
+                        </div>
+
+                        <!-- Improvements Selection -->
+                        <div class="mb-4 border-top pt-3">
+                            <label class="form-label fw-bold mb-2 d-block">Mejoras de la Propiedad</label>
+                            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-2">
+                                @if (ViewBag.Improvements != null)
+                                {
+                                    foreach (var imp in (List<RealEstateApp.Core.Application.DTOs.Improvement.ImprovementDto>)ViewBag.Improvements)
+                                    {
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="ImprovementIds" id="imp-@imp.Id" value="@imp.Id" @(Model.ImprovementIds != null && Model.ImprovementIds.Contains(imp.Id) ? "checked" : "") />
+                                                <label class="form-check-label" for="imp-@imp.Id">@imp.Name</label>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            <span class="field-validation-error text-danger" asp-validation-for="ImprovementIds"></span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-flex justify-content-between align-items-center border-top pt-4">
+                            <a asp-action="Index" class="rea-btn rea-btn--secondary">Cancelar</a>
+                            <button type="submit" class="rea-btn rea-btn--primary">Registrar Propiedad</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let selectedFiles = [];
+
+        function showToast(message, type = 'warning') {
+            let container = document.querySelector('.rea-toasts');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'rea-toasts';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `rea-toast rea-toast--${type}`;
+            toast.setAttribute('role', 'status');
+
+            toast.innerHTML = `
+                <span class="rea-toast__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12" y2="17" />
+                    </svg>
+                </span>
+                <div class="rea-toast__content">
+                    <strong class="rea-toast__title">${type === 'success' ? 'Éxito' : 'Alerta'}</strong>
+                    <p class="rea-toast__text">${message}</p>
+                </div>
+                <button class="rea-toast__close" type="button" aria-label="Cerrar notificación">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            const closeBtn = toast.querySelector('.rea-toast__close');
+            closeBtn.addEventListener('click', () => {
+                toast.classList.add('is-leaving');
+                setTimeout(() => toast.remove(), 240);
+            });
+
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('is-leaving');
+                    setTimeout(() => toast.remove(), 240);
+                }
+            }, 6000);
+        }
+
+        document.getElementById('imageFilesInput').addEventListener('change', function (e) {
+            const files = e.target.files;
+            if (!files.length) return;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (!file.type.startsWith('image/')) continue;
+
+                if (selectedFiles.length >= 4) {
+                    showToast('Solo se permite subir un máximo de 4 imágenes por propiedad.');
+                    break;
+                }
+
+                const isDuplicate = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+                if (!isDuplicate) {
+                    selectedFiles.push(file);
+                }
+            }
+
+            e.target.value = '';
+
+            renderPreviews();
+            updateInputFiles();
+        });
+
+        function renderPreviews() {
+            const container = document.getElementById('imagePreviewGrid');
+            container.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const col = document.createElement('div');
+                    col.className = 'col-3 position-relative';
+                    col.innerHTML = `
+                        <div class="position-relative border rounded overflow-hidden shadow-sm" style="height: 60px; background: var(--color-surface);">
+                            <img src="${event.target.result}" class="w-100 h-100" style="object-fit: cover;" alt="Preview" />
+                            <button type="button" class="btn btn-danger btn-xs position-absolute top-0 end-0 m-1 px-1 py-0" style="font-size: 10px; line-height: 1; border-radius: 50%; padding: 0px 4px; opacity: 0.85; border: none; color: white;" onclick="removeNewFile(${index})">
+                                &times;
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(col);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        window.removeNewFile = function(index) {
+            selectedFiles.splice(index, 1);
+            renderPreviews();
+            updateInputFiles();
+        };
+
+        function updateInputFiles() {
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            document.getElementById('imageFilesInput').files = dataTransfer.files;
+        }
+    </script>
+}
