@@ -36,16 +36,17 @@ namespace RealEstateApp.Core.Application.Services.PropertyType
             {
                 var entities = await _propertyTypeRepository.GetAllAsync();
                 var dtos = _mapper.Map<List<PropertyTypeDto>>(entities);
-                
-                
-                var countTasks = dtos.Select(async dto =>
+
+                var countsResult = await _propertyCascadeService.GetPropertyCountsByTypeAsync();
+                var counts = countsResult.IsValid && countsResult.Value != null
+                    ? countsResult.Value
+                    : new Dictionary<int, int>();
+
+                foreach (var dto in dtos)
                 {
-                    var countResult = await _propertyCascadeService.CountByPropertyTypeAsync(dto.Id);
-                    dto.PropertyCount = countResult.IsValid ? countResult.Value : 0;
-                }).ToList();
-                
-                await Task.WhenAll(countTasks);
-                
+                    dto.PropertyCount = counts.TryGetValue(dto.Id, out var count) ? count : 0;
+                }
+
                 return ValidationResult<IReadOnlyCollection<PropertyTypeDto>>.Success(dtos);
             }
             catch (Exception)

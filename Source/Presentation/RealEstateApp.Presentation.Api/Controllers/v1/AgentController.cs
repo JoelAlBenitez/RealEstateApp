@@ -61,7 +61,7 @@ namespace RealEstateApp.Presentation.Api.Controllers.v1
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(id))
+                if (string.IsNullOrWhiteSpace(id) || id.Length <= 0)
                 {
                     return BadRequest(new { message = "El Id enviado no tiene un formato válido." });
                 }

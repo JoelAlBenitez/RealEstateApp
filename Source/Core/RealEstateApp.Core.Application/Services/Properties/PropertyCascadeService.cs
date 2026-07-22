@@ -102,6 +102,44 @@ namespace RealEstateApp.Core.Application.Services.Properties
             }
         }
 
+        public async Task<ValidationResult<IReadOnlyDictionary<int, int>>> GetPropertyCountsByTypeAsync()
+        {
+            try
+            {
+                // Una sola consulta y agrupación en memoria. Evita el patrón anterior
+                // (un conteo por tipo ejecutado en paralelo con Task.WhenAll), que
+                // lanzaba concurrencia sobre el mismo DbContext (Scoped) y provocaba
+                // "A second operation was started on this context instance...".
+                var properties = await _propertyRepository.GetAllAsync();
+                IReadOnlyDictionary<int, int> counts = properties
+                    .GroupBy(p => p.PropertyTypeId)
+                    .ToDictionary(g => g.Key, g => g.Count());
+                return ValidationResult<IReadOnlyDictionary<int, int>>.Success(counts);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocurrió un error en PropertyCascadeService");
+                return ValidationResult<IReadOnlyDictionary<int, int>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
+            }
+        }
+
+        public async Task<ValidationResult<IReadOnlyDictionary<int, int>>> GetPropertyCountsBySaleTypeAsync()
+        {
+            try
+            {
+                var properties = await _propertyRepository.GetAllAsync();
+                IReadOnlyDictionary<int, int> counts = properties
+                    .GroupBy(p => p.SaleTypeId)
+                    .ToDictionary(g => g.Key, g => g.Count());
+                return ValidationResult<IReadOnlyDictionary<int, int>>.Success(counts);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocurrió un error en PropertyCascadeService");
+                return ValidationResult<IReadOnlyDictionary<int, int>>.Failure(new List<Error> { new Error("Oops", "Al parecer esta función no está disponible en este momento.") });
+            }
+        }
+
         public async Task<ValidationResult<int>> CountByImprovementAsync(int improvementId)
         {
             try

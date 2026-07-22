@@ -77,6 +77,12 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 if (dto.ImageFiles != null && dto.ImageFiles.Any())
                 {
                     var savedPaths = await _fileManager.SaveManyAsync(dto.ImageFiles, "Properties");
+
+                    
+                    if (savedPaths.NumberFailed > 0)
+                    {
+                        return ValidationResult.Failure(new Error("Propiedad.ImagenNoGuardada", "No se pudieron guardar una o más imágenes de la propiedad. Verifique que sean imágenes válidas e intente nuevamente."));
+                    }
                     foreach (var path in savedPaths.Files)
                     {
                         images.Add(new PropertyImage
@@ -186,6 +192,23 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 property.SaleTypeId = dto.SaleTypeId;
                 property.UpdateAt = DateTimeOffset.UtcNow;
 
+                var newPropertyImages = new List<PropertyImage>();
+                if (dto.ImageFiles != null && dto.ImageFiles.Any())
+                {
+                    var savedPaths = await _fileManager.SaveManyAsync(dto.ImageFiles, "Properties");
+                    if (savedPaths.NumberFailed > 0)
+                    {
+                        return ValidationResult.Failure(new Error("Propiedad.ImagenNoGuardada", "No se pudieron guardar una o más imágenes de la propiedad. Verifique que sean imágenes válidas e intente nuevamente."));
+                    }
+                    newPropertyImages = savedPaths.Files.Select(path => new PropertyImage
+                    {
+                        PropertyId = property.Id,
+                        ImageUrl = path,
+                        CreateAt = DateTimeOffset.UtcNow,
+                        UpdateAt = DateTimeOffset.UtcNow
+                    }).ToList();
+                }
+
                 var currentImprovements = property.PropertyImprovements?.ToList() ?? new List<PropertyImprovement>();
                 var toRemove = currentImprovements
                     .Where(pi => !dto.ImprovementIds.Contains(pi.ImprovementId))
@@ -224,20 +247,7 @@ namespace RealEstateApp.Core.Application.Services.Properties
                 }
 
                 var updatedImagesList = currentImages.Where(img => urlsToKeep.Contains(img.ImageUrl)).ToList();
-                if (dto.ImageFiles != null && dto.ImageFiles.Any())
-                {
-                    var savedPaths = await _fileManager.SaveManyAsync(dto.ImageFiles, "Properties");
-
-                    var newPropertyImages = savedPaths.Files.Select(path => new PropertyImage
-                    {
-                        PropertyId = property.Id,
-                        ImageUrl = path,
-                        CreateAt = DateTimeOffset.UtcNow,
-                        UpdateAt = DateTimeOffset.UtcNow
-                    });
-
-                    updatedImagesList.AddRange(newPropertyImages);
-                }
+                updatedImagesList.AddRange(newPropertyImages);
                 property.Images = updatedImagesList;
 
                 await _propertyRepository.UpdateAsync(property);

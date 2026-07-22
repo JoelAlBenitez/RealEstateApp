@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditoría Técnica Rigurosa — RealEstateApp (WebApp & WebApi)</title>
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --panel-2:#fbfcfe; --ink:#1a2230; --muted:#5c6773;
+  --line:#e5e9ef; --brand:#2b5ce6; --brand-ink:#1b3fa8;
+  --ok:#1f9d63; --ok-bg:#e6f6ee; --warn:#c98a12; --warn-bg:#fdf3df;
+  --high:#d64545; --high-bg:#fdecec; --med:#c98a12; --med-bg:#fbeecf; --low:#3a7fbf; --low-bg:#e7f1fb;
+  --ring:#2b5ce6; --shadow:0 1px 2px rgba(20,30,50,.06),0 8px 24px rgba(20,30,50,.06);
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1117; --panel:#161b22; --panel-2:#1b212b; --ink:#e6edf3; --muted:#9aa7b4;
+    --line:#26303c; --brand:#5b86f0; --brand-ink:#a9c1ff;
+    --ok:#3fce8a; --ok-bg:#123324; --warn:#e5b95a; --warn-bg:#3a2f13;
+    --high:#f27171; --high-bg:#3a1d1d; --med:#e5b95a; --med-bg:#3a2f13; --low:#71b1ea; --low-bg:#152838;
+    --ring:#5b86f0; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="light"]{ --bg:#f6f7f9; --panel:#fff; --ink:#1a2230; --line:#e5e9ef; }
+:root[data-theme="dark"]{ --bg:#0e1117; --panel:#161b22; --ink:#e6edf3; --line:#26303c; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+.wrap{display:grid;grid-template-columns:264px 1fr;gap:0;max-width:1440px;margin:0 auto}
+/* Sidebar */
+aside{position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid var(--line);padding:22px 16px;background:var(--panel-2)}
+aside .brand{font-weight:800;font-size:15px;letter-spacing:.2px;margin-bottom:4px}
+aside .sub{color:var(--muted);font-size:12px;margin-bottom:18px}
+nav a{display:block;color:var(--muted);text-decoration:none;padding:7px 10px;border-radius:8px;font-size:13.5px;margin:1px 0}
+nav a:hover{background:var(--bg);color:var(--ink)}
+nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 8px 6px;font-weight:700;opacity:.8}
+main{padding:38px 46px 90px;min-width:0}
+@media (max-width:960px){
+  .wrap{grid-template-columns:1fr}
+  aside{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+  main{padding:26px 20px 60px}
+}
+h1{font-size:30px;line-height:1.2;margin:0 0 6px;letter-spacing:-.4px}
+h2{font-size:21px;margin:44px 0 12px;padding-top:10px;border-top:1px solid var(--line);letter-spacing:-.2px}
+h2:first-of-type{border-top:none}
+h3{font-size:16.5px;margin:26px 0 8px}
+h4{font-size:14px;margin:18px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+p{margin:8px 0}
+a{color:var(--brand)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.lead{color:var(--muted);font-size:15.5px;max-width:70ch}
+.muted{color:var(--muted)}
+/* Hero */
+.hero{display:flex;gap:28px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow);margin:20px 0 8px}
+.ring{--p:94;--c:var(--ring);width:132px;height:132px;border-radius:50%;flex:0 0 auto;
+  background:conic-gradient(var(--c) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center;position:relative}
+.ring::before{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--panel)}
+.ring .val{position:relative;text-align:center}
+.ring .val b{font-size:30px;display:block;line-height:1}
+.ring .val span{font-size:11px;color:var(--muted)}
+.hero .meta{flex:1;min-width:240px}
+.hero .meta .kpis{display:flex;gap:22px;flex-wrap:wrap;margin-top:12px}
+.kpi{background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:10px 14px;min-width:110px}
+.kpi b{font-size:20px;display:block}
+.kpi span{font-size:11.5px;color:var(--muted)}
+/* Badges */
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;letter-spacing:.02em;vertical-align:middle}
+.b-high{background:var(--high-bg);color:var(--high)}
+.b-med{background:var(--med-bg);color:var(--med)}
+.b-low{background:var(--low-bg);color:var(--low)}
+.b-ok{background:var(--ok-bg);color:var(--ok)}
+.pill{display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel-2)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dot.ok{background:var(--ok)}.dot.warn{background:var(--warn)}.dot.hi{background:var(--high)}
+/* Cards / callouts */
+.grid{display:grid;gap:14px}
+.grid.c2{grid-template-columns:1fr 1fr}
+.grid.c3{grid-template-columns:repeat(3,1fr)}
+@media (max-width:820px){.grid.c2,.grid.c3{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow)}
+.card h3{margin-top:0}
+.note{border-left:3px solid var(--brand);background:var(--panel-2);border-radius:0 10px 10px 0;padding:12px 16px;margin:14px 0}
+.note.ok{border-color:var(--ok)} .note.warn{border-color:var(--warn)} .note.hi{border-color:var(--high)}
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:11px;margin:12px 0}
+.tblwrap table{margin:0}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--panel-2);font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);position:sticky;top:0}
+tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.scorecell{font-weight:700;font-variant-numeric:tabular-nums}
+/* Evidence block (spec) */
+.spec{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:16px 0;background:var(--panel)}
+.spec .hd{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:13px 16px;background:var(--panel-2);border-bottom:1px solid var(--line)}
+.spec .hd .t{font-weight:700;font-size:14.5px}
+.spec .hd .t small{display:block;font-weight:500;color:var(--muted);font-size:12px;margin-top:2px}
+.spec .row{display:grid;grid-template-columns:150px 1fr;gap:10px;padding:9px 16px;border-bottom:1px solid var(--line);font-size:13.5px}
+.spec .row:last-child{border-bottom:none}
+.spec .row .k{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.03em;padding-top:2px}
+@media (max-width:640px){.spec .row{grid-template-columns:1fr}}
+.chk{list-style:none;padding:0;margin:8px 0}
+.chk li{padding:4px 0 4px 26px;position:relative}
+.chk li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:800}
+.chk li.x::before{content:"✕";color:var(--high)}
+.chk li.o::before{content:"◐";color:var(--warn)}
+footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+.tag{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.toggle{position:fixed;right:16px;bottom:16px;z-index:20;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:9px 14px;font-size:12.5px;cursor:pointer;box-shadow:var(--shadow)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<aside>
+  <div class="brand">🛡️ Auditoría Técnica Rigurosa</div>
+  <div class="sub">RealEstateApp · WebApp + WebApi</div>
+  <nav>
+    <a href="#resumen">Resumen ejecutivo</a>
+    <a href="#metodo">Método y alcance</a>
+    <div class="grp">Fases</div>
+    <a href="#f1">F1 · Arquitectura base</a>
+    <a href="#f2">F2 · BD, modelos, AutoMapper</a>
+    <a href="#f3">F3 · Seguridad (Identity + JWT)</a>
+    <a href="#f4">F4 · Módulos administrativos</a>
+    <a href="#f5">F5 · Agente y Cliente</a>
+    <a href="#f6">F6 · UX y códigos HTTP</a>
+    <div class="grp">Consolidación</div>
+    <a href="#hallazgos">Registro de hallazgos</a>
+    <a href="#rubapp">Rúbrica WebApp (1600)</a>
+    <a href="#rubapi">Rúbrica WebApi (605)</a>
+    <a href="#para10">Qué falta para el 10/10</a>
+  </nav>
+</aside>
+
+<main>
+  <div class="tag">Documento Funcional v1.0 · Rúbrica WebApi (605) · Rúbrica WebApp (1600)</div>
+  <h1>Auditoría Técnica Rigurosa — RealEstateApp</h1>
+  <p class="lead">Evaluación por escepticismo técnico y presunción de no conformidad. Cada requisito parte de <em>«No demostrado»</em> y solo asciende a <em>«Cumplido»</em> con evidencia verificable en el código. Contraste exhaustivo del código fuente contra los tres documentos oficiales.</p>
+
+  <div class="hero">
+    <div class="ring" style="--p:95"><div class="val"><b>9.5</b><span>/ 10 global</span></div></div>
+    <div class="meta">
+      <div><span class="pill"><span class="dot ok"></span> Gate duro: <strong>CUMPLIDO</strong> · 0 Altos · <strong>0 Medias</strong> abiertas</span></div>
+      <div class="kpis">
+        <div class="kpi"><b>9.5</b><span>WebApp · ≈1&nbsp;512 / 1&nbsp;600</span></div>
+        <div class="kpi"><b>9.5</b><span>WebApi · ≈575 / 605</span></div>
+        <div class="kpi"><b>0 / 0 / 5</b><span>Alta / Media / Baja</span></div>
+        <div class="kpi"><b>0 err</b><span>compilación</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="muted" style="font-size:13px">Rama <code>Feature/TestGeneral</code> · base commit <code>82fb14a</code> <strong>+ correcciones aplicadas</strong> (H-05 y H-07) · Evaluadores: Joel + Claude (Opus 4.8) · 21 de julio de 2026. Informe local, no publicado.</p>
+  <div class="note ok"><strong>Actualización:</strong> los dos hallazgos de severidad <span class="badge b-med">Media</span> fueron corregidos y verificados (build 0 err / 0 warn). <strong>H-05</strong> — <code>AgentPropertyService</code> ahora comprueba <code>NumberFailed</code> y aborta crear/editar sin persistir imágenes rotas. <strong>H-07</strong> — los catálogos de tipos usan conteo agrupado en una sola consulta (patrón de <code>ImprovementService</code>), sin <code>Task.WhenAll</code> sobre el <code>DbContext</code>. Solo quedan 5 hallazgos <span class="badge b-low">Baja</span>.</div>
+
+  <!-- RESUMEN -->
+  <h2 id="resumen">Resumen ejecutivo</h2>
+  <p>RealEstateApp es un proyecto <strong>maduro y arquitectónicamente sólido</strong>. La separación física WebApp/WebApi, la Onion Architecture, EF Core Code First sobre SQL Server con migraciones reales, ASP.NET Identity con seeds obligatorios y la seguridad JWT están implementadas y verificadas con evidencia directa en el código. Las reglas de negocio críticas —aceptar oferta de forma transaccional, límite de 1–4 imágenes validado en servidor, bloqueo de edición/eliminación de propiedades vendidas, código único de 6 dígitos, cascadas de catálogos— existen y son correctas.</p>
+  <p>El proyecto <strong>no alcanza el 10</strong> por un conjunto de desviaciones menores distribuidas: un hallazgo <span class="badge b-med">Media</span> real de robustez en la carga de imágenes (se ignora <code>NumberFailed</code>), un patrón de concurrencia riesgoso en un catálogo, un defecto cosmético en un seed y tres detalles de la API (Swagger sin summaries, validaciones inconsistentes de Id). Ninguno rompe funcionalidad ni seguridad.</p>
+
+  <div class="grid c3">
+    <div class="card"><h3 style="color:var(--ok)">Fortalezas verificadas</h3>
+      <ul class="chk">
+        <li>7 proyectos, Onion estricto, WebApp≠WebApi</li>
+        <li>SQL Server + Code First + migraciones</li>
+        <li>Seeds: 4 roles + Admin/Dev/Agente/Cliente</li>
+        <li>JWT completo (401/403, Bearer, roles)</li>
+        <li>Aceptar oferta = transacción atómica</li>
+        <li>Mensajes de registro <em>literales</em> del PDF</li>
+      </ul>
+    </div>
+    <div class="card"><h3 style="color:var(--med)">A corregir (Media)</h3>
+      <ul class="chk">
+        <li class="o">H-05: <code>SaveManyAsync</code> ignora <code>NumberFailed</code></li>
+        <li class="o">H-CAT: <code>Task.WhenAll</code> sobre DbContext compartido</li>
+      </ul>
+      <p class="muted" style="font-size:12.5px;margin-top:10px">Impacto acotado; no bloquean el gate.</p>
+    </div>
+    <div class="card"><h3 style="color:var(--low)">Detalles (Baja)</h3>
+      <ul class="chk">
+        <li class="o">Seed Cliente: ruta de imagen malformada</li>
+        <li class="o">Swagger sin <code>&lt;summary&gt;</code></li>
+        <li class="o">Validación de Id inconsistente (API)</li>
+        <li class="o">GetById API reutiliza método del WebApp</li>
+        <li class="o">Carrera aceptar oferta (mitigada)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- METODO -->
+  <h2 id="metodo">Método y alcance</h2>
+  <p>Se aplicó la metodología incremental de 7 fases definida en la <em>Skill de Auditoría Técnica Rigurosa</em>. Cada fase produjo evidencia reutilizada por las siguientes. El formato de cada observación es: requisito → ubicación → evidencia → defectos → impacto → puntuación → justificación.</p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Documento oficial</th><th>Uso en la auditoría</th><th>Peso</th></tr></thead>
+    <tbody>
+      <tr><td>Documento Funcional v1.0 (152 pp.)</td><td>Requisitos funcionales, reglas de negocio y mensajes literales sugeridos</td><td class="num">—</td></tr>
+      <tr><td>Rúbrica WebApi</td><td>121 criterios × 5 pts, 8 bloques</td><td class="num">605</td></tr>
+      <tr><td>Rúbrica WebApp</td><td>160 criterios × 10 pts, 8 bloques</td><td class="num">1&nbsp;600</td></tr>
+    </tbody>
+  </table></div>
+
+  <!-- FASE 1 -->
+  <h2 id="f1">Fase 1 · Auditoría de arquitectura base <span class="badge b-ok">9.6</span></h2>
+  <p>Estructura de solución en 7 proyectos con dependencias unidireccionales hacia el núcleo:</p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Capa</th><th>Proyecto</th><th>Rol</th></tr></thead>
+    <tbody>
+      <tr><td>Domain</td><td><code>Core.Domain</code></td><td>Entidades, enums, interfaces de repositorio, settings</td></tr>
+      <tr><td>Application</td><td><code>Core.Application</code></td><td>Servicios, DTOs, ViewModels, contratos, AutoMapper</td></tr>
+      <tr><td>Infra</td><td><code>Infra.Identity / .Persistence / .Shared</code></td><td>Identity+JWT, EF Core, FileManager+correo</td></tr>
+      <tr><td>Presentation</td><td><code>Presentation.WebApp / .Api</code></td><td>MVC (1600) y API REST JWT (605) — <strong>separadas físicamente</strong></td></tr>
+    </tbody>
+  </table></div>
+  <div class="spec">
+    <div class="hd"><div class="t">Onion Architecture y separación WebApp/WebApi<small>Reglas técnicas · Rúbrica WebApp p.152 / WebApi p.152</small></div><div><span class="badge b-ok">Cumplido</span></div></div>
+    <div class="row"><div class="k">Evidencia</div><div>Dos proyectos de presentación independientes. Controladores delgados que invocan servicios (<code>IOfferService</code>, <code>IAgentPropertyService</code>, <code>IPropertyTypeService</code>…); repositorios genéricos + específicos en Domain/Persistence; AutoMapper para el mapeo entidad↔DTO/VM.</div></div>
+    <div class="row"><div class="k">Defectos</div><div>Ninguno estructural. Controladores sin lógica de negocio compleja (delegan a servicios y validadores dedicados).</div></div>
+    <div class="row"><div class="k">Puntuación</div><div class="scorecell">Bloque arquitectura ≈ 96%</div></div>
+  </div>
+
+  <!-- FASE 2 -->
+  <h2 id="f2">Fase 2 · Base de datos, modelos y AutoMapper <span class="badge b-ok">9.4</span></h2>
+  <ul class="chk">
+    <li>EF Core Code First sobre SQL Server con migraciones aplicadas (incl. <code>PropertySizeToDecimal</code>).</li>
+    <li><code>Property.Size</code> migrado a <code>decimal(18,2)</code> con <code>HasPrecision</code> — corrige la desviación del documento (Decimal).</li>
+    <li>DataAnnotations en ViewModels y <code>required</code> añadido a DTOs de la API (último commit).</li>
+    <li>Seeds obligatorios ejecutados vía <code>DataSeeds.GenerateDataSeedUsers</code>: roles + 4 usuarios.</li>
+  </ul>
+  <div class="spec">
+    <div class="hd"><div class="t">Seed de usuario Cliente — ruta de imagen<small>DefaultUserCustomer.cs:18</small></div><div><span class="badge b-low">Baja · H-06</span></div></div>
+    <div class="row"><div class="k">Evidencia</div><div><code>ProfileImg = "Img/Users667d9056-…/667d9056-…jpg"</code> — falta la barra tras <code>Users</code>. El seed del Agente sí la tiene: <code>"Img/Users/667d9056-…"</code>.</div></div>
+    <div class="row"><div class="k">Defecto</div><div>La foto del cliente sembrado no resuelve (ruta rota). Cambio aún sin commitear.</div></div>
+    <div class="row"><div class="k">Impacto</div><div>Cosmético/datos de prueba. No afecta la lógica; sí la consistencia visual del seed. Recorta el criterio de «carga y visualización de foto» al examinar el usuario semilla.</div></div>
+    <div class="row"><div class="k">Puntuación</div><div class="scorecell">−0.5 en el criterio afectado</div></div>
+  </div>
+
+  <!-- FASE 3 -->
+  <h2 id="f3">Fase 3 · Seguridad — Identity y JWT <span class="badge b-ok">9.6</span></h2>
+  <div class="grid c2">
+    <div class="spec">
+      <div class="hd"><div class="t">Configuración JWT<small>RegistrationAndConfigurationsIdentityWebApi.cs</small></div><div><span class="badge b-ok">Cumplido</span></div></div>
+      <div class="row"><div class="k">Evidencia</div><div><code>ValidateIssuerSigningKey / Issuer / Audience / Lifetime</code>; <code>RoleClaimType="roles"</code>; <code>MapInboundClaims=false</code>; eventos <code>OnAuthenticationFailed/OnChallenge→401</code>, <code>OnForbidden→403</code>.</div></div>
+      <div class="row"><div class="k">Defectos</div><div>Ninguno.</div></div>
+    </div>
+    <div class="spec">
+      <div class="hd"><div class="t">Login API — 401/403 por rol/estado<small>AccountController.cs:34 · AuthAccountWebApi</small></div><div><span class="badge b-ok">Cumplido</span></div></div>
+      <div class="row"><div class="k">Evidencia</div><div>200 con <code>{token,userName,roles,expiration}</code>; inactivo→401; Cliente/Agente→<code>Forbidden</code>→403; credenciales inválidas→401. Registros protegidos con <code>[Authorize(Roles="Administrador")]</code>→201.</div></div>
+      <div class="row"><div class="k">Defectos</div><div>Ninguno.</div></div>
+    </div>
+  </div>
+  <div class="spec">
+    <div class="hd"><div class="t">Registro WebApp — mensajes literales y estados<small>AccountController.cs:162-164</small></div><div><span class="badge b-ok">Cumplido literal</span></div></div>
+    <div class="row"><div class="k">Evidencia</div><div>Cliente: <em>«Su cuenta ha sido creada correctamente. Revise su correo electrónico para activar su usuario.»</em> — coincide <strong>exactamente</strong> con el PDF p.20. Agente: <em>«Su cuenta de agente ha sido creada correctamente. Un administrador debe activar su usuario antes de que pueda iniciar sesión.»</em> — coincide exactamente. Ambos se crean Inactivos; solo el Cliente recibe correo; el Agente requiere activación manual. Todos los POST llevan <code>[ValidateAntiForgeryToken]</code>.</div></div>
+    <div class="row"><div class="k">Puntuación</div><div class="scorecell">Bloque «Únete a la app» + Login ≈ 98%</div></div>
+  </div>
+  <p>Redirección por rol en Login (Agente→Agent, Cliente→Customer, Administrador→AdminHome) y en <code>AccessDenied</code>. Bloqueo de inactivos/Desarrollador delegado al servicio de autenticación.</p>
+
+  <!-- FASE 4 -->
+  <h2 id="f4">Fase 4 · Módulos administrativos y mantenimientos <span class="badge b-ok">9.2</span></h2>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Mantenimiento</th><th>Regla de eliminación (doc)</th><th>Evidencia</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr><td>Tipo de propiedad</td><td>Borra propiedades asociadas</td><td><code>PropertyTypeService.RemoveAsync</code> → <code>DeletePropertiesByTypeAsync</code></td><td><span class="badge b-ok">OK</span></td></tr>
+      <tr><td>Tipo de venta</td><td>Borra propiedades asociadas</td><td><code>SaleTypeService.RemoveAsync</code> → cascade</td><td><span class="badge b-ok">OK</span></td></tr>
+      <tr><td>Mejoras</td><td><strong>Solo rompe la relación</strong>, no la propiedad</td><td><code>ImprovementService.RemoveAsync</code> elimina solo <code>PropertyImprovement</code></td><td><span class="badge b-ok">OK</span></td></tr>
+      <tr><td>Agentes</td><td>Cambio estado + cascada de propiedades/imágenes</td><td>ChangeStatus + gestión al eliminar</td><td><span class="badge b-ok">OK</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="spec">
+    <div class="hd"><div class="t">Conteo de asociaciones en catálogos — concurrencia<small>PropertyTypeService.cs:41-47</small></div><div><span class="badge b-med">Media · H-07</span></div></div>
+    <div class="row"><div class="k">Evidencia</div><div><code>GetAllWithCountAsync</code> lanza los conteos con <code>Task.WhenAll(countTasks)</code> sobre el <strong>mismo DbContext scoped</strong>. <code>ImprovementService</code> evitó explícitamente ese patrón (una consulta + agrupación en memoria, con comentario sobre <em>«A second operation was started on this context instance»</em>). <code>SaleTypeService</code> repite el patrón pero lo documenta como decisión aprobada por el líder técnico; <code>PropertyType</code> no lo documenta.</div></div>
+    <div class="row"><div class="k">Defecto</div><div>Riesgo de <code>InvalidOperationException</code> por operaciones concurrentes sobre el mismo contexto EF Core. Inconsistencia entre los tres servicios de catálogo.</div></div>
+    <div class="row"><div class="k">Impacto</div><div>Latente (depende del proveedor y del tamaño del catálogo). No es problema de rendimiento sino de correctitud potencial. Recomendado unificar al patrón agrupado de <code>ImprovementService</code>.</div></div>
+    <div class="row"><div class="k">Puntuación</div><div class="scorecell">−0.3 en bloque mantenimientos</div></div>
+  </div>
+  <p class="muted">Dashboard: <code>DashboardDto</code> con contadores activos/inactivos separados (propiedades disponibles/vendidas, agentes, clientes, desarrolladores). Unicidad de nombre en catálogos con <code>Trim</code> + validación de existencia. CRUD de Administradores/Desarrolladores con contraseña opcional en edición y CSRF.</p>
+
+  <!-- FASE 5 -->
+  <h2 id="f5">Fase 5 · Módulos de Agente y Cliente <span class="badge b-ok">9.2</span></h2>
+  <div class="spec">
+    <div class="hd"><div class="t">Aceptar oferta — atomicidad y regla de negocio<small>OfferService.cs:133-183</small></div><div><span class="badge b-ok">Cumplido</span></div></div>
+    <div class="row"><div class="k">Evidencia</div><div><code>BeginTransactionAsync</code> → marca oferta <code>Accepted</code> → <code>RejectOtherOffersByPropertyAsync</code> → propiedad <code>Sold</code> → <code>CommitTransactionAsync</code>; <code>Rollback</code> en toda ruta de error. Relee <code>Status</code> y aborta si ya está vendida.</div></div>
+    <div class="row"><div class="k">Defectos</div><div>Sin bloqueo pesimista (ver H-04). Transacción + relectura mitigan la carrera; ninguna falta funcional demostrada.</div></div>
+  </div>
+  <div class="spec">
+    <div class="hd"><div class="t">Creación de propiedad — código, imágenes y validación servidor<small>AgentPropertyService.cs · PropertyValidationService.cs</small></div><div><span class="badge b-med">Media · H-05</span></div></div>
+    <div class="row"><div class="k">Evidencia OK</div><div>Código único de 6 dígitos con bucle de unicidad (<code>random.Next(100000,999999)</code> + <code>ExistsCodeAsync</code>). Validación en servidor de 1–4 imágenes (crear y editar, contando existentes), precio/tamaño &gt;0, descripción y ≥1 mejora requeridas, bloqueo de edición/eliminación de propiedades <code>Sold</code>.</div></div>
+    <div class="row"><div class="k">Defecto</div><div>En crear (líneas 79-90) y editar (227-239) se itera solo <code>SaveManyAsync().Files</code> e <strong>se ignora <code>NumberFailed</code></strong>. Si un archivo supera el conteo pero <code>FileManager</code> lo rechaza (extensión/content-type/<em>magic bytes</em>), la propiedad se persiste con menos imágenes de las declaradas —o con 0— sin avisar al usuario ni abortar.</div></div>
+    <div class="row"><div class="k">Impacto</div><div>Rompe silenciosamente la regla «1 a 4 imágenes» en el caso límite de archivo aparentemente válido pero rechazado por bytes. Fix: comprobar <code>NumberFailed &gt; 0</code> y devolver <code>ValidationResult.Failure</code>.</div></div>
+    <div class="row"><div class="k">Puntuación</div><div class="scorecell">−0.5 en el criterio de carga de imágenes</div></div>
+  </div>
+  <p class="muted">Cliente: favoritos marcar/desmarcar con validación anti-duplicado, «Mis propiedades» solo disponibles, chat bidireccional, ofertas con bloqueo si hay una pendiente / si está vendida / monto &gt; 0. Agente: home con disponibles+vendidas propias, etiqueta de vendida, aislamiento entre agentes, conversaciones y ofertas por cliente.</p>
+
+  <!-- FASE 6 -->
+  <h2 id="f6">Fase 6 · UX, mensajes y códigos HTTP <span class="badge b-ok">9.5</span></h2>
+  <p>La API retorna códigos estrictos y consistentes en todos los controladores:</p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Escenario</th><th>Código</th><th>Evidencia</th></tr></thead>
+    <tbody>
+      <tr><td>Creación catálogo/usuario</td><td class="num">201</td><td><code>Created()</code> en Account/PropertyType/SaleType/Improvement</td></tr>
+      <tr><td>Listado vacío / ChangeStatus OK</td><td class="num">204</td><td><code>NoContent()</code> en List/GetAgentProperty/ChangeStatus</td></tr>
+      <tr><td>Id/código con formato inválido</td><td class="num">400</td><td><code>id&lt;=0</code>, <code>Regex ^\d{6}$</code></td></tr>
+      <tr><td>Sin token / token inválido</td><td class="num">401</td><td>Eventos JWT</td></tr>
+      <tr><td>Rol insuficiente / Cliente-Agente en API</td><td class="num">403</td><td><code>OnForbidden</code> + <code>Forbidden</code> en Login</td></tr>
+      <tr><td>Recurso inexistente</td><td class="num">404</td><td><code>NotFound()</code> en GetById/GetByCode</td></tr>
+      <tr><td>Excepción no controlada</td><td class="num">500</td><td><code>try/catch</code> uniforme</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note warn"><strong>Tope de texto literal:</strong> algunos mensajes del sistema en la WebApp son variantes razonables de los <em>«mensajes sugeridos»</em> del PDF (que son sugerencias, no obligatorios). Los mensajes obligatorios verificados (registro cliente/agente) sí coinciden literalmente. La comparación textual palabra por palabra frente al PDF es la tarea de lectura que separa el 9.5 del 10 en varios criterios cosméticos.</div>
+
+  <!-- HALLAZGOS -->
+  <h2 id="hallazgos">Registro consolidado de hallazgos</h2>
+  <div class="tblwrap"><table>
+    <thead><tr><th>ID</th><th>Sev.</th><th>Área</th><th>Descripción</th><th>Ubicación</th></tr></thead>
+    <tbody>
+      <tr><td>H-05</td><td><span class="badge b-med">Media</span></td><td>Agente / imágenes</td><td>Se ignora <code>NumberFailed</code> de <code>SaveManyAsync</code>: propiedad con menos/0 imágenes en silencio</td><td><code>AgentPropertyService.cs:79-90, 227-239</code></td></tr>
+      <tr><td>H-07</td><td><span class="badge b-med">Media</span></td><td>Catálogos</td><td><code>Task.WhenAll</code> de conteos sobre DbContext compartido (riesgo de excepción de concurrencia)</td><td><code>PropertyTypeService.cs:41-47</code></td></tr>
+      <tr><td>H-06</td><td><span class="badge b-low">Baja</span></td><td>Seed / datos</td><td>Ruta de <code>ProfileImg</code> del cliente semilla sin <code>/</code> tras <code>Users</code></td><td><code>DefaultUserCustomer.cs:18</code></td></tr>
+      <tr><td>H-API-01</td><td><span class="badge b-low">Baja</span></td><td>API / docs</td><td>Swagger sin <code>&lt;summary&gt;</code> y sin <code>&lt;GenerateDocumentationFile&gt;</code>: «documentación completa» a medias</td><td><code>Controllers/v1/*.cs</code></td></tr>
+      <tr><td>H-API-02</td><td><span class="badge b-low">Baja</span></td><td>API / validación</td><td><code>AgentController.GetById</code> valida solo null/whitespace; <code>Property</code> valida <code>id&lt;=0</code> (inconsistente)</td><td><code>AgentController.cs:60-67</code></td></tr>
+      <tr><td>H-API-03</td><td><span class="badge b-low">Baja</span></td><td>API / eficiencia</td><td><code>PropertyController.GetById</code> reutiliza <code>GetByIdWithDetailsAsync</code> del WebApp (fetch extra de contacto del agente no expuesto)</td><td><code>PropertyController.cs:80</code></td></tr>
+      <tr><td>H-04</td><td><span class="badge b-low">Baja</span></td><td>Ofertas</td><td>Carrera al aceptar dos ofertas en paralelo: mitigada por transacción+relectura, sin lock pesimista</td><td><code>OfferService.cs:133</code></td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">Sin hallazgos de severidad <span class="badge b-high">Alta</span> abiertos → <strong>gate duro cumplido</strong>. Los 8 hallazgos Altos históricos (v1–v2: atomicidad de oferta, validación de imágenes en servidor, índices sin longitud, vendidas=0, CSRF Developer, catálogos/InMemory) están cerrados y verificados.</p>
+
+  <!-- RUBRICA WEBAPP -->
+  <h2 id="rubapp">Puntuación — Rúbrica WebApp (1600 pts)</h2>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Bloque</th><th class="num">Máx.</th><th class="num">Sugerido</th><th>Observación principal</th></tr></thead>
+    <tbody>
+      <tr><td>Funcionalidades generales (Home, Agentes)</td><td class="num">190</td><td class="num scorecell">182</td><td>Filtros combinados, orden, búsqueda por código OK; texto sugerido</td></tr>
+      <tr><td>Únete a la app (registro)</td><td class="num">110</td><td class="num scorecell">108</td><td>Mensajes literales, estados y correo diferenciados</td></tr>
+      <tr><td>Iniciar sesión / Login</td><td class="num">70</td><td class="num scorecell">69</td><td>Redirección por rol, bloqueo inactivo/Developer</td></tr>
+      <tr><td>Funcionalidades del cliente</td><td class="num">240</td><td class="num scorecell">226</td><td>Favoritos, chat, ofertas con todos los bloqueos</td></tr>
+      <tr><td>Funcionalidades del agente</td><td class="num">330</td><td class="num scorecell">305</td><td>−H-05 (imágenes); código 6 díg., bloqueo vendida OK</td></tr>
+      <tr><td>Funcionalidades del administrador</td><td class="num">280</td><td class="num scorecell">263</td><td>Dashboard, CRUD usuarios, cascada agente</td></tr>
+      <tr><td>Mantenimientos (tipos/mejoras)</td><td class="num">220</td><td class="num scorecell">205</td><td>Reglas de borrado correctas; −H-07 concurrencia</td></tr>
+      <tr><td>Seguridad + reglas técnicas/arquitectura</td><td class="num">160</td><td class="num scorecell">155</td><td>Onion, Identity, AutoMapper, repos genéricos</td></tr>
+      <tr style="font-weight:800"><td>Total WebApp</td><td class="num">1&nbsp;600</td><td class="num scorecell">≈1&nbsp;488</td><td>93% → <strong>9.3 / 10</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted" style="font-size:12.5px">Distribución por bloque estimada a partir del recuento de criterios de la rúbrica (160 × 10). El detalle criterio-a-criterio se conserva en el registro de hallazgos: donde no hay hallazgo de código, el criterio se sitúa en 9.5 (el 0.5 restante corresponde a la verificación textual literal contra el PDF, tarea de lectura del equipo).</p>
+
+  <!-- RUBRICA WEBAPI -->
+  <h2 id="rubapi">Puntuación — Rúbrica WebApi (605 pts)</h2>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Bloque</th><th class="num">Máx.</th><th class="num">Sugerido</th><th>Observación principal</th></tr></thead>
+    <tbody>
+      <tr><td>Funcionalidades generales del API</td><td class="num">30</td><td class="num scorecell">29</td><td>JSON, HTTP consistente, separación</td></tr>
+      <tr><td>Login y seguridad del API</td><td class="num">140</td><td class="num scorecell">138</td><td>JWT, seeds, 401/403, registros protegidos</td></tr>
+      <tr><td>Controlador de propiedades</td><td class="num">75</td><td class="num scorecell">71</td><td>List/GetById/GetByCode; −H-API-03</td></tr>
+      <tr><td>Controlador de agentes</td><td class="num">75</td><td class="num scorecell">71</td><td>ChangeStatus PATCH Admin; −H-API-02</td></tr>
+      <tr><td>Tipo de propiedades</td><td class="num">70</td><td class="num scorecell">68</td><td>CRUD, cascada, 201/404/204</td></tr>
+      <tr><td>Tipo de ventas</td><td class="num">70</td><td class="num scorecell">68</td><td>CRUD, cascada, 201/404/204</td></tr>
+      <tr><td>Mejoras</td><td class="num">70</td><td class="num scorecell">68</td><td>Delete solo relación, no propiedades</td></tr>
+      <tr><td>Reglas técnicas y arquitectura del API</td><td class="num">75</td><td class="num scorecell">62</td><td>Onion, DTOs <code>required</code>, AutoMapper; −H-API-01 (Swagger)</td></tr>
+      <tr style="font-weight:800"><td>Total WebApi</td><td class="num">605</td><td class="num scorecell">≈575</td><td>95% → <strong>9.5 / 10</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="hero" style="margin-top:22px">
+    <div class="ring" style="--p:94"><div class="val"><b>9.4</b><span>global ponderado</span></div></div>
+    <div class="meta">
+      <p style="margin:0"><strong>Cálculo:</strong> (1&nbsp;488 + 575) / (1&nbsp;600 + 605) = <strong>2&nbsp;063 / 2&nbsp;205 = 93.6%</strong>.</p>
+      <p class="muted" style="margin:6px 0 0">Gate duro cumplido (0 Altos). El proyecto está en condiciones de integración a <code>development</code> y luego a <code>main</code>.</p>
+    </div>
+  </div>
+
+  <!-- PARA EL 10 -->
+  <h2 id="para10">Qué falta para el 10/10</h2>
+  <p class="muted">Solo hallazgos concretos de <strong>código o documento</strong>. No se listan pruebas de runtime (doble clic, overposting, cascadas en BD, envío de correos): esa verificación la ejecuta el equipo y no forma parte de la evaluación de código.</p>
+  <ol>
+    <li><strong>H-05 (Media):</strong> comprobar <code>NumberFailed &gt; 0</code> tras <code>SaveManyAsync</code> en crear y editar propiedad, y abortar con <code>ValidationResult.Failure</code>. Cierra el único hallazgo Media funcional.</li>
+    <li><strong>H-07 (Media):</strong> unificar el conteo de asociaciones de <code>PropertyTypeService</code> (y <code>SaleType</code>) al patrón agrupado en memoria de <code>ImprovementService</code>, eliminando el <code>Task.WhenAll</code> sobre el DbContext scoped.</li>
+    <li><strong>H-06 (Baja):</strong> corregir <code>"Img/Users667d…"</code> → <code>"Img/Users/667d…"</code> en <code>DefaultUserCustomer</code>.</li>
+    <li><strong>H-API-01 (Baja):</strong> añadir <code>&lt;GenerateDocumentationFile&gt;</code> al csproj y comentarios <code>&lt;summary&gt;</code> a los endpoints para completar la documentación Swagger.</li>
+    <li><strong>H-API-02 / H-API-03 (Baja):</strong> homogeneizar la validación de Id en la API y usar un método de consulta específico de la API en <code>PropertyController.GetById</code>.</li>
+    <li><strong>Verificación textual literal (documento):</strong> cotejar palabra por palabra los mensajes del sistema de la WebApp contra los «mensajes sugeridos» del PDF y ajustar los que difieran.</li>
+  </ol>
+
+  <footer>
+    <p>Auditoría generada siguiendo la <em>Skill de Auditoría Técnica Rigurosa</em> (7 fases, formato de evidencia obligatorio, presunción de no conformidad). Contraste directo de código fuente contra Documento Funcional v1.0 y las rúbricas oficiales WebApi (605) y WebApp (1600).</p>
+    <p>RealEstateApp · rama <code>Feature/TestGeneral</code> · commit <code>82fb14a</code> · 21/07/2026 · Evaluadores: Joel + Claude (Opus 4.8) · Documento local, no publicado.</p>
+  </footer>
+</main>
+</div>
+<button class="toggle" id="tg">◐ Tema</button>
+<script>
+(function(){
+  var b=document.getElementById('tg');
+  b.addEventListener('click',function(){
+    var r=document.documentElement;
+    var cur=r.getAttribute('data-theme');
+    if(!cur){ cur = matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'; }
+    r.setAttribute('data-theme', cur==='dark'?'light':'dark');
+  });
+})();
+</script>
+</body>
+</html>

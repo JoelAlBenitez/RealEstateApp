@@ -15,7 +15,7 @@ namespace RealEstateApp.Infraestructure.Identity.Seeds
                 LastName = "Brito",
                 UserName = "ABrito",
                 IsActive = true,
-                ProfileImg = "Img/Users/bbdcf1d9-c6e0-438d-a508-a69fb0d6b718/bbdcf1d9-c6e0-438d-a508-a69fb0d6b718.jpg",
+                ProfileImg = "Img/Users/667d9056-dee5-4c6a-8723-13eed6440374/667d9056-dee5-4c6a-8723-13eed6440374.jpg",
                 IDCard = null,
                 EmailConfirmed = true,
                 PhoneNumber = "8290000001",

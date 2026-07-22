@@ -39,17 +39,17 @@ namespace RealEstateApp.Core.Application.Services.SaleType
                 var entities = await _saleTypeRepository.GetAllAsync();
                 var dtos = base._mapper.Map<List<SaleTypeDto>>(entities);
 
-                // Nota: se usa un conteo individual por elemento ejecutado en paralelo con Task.WhenAll
-                // en vez de una consulta agrupada. Confirmado con el líder técnico (Joel) que esto es
-                // aceptable para catálogos maestros con pocos registros (no es un problema de rendimiento en este contexto).
-                var countTasks = dtos.Select(async dto =>
-                {
-                    var countResult = await _propertyCascadeService.CountBySaleTypeAsync(dto.Id);
-                    dto.PropertyCount = countResult.IsValid ? countResult.Value : 0;
-                }).ToList();
+               
+                var countsResult = await _propertyCascadeService.GetPropertyCountsBySaleTypeAsync();
+                var counts = countsResult.IsValid && countsResult.Value != null
+                    ? countsResult.Value
+                    : new Dictionary<int, int>();
 
-                await Task.WhenAll(countTasks);
-                
+                foreach (var dto in dtos)
+                {
+                    dto.PropertyCount = counts.TryGetValue(dto.Id, out var count) ? count : 0;
+                }
+
                 return ValidationResult<IReadOnlyCollection<SaleTypeDto>>.Success(dtos);
             }
             catch (Exception)

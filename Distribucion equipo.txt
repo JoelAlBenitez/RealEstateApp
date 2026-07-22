@@ -1,0 +1,32 @@
+### RealStateApp - Integrantes del Grupo y Funcionalidades
+
+**Joel Alberto Benítez Varela | Matrícula: 2025-1049**
+
+* Funcionalidades generales.
+* Home público.
+* Módulo de agentes.
+* Únete a la app e inicio de sesión.
+* Proyecto API.
+* Funcionalidades y manejo de usuarios.
+* Creación y manejo de Project Identity y diversos tipos de usuarios del sistema.
+
+---
+
+**Adrián Francisco Brito Nelkits | Matrícula: 2025-1150**
+
+* Funcionalidad del administrador.
+* Home del administrador.
+* Listado de agentes.
+* Tipos de propiedades.
+* Tipos de ventas.
+* Mejoras de propiedades.
+
+---
+
+**Sebastián De Jesús Peguero Herrera | Matrícula: 2025-1172**
+
+* Funcionalidad del agente.
+* Funcionalidad del cliente.
+* Tipos de propiedades.
+* Tipos de ventas.
+* Mejoras de propiedades.
